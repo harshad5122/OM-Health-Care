@@ -1,0 +1,466 @@
+/* General Appointment Page Styles */
+.appointment-page {
+  padding-top: 80px; /* Adjust for fixed navbar */
+  background-color: #f8fbfd; /* Very light subtle blue background */
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll from animations */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* --- Appointment Hero Section --- */
+.appointment-hero {
+  position: relative;
+  height: 50vh; /* Shorter hero for inner pages */
+  min-height: 350px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  margin-bottom: 5rem;
+}
+
+.appointment-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(26, 111, 139, 0.7); /* Darker overlay from primary color */
+  z-index: 1;
+}
+
+.appointment-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  padding: 0 1rem;
+}
+
+.appointment-hero-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+  color: white;
+  font-weight: 700;
+}
+
+.appointment-hero-content p {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- Appointment Form Section --- */
+.appointment-form-section {
+  padding: 5rem 0;
+  margin-bottom: 5rem;
+}
+
+.appointment-form-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.form-content-wrapper {
+  display: flex;
+  gap: 3rem;
+  align-items: stretch; /* Stretch children to fill height */
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1); /* Stronger shadow for this main block */
+  overflow: hidden; /* Ensures border-radius applies to children */
+  opacity: 0; /* Hidden by default for animation */
+  transform: translateY(50px); /* Start lower */
+  transition: opacity 1s ease-out, transform 1s ease-out; /* Slower animation */
+}
+
+.appointment-form-section.in-view .form-content-wrapper {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.form-image-container {
+  flex: 1;
+  min-width: 300px; /* Ensure image doesn't get too small */
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px 0 0 20px; /* Rounded only on the left side */
+}
+
+.form-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease, filter 0.3s ease;
+}
+/* .form-image-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(64, 88, 97, 0.7); 
+  pointer-events: none; 
+  border-radius: 20px 0 0 20px;
+} */
+
+.form-image-container:hover img {
+  transform: scale(1.05); /* Zoom effect on hover */
+}
+
+.appointment-form-container {
+  flex: 1.2; /* Form takes more space */
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.appointment-form-container h2 {
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.form-intro-text {
+  font-size: 1rem;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+/* Form Group & Input Styles */
+.appointment-form .form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+  position: relative; /* For error messages */
+}
+
+.appointment-form label {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.appointment-form input[type="text"],
+.appointment-form input[type="email"],
+.appointment-form input[type="tel"],
+.appointment-form select,
+.appointment-form textarea,
+/* Specific styling for react-datepicker inputs */
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box; /* Include padding in width */
+  background-color: #fcfcfc;
+  -webkit-appearance: none; /* Remove default browser styling for select */
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.appointment-form select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a6f8b'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1.2rem;
+  padding-right: 2.5rem; /* Make space for custom arrow */
+}
+
+
+.appointment-form input:focus,
+.appointment-form select:focus,
+.appointment-form textarea:focus,
+.react-datepicker__input-container input:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2); /* Light green glow */
+  outline: none;
+}
+
+.appointment-form textarea {
+  resize: vertical; /* Allow vertical resizing */
+  min-height: 100px;
+}
+
+.appointment-form .input-error {
+  border-color: #ff4d4f !important; /* Red for errors, using !important to override focus */
+  box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.2) !important;
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+  display: block;
+}
+
+.submit-button {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(26, 111, 139, 0.3);
+  margin-top: 1rem;
+  width: auto; /* Allow button to size to content */
+}
+
+.submit-button:hover {
+  background-color: #145369;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(26, 111, 139, 0.4);
+}
+
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.form-submission-message {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  opacity: 0; /* Hidden by default for animation */
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.form-submission-message.animate-fade-in-up { /* Ensure it animates */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.success-message {
+  background-color: #e6ffe6; /* Light green */
+  color: #28a745; /* Dark green text */
+  border: 1px solid #28a745;
+}
+
+.error-message {
+  background-color: #ffe6e6; /* Light red */
+  color: #dc3545; /* Dark red text */
+  border: 1px solid #dc3545;
+}
+
+/* React Datepicker Custom Styles */
+.react-datepicker-wrapper {
+  display: block; /* Make DatePicker input take full width */
+}
+
+/* Ensure consistent input style for DatePicker */
+.react-datepicker__input-container input {
+  /* Already covered by general input styles */
+}
+
+/* Datepicker calendar styles */
+.react-datepicker {
+  font-family: 'Poppins', sans-serif;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-size: 0.9rem;
+}
+
+.react-datepicker__header {
+  background-color: var(--primary-color);
+  border-bottom: none;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding-top: 10px;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: white;
+}
+
+.react-datepicker__navigation {
+  top: 12px;
+}
+
+.react-datepicker__navigation--previous {
+  border-right-color: white;
+}
+.react-datepicker__navigation--next {
+  border-left-color: white;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range {
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 50%;
+}
+
+.react-datepicker__day--selected:hover,
+.react-datepicker__day--in-selecting-range:hover,
+.react-datepicker__day--in-range:hover {
+  background-color: #3b8e3f;
+}
+
+.react-datepicker__day--outside-month {
+  color: #ccc;
+}
+
+.react-datepicker__day--disabled {
+  color: #ddd;
+  cursor: default;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+  background-color: var(--secondary-color) !important;
+}
+
+
+/* --- Global Animation Classes (Ideally in App.css) --- */
+/* fade-in-up */
+.animate-fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.appointment-hero-content.animate-fade-in-up { /* Hero content animates immediately */
+  opacity: 1;
+  transform: translateY(0);
+}
+/* For sections that animate on scroll */
+.in-view .animate-fade-in-up {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* fade-in-left */
+.animate-fade-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+.in-view .animate-fade-in-left {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* fade-in-right */
+.animate-fade-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+.in-view .animate-fade-in-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Animation Delays */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+  .appointment-hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .appointment-hero-content p {
+    font-size: 1.2rem;
+  }
+  .appointment-form-section {
+    margin: 0 1rem 4rem; /* Less margin on sides */
+  }
+  .form-content-wrapper {
+    flex-direction: column; /* Stack image and form */
+    border-radius: 20px; /* Full rounded corners */
+  }
+  .form-image-container {
+    height: 250px; /* Give image a fixed height when stacked */
+    border-radius: 20px 20px 0 0; /* Rounded top corners */
+  }
+  .appointment-form-container {
+    padding: 2rem;
+  }
+  .appointment-form-container h2 {
+    text-align: center;
+  }
+  .form-intro-text {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .appointment-page {
+    padding-top: 60px; /* Adjust for smaller navbar */
+  }
+  .appointment-hero {
+    height: 40vh;
+    min-height: 250px;
+  }
+  .appointment-hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .appointment-hero-content p {
+    font-size: 1rem;
+  }
+  .appointment-form-container h2 {
+    font-size: 1.8rem;
+  }
+  .form-intro-text {
+    font-size: 0.9rem;
+  }
+  .appointment-form input[type="text"],
+  .appointment-form input[type="email"],
+  .appointment-form input[type="tel"],
+  .appointment-form select,
+  .appointment-form textarea,
+  .react-datepicker__input-container input {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  .submit-button {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .appointment-hero-content h1 {
+    font-size: 1.8rem;
+  }
+  .appointment-hero-content p {
+    font-size: 0.9rem;
+  }
+  .submit-button {
+    width: 100%; /* Full width button on small screens */
+  }
+}

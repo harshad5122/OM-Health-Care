@@ -1,0 +1,456 @@
+.testimonials-page {
+  padding-top: 80px; /* Adjust for fixed navbar */
+  background-color: #f8fbfd; /* Very light subtle blue background */
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll from animations */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Section Header Styles (consistent with other pages) */
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.section-header h2 {
+  font-size: 2.8rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-weight: 700;
+  position: relative;
+  display: inline-block;
+}
+
+.section-header h2::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 4px;
+  background-color: var(--secondary-color);
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  margin-top: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* --- Testimonials Hero Section --- */
+.testimonials-hero {
+  position: relative;
+  height: 50vh; /* Shorter hero for inner pages */
+  min-height: 350px;
+  background: url('../assets/images/hero-image.jpg') center/cover no-repeat; /* Replace with a suitable background */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  margin-bottom: 5rem;
+}
+
+.testimonials-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(26, 111, 139, 0.7); /* Darker overlay from primary color */
+  z-index: 1;
+}
+
+.testimonials-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  padding: 0 1rem;
+}
+
+.testimonials-hero-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+  color: white;
+  font-weight: 700;
+}
+
+.testimonials-hero-content p {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- Testimonials List/Grid Section --- */
+.testimonials-list-section {
+  padding: 5rem 0;
+  background-color: white;
+  border-radius: 20px;
+  margin: 0 2rem 5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  opacity: 0; /* Hidden by default for animation */
+  transform: translateY(50px); /* Start lower */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.testimonials-list-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.testimonials-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6rem; /* Large gap between testimonial items */
+}
+
+/* --- Testimonial Item Styles (Zigzag Layout) --- */
+.testimonial-item {
+  display: flex;
+  align-items: center;
+  gap: 3rem; /* Space between media and content */
+  position: relative;
+  padding: 2rem;
+  background-color: #fcfdfe; /* Light background for card */
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+
+  opacity: 0; /* Initial state for animation */
+  transform: translateY(50px);
+}
+
+.testimonial-item.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.testimonial-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18);
+}
+
+/* Zigzag Layout Specifics */
+.testimonial-item.layout-left .media-container {
+  order: 0; /* Default order */
+  padding-right: 1.5rem; /* Space before content on left layout */
+}
+
+.testimonial-item.layout-left .content-container {
+  order: 1;
+  padding-left: 1.5rem; /* Space after media on left layout */
+  border-left: 3px solid var(--secondary-color); /* Separator line */
+}
+
+.testimonial-item.layout-right {
+  flex-direction: row-reverse; /* Swap order for right layout */
+}
+
+.testimonial-item.layout-right .media-container {
+  order: 0; /* Default order after flex-direction change */
+  padding-left: 1.5rem; /* Space before content on right layout */
+}
+
+.testimonial-item.layout-right .content-container {
+  order: 1;
+  padding-right: 1.5rem; /* Space after media on right layout */
+  border-right: 3px solid var(--secondary-color); /* Separator line */
+}
+
+
+.media-container {
+  flex: 0 0 400px; /* Fixed width for media container */
+  height: 250px;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.media-container:hover {
+  transform: scale(1.02);
+}
+
+.media-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.video-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.identifier-tag {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background-color: rgba(26, 111, 139, 0.9); /* Primary color semi-transparent */
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 1;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.content-container {
+  flex: 1; /* Take remaining space */
+  position: relative;
+  padding: 1rem 0; /* Vertical padding */
+}
+
+.quote-icon-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 3rem;
+  color: var(--secondary-color);
+  opacity: 0.2;
+}
+
+.quote-icon-right {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 3rem;
+  color: var(--secondary-color);
+  opacity: 0.2;
+  transform: rotate(180deg);
+}
+
+.result-headline {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+  padding: 0 2rem; /* Space for quote icons */
+  position: relative; /* For z-index over icons */
+  z-index: 1;
+}
+
+.challenge-text, .result-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.bold-label {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+
+/* --- Call to Action Section (consistent with other pages) --- */
+.testimonials-cta-section {
+  padding: 5rem 0;
+  background-color: var(--primary-color);
+  color: white;
+  text-align: center;
+  border-radius: 20px;
+  margin: 0 2rem 5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+}
+
+.testimonials-cta-section h2 {
+  font-size: 2.5rem;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.testimonials-cta-section p {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 3rem;
+}
+
+.cta-button {
+  display: inline-block;
+  background-color: var(--secondary-color);
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cta-button:hover {
+  background-color: #3b8e3f;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Global Animation Classes (Ideally in App.css) --- */
+/* fade-in-up */
+.animate-fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.testimonials-hero-content.animate-fade-in-up { /* Hero content animates immediately */
+  opacity: 1;
+  transform: translateY(0);
+}
+/* For sections that animate on scroll */
+.in-view .animate-fade-in-up {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animation Delays */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+  .testimonials-hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .testimonials-hero-content p {
+    font-size: 1.2rem;
+  }
+  .testimonials-list-section, .testimonials-cta-section {
+    margin: 0 1rem 4rem;
+  }
+  .testimonial-item {
+    flex-direction: column; /* Stack on smaller screens */
+    gap: 2rem;
+  }
+  /* Reset order for stacked layout */
+  .testimonial-item.layout-right {
+    flex-direction: column;
+  }
+  .testimonial-item .media-container,
+  .testimonial-item .content-container {
+    order: unset; /* Reset order */
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .content-container {
+    border-left: none !important; /* Remove border when stacked */
+    border-right: none !important;
+    padding-top: 1rem; /* Add some space if needed */
+  }
+  .media-container {
+    flex: 0 0 auto; /* Allow media container to auto-size height */
+    width: 100%; /* Take full width */
+    height: 250px; /* Keep consistent height */
+  }
+  .result-headline {
+    font-size: 1.6rem;
+    padding: 0 1rem;
+  }
+  .quote-icon-left {
+    left: 10px;
+  }
+  .quote-icon-right {
+    right: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .testimonials-page {
+    padding-top: 60px; /* Adjust for smaller navbar */
+  }
+  .testimonials-hero {
+    height: 40vh;
+    min-height: 250px;
+  }
+  .testimonials-hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .testimonials-hero-content p {
+    font-size: 1rem;
+  }
+  .section-header h2 {
+    font-size: 2.2rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+  }
+  .testimonial-item {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  .media-container {
+    height: 200px; /* Smaller media height */
+  }
+  .identifier-tag {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+  .result-headline {
+    font-size: 1.4rem;
+  }
+  .challenge-text, .result-text {
+    font-size: 0.9rem;
+  }
+  .quote-icon-left, .quote-icon-right {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .testimonials-hero-content h1 {
+    font-size: 1.8rem;
+  }
+  .testimonials-hero-content p {
+    font-size: 0.9rem;
+  }
+  .section-header h2 {
+    font-size: 1.8rem;
+  }
+  .testimonial-item {
+    padding: 1rem;
+  }
+  .media-container {
+    height: 180px;
+  }
+  .result-headline {
+    font-size: 1.2rem;
+  }
+  .cta-button {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+}

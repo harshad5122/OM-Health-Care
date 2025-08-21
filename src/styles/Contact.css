@@ -1,0 +1,510 @@
+.contact-page {
+  padding-top: 80px; /* Adjust for fixed navbar */
+  background-color: #f8fbfd; /* Very light subtle blue background */
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll from animations */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* --- Contact Hero Section --- */
+.contact-hero {
+  position: relative;
+  height: 50vh; /* Shorter hero for inner pages */
+  min-height: 350px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  margin-bottom: 5rem;
+}
+
+.contact-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(26, 111, 139, 0.7); /* Darker overlay from primary color */
+  z-index: 1;
+}
+
+.contact-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  padding: 0 1rem;
+}
+
+.contact-hero-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+  color: white;
+  font-weight: 700;
+}
+
+.contact-hero-content p {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- Contact Info Section (Address, Phone, Email in one row) --- */
+.contact-info-section {
+  padding: 4rem 0;
+  background-color: white;
+  border-radius: 20px; /* Rounded corners for the whole section block */
+  margin: 0 2rem 5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); /* Soft shadow */
+  opacity: 0; /* Hidden by default for animation */
+  transform: translateY(50px); /* Start lower */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.contact-info-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  justify-content: center;
+}
+
+.info-card {
+  background-color: #f8fbfd; /* Light background for cards */
+  border-radius: 15px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.info-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.info-icon-wrapper {
+  background-color: var(--secondary-color); /* Green background for icon */
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+  color: white;
+  font-size: 2.2rem;
+}
+
+.info-card h3 {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.info-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.info-link {
+  display: inline-block;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+  position: relative;
+  padding-bottom: 3px;
+}
+
+.info-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--secondary-color);
+  transition: width 0.3s ease;
+}
+
+.info-link:hover::after {
+  width: 100%;
+}
+
+/* --- Contact Form Section (Image & Form Side-by-Side) --- */
+.contact-form-section {
+  padding: 5rem 0;
+  margin-bottom: 5rem;
+}
+
+.contact-form-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.form-content-wrapper {
+  display: flex;
+  gap: 3rem;
+  align-items: stretch; /* Stretch children to fill height */
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1); /* Stronger shadow for this main block */
+  overflow: hidden; /* Ensures border-radius applies to children */
+  opacity: 0; /* Hidden by default for animation */
+  transform: translateY(50px); /* Start lower */
+  transition: opacity 1s ease-out, transform 1s ease-out; /* Slower animation */
+}
+
+.contact-form-section.in-view .form-content-wrapper {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+.form-image-container {
+  flex: 1;
+  min-width: 300px; /* Ensure image doesn't get too small */
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px 0 0 20px; /* Rounded only on the left side */
+}
+
+.form-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.form-image-container:hover img {
+  transform: scale(1.05); /* Zoom effect on hover */
+}
+
+
+.contact-form-container {
+  flex: 1.2; /* Form takes more space */
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.contact-form-container h2 {
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.form-intro-text {
+  font-size: 1rem;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.contact-form .form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+  position: relative; /* For error messages */
+}
+
+.contact-form label {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form input[type="tel"],
+.contact-form textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box; /* Include padding in width */
+  background-color: #fcfcfc;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2); /* Light green glow */
+  outline: none;
+}
+
+.contact-form textarea {
+  resize: vertical; /* Allow vertical resizing */
+  min-height: 120px;
+}
+
+.contact-form .input-error {
+  border-color: #ff4d4f; /* Red for errors */
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+  display: block;
+}
+
+.submit-button {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(26, 111, 139, 0.3);
+  margin-top: 1rem;
+  width: auto; /* Allow button to size to content */
+}
+
+.submit-button:hover {
+  background-color: #145369;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(26, 111, 139, 0.4);
+}
+
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.form-submission-message {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  opacity: 0; /* Hidden by default for animation */
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.form-submission-message.animate-fade-in-up { /* Ensure it animates */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.success-message {
+  background-color: #e6ffe6; /* Light green */
+  color: #28a745; /* Dark green text */
+  border: 1px solid #28a745;
+}
+
+.error-message {
+  background-color: #ffe6e6; /* Light red */
+  color: #dc3545; /* Dark red text */
+  border: 1px solid #dc3545;
+}
+
+/* --- Google Maps Section --- */
+.map-section {
+  padding: 0 0 5rem 0; /* Padding only at bottom */
+  display: none !important;
+}
+
+.map-embed-wrapper {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+  background-color: white; /* Fallback */
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.map-embed-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  z-index: 1;
+}
+
+.map-section .section-title {
+  margin-bottom: 3rem; /* Space below title */
+  margin-top: 2rem; /* Space above title */
+}
+
+/* --- Global Animation Classes (re-copied for context, but should be in App.css) --- */
+/* Fade In Up */
+.animate-fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.contact-hero-content .animate-fade-in-up { /* Hero content animates immediately */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Zoom In */
+.animate-zoom-in {
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.in-view .animate-zoom-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Fade In Left */
+.animate-fade-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+.in-view .animate-fade-in-left {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Fade In Right */
+.animate-fade-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+.in-view .animate-fade-in-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+
+/* Animation Delays */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+/* ... (add more delays as needed in App.css if global) */
+
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+  .contact-hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .contact-hero-content p {
+    font-size: 1.2rem;
+  }
+  .contact-info-section, .contact-form-section {
+    margin: 0 1rem 4rem; /* Less margin on sides */
+  }
+  .info-grid {
+    grid-template-columns: 1fr; /* Stack cards */
+  }
+  .form-content-wrapper {
+    flex-direction: column; /* Stack image and form */
+    border-radius: 20px; /* Full rounded corners */
+  }
+  .form-image-container {
+    height: 250px; /* Give image a fixed height when stacked */
+    border-radius: 20px 20px 0 0; /* Rounded top corners */
+  }
+  .contact-form-container {
+    padding: 2rem;
+  }
+  .contact-form-container h2 {
+    text-align: center;
+  }
+  .form-intro-text {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-page {
+    padding-top: 60px; /* Adjust for smaller navbar */
+  }
+  .contact-hero {
+    height: 40vh;
+    min-height: 250px;
+  }
+  .contact-hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .contact-hero-content p {
+    font-size: 1rem;
+  }
+  .info-card {
+    padding: 2rem 1rem;
+  }
+  .info-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    font-size: 1.8rem;
+  }
+  .info-card h3 {
+    font-size: 1.3rem;
+  }
+  .info-card p {
+    font-size: 0.9rem;
+  }
+  .contact-form-container h2 {
+    font-size: 1.8rem;
+  }
+  .form-intro-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .contact-hero-content h1 {
+    font-size: 1.8rem;
+  }
+  .contact-hero-content p {
+    font-size: 0.9rem;
+  }
+  .submit-button {
+    width: 100%; /* Full width button on small screens */
+  }
+}
+

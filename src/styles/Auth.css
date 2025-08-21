@@ -1,0 +1,458 @@
+
+
+.auth-wrapper {
+  display: flex;
+  min-height: 100vh;
+  /* background: linear-gradient(135deg, var(--primary-color) 0%, #a2d4eb 100%);  */
+  overflow: hidden; /* Ensures no overflow from animations */
+  align-items: stretch; /* Stretch children to fill height */
+  position: relative; /* For z-index of go back button */
+}
+
+/* Left Side: Illustration Section */
+.auth-illustration-section {
+  flex: 1; /* Takes up 50% width on large screens */
+  background: rgba(255, 255, 255, 0.1); 
+  backdrop-filter: blur(5px); /* Frosted glass effect */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  position: relative; /* For absolute positioning of go-back-button */
+  animation: slideInLeft 0.8s ease-out; /* Entrance animation */
+}
+
+.go-back-button {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+  z-index: 10; /* Ensure it's above other elements */
+}
+
+.go-back-button:hover {
+  transform: translateX(-5px);
+  color: var(--primary-color);
+}
+
+.go-back-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--primary-color);
+}
+
+.illustration-content {
+  text-align: center;
+  color: white;
+  padding: 2rem;
+  max-width: 450px; /* Limit width of content */
+  animation: fadeIn 1s ease-out 0.3s forwards; /* Delayed fade-in */
+  opacity: 0; /* Start hidden for animation */
+}
+
+.auth-illustration {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 2rem;
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2)); /* Subtle shadow for illustration */
+}
+
+.illustration-title {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.illustration-subtitle {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+
+/* Right Side: Form Section */
+.auth-form-section {
+  flex: 1; /* Takes up 50% width on large screens */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  /* background-color: #fcfcfc;  */
+  animation: slideInRight 0.8s ease-out; /* Entrance animation */
+}
+
+.auth-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); 
+  padding: 3rem 2.5rem; /* Increased padding */
+  width: 100%;
+  max-width: 500px;
+  transform: translateY(0); /* Resetting animation from previous version */
+  animation: fadeInScale 0.6s ease-out 0.2s forwards; /* Delayed fade-in and slight scale */
+  opacity: 0;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2.5rem; /* Increased margin */
+}
+
+.auth-header h2 {
+  color: var(--primary-color);
+  font-size: 2.2rem; /* Larger font size */
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+
+.auth-header p {
+  color: var(--text-color);
+  font-size: 1.05rem;
+}
+
+/* Auth Method Toggle (Tabs/Pills) */
+.auth-method-toggle {
+  display: flex;
+  margin-bottom: 2rem; /* Increased margin */
+  border-radius: 10px; /* More rounded */
+  background-color: #f0f4f8; /* Lighter background */
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08); /* Subtle inner shadow */
+}
+
+.toggle-option {
+  flex: 1;
+  padding: 1rem 0.5rem; /* More vertical padding */
+  border: none;
+  background: transparent;
+  font-weight: 600; /* Bolder text */
+  cursor: pointer;
+  transition: all 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  font-size: 1rem;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.toggle-option.active {
+  background-color: var(--primary-color); /* Accent color for active state */
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Shadow for active state */
+  transform: translateY(-2px);
+}
+
+.toggle-option:hover:not(.active) {
+  background-color: #e5e9ed; /* Subtle hover effect */
+  color: var(--primary-color);
+}
+
+
+/* Form Styles */
+.auth-form {
+  margin-top: 1.5rem; /* Adjusted margin */
+}
+
+.form-row {
+  display: flex;
+  gap: 1.5rem; /* Increased gap */
+}
+
+.form-row.three-col .form-group {
+    /* flex: 1 1 30%;  */
+    flex: 1;
+}
+
+.form-group {
+  margin-bottom: 1.5rem; 
+  flex: 1;
+  position: relative; 
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.6rem; 
+  color: var(--text-color);
+  font-weight: 500;
+  font-size: 0.95rem; 
+  text-align: left;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 1rem 1.2rem; /* More padding for a richer feel */
+  border: 1px solid #c9d8e5; /* Softer border color */
+  border-radius: 10px; /* More rounded corners */
+  font-size: 1rem;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  background-color: #fdfdfd; /* Subtle background for input */
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(26, 111, 139, 0.15); /* Stronger focus shadow */
+  background-color: white;
+}
+
+.phone-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between select and input */
+}
+
+.phone-input .country-code {
+  width: auto; /* Auto width based on content */
+  padding-right: 0.5rem; /* Ensure space for arrow */
+}
+
+.country-code {
+  padding: 0.5rem 2rem 0.5rem 0.5rem; /* top-right-bottom-left */
+  background-position: right 0.5rem center; /* move arrow inside */
+  background-repeat: no-repeat;
+  background-size: 1rem; /* arrow size */
+}
+
+.resend-otp {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-top: 0.75rem;
+    text-align: right;
+}
+
+.resend-otp .link-button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+    padding: 0;
+}
+
+.resend-otp .link-button:hover {
+    color: var(--secondary-color);
+}
+
+
+/* Button Styles */
+.auth-button {
+  width: 100%;
+  padding: 1.1rem; /* More padding */
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 10px; /* More rounded */
+  font-size: 1.1rem; /* Larger text */
+  font-weight: 700; /* Bolder */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem; /* Space from last form group */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Initial shadow */
+}
+
+.auth-button:hover {
+  background-color: #145369; /* Darker primary */
+  transform: translateY(-3px); /* Lift effect */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Enhanced shadow on hover */
+}
+
+/* Footer Links */
+.auth-footer {
+  margin-top: 2rem; /* More space */
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.signup-prompt {
+  margin-top: 1rem; /* Space for the prompt */
+}
+
+.auth-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600; /* Bolder link */
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.auth-link:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .auth-wrapper {
+    flex-direction: column; /* Stack columns on smaller screens */
+    padding: 2rem; /* Add padding to wrapper */
+  }
+
+  .auth-illustration-section {
+    width: 100%;
+    height: 300px; /* Fixed height for illustration section */
+    padding: 2rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    animation: fadeIn 0.8s ease-out; /* Simpler animation for smaller screens */
+  }
+
+  .auth-illustration {
+    max-height: 200px; /* Smaller illustration */
+    margin-bottom: 1rem;
+  }
+
+  .illustration-content {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .illustration-title {
+    font-size: 1.8rem;
+  }
+
+  .illustration-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .go-back-button {
+    top: 1rem;
+    left: 1rem;
+  }
+
+  .auth-form-section {
+    width: 100%;
+    padding: 2rem;
+    animation: fadeIn 0.8s ease-out; /* Simpler animation for smaller screens */
+  }
+
+  .auth-card {
+    padding: 2rem 1.5rem;
+    max-width: 100%; /* Allows it to take full width of its container */
+    animation: fadeIn 0.6s ease-out 0.2s forwards; /* Simpler animation */
+  }
+
+  .auth-header h2 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 1.5rem;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0; /* Remove gap when stacked */
+  }
+  .form-row.three-col .form-group {
+    flex: none; /* Reset flex */
+    width: 100%; /* Full width when stacked */
+  }
+  .auth-method-toggle {
+    flex-direction: column;
+  }
+  .toggle-option {
+    border-radius: 0;
+  }
+  .toggle-option:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+  .toggle-option:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-wrapper {
+    padding: 1rem;
+  }
+  .auth-illustration-section {
+    height: 250px;
+  }
+  .auth-illustration {
+    max-height: 150px;
+  }
+  .illustration-title {
+    font-size: 1.5rem;
+  }
+  .illustration-subtitle {
+    font-size: 0.9rem;
+  }
+  .auth-card {
+    padding: 1rem;
+  }
+  .auth-header h2 {
+    font-size: 1.5rem;
+  }
+  .auth-button {
+    font-size: 1rem;
+    padding: 0.9rem;
+  }
+}

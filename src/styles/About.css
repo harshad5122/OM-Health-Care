@@ -1,0 +1,625 @@
+/* General About Page Styles */
+.about-page {
+  padding-top: 80px; /* Adjust for fixed navbar */
+  background-color: #f8fbfd; /* Very light subtle blue background */
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll from animations */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.section-header h2 {
+  font-size: 2.8rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-weight: 700;
+  position: relative;
+  display: inline-block;
+}
+
+.section-header h2::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 4px;
+  background-color: var(--secondary-color);
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  margin-top: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* --- About Hero Section --- */
+.about-hero {
+  position: relative;
+  height: 50vh; /* Shorter hero for inner pages */
+  min-height: 350px;
+  background: url('../assets/images/hero-image.jpg') center/cover no-repeat; /* Replace with a suitable background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  margin-bottom: 5rem;
+}
+
+.about-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(26, 111, 139, 0.7); /* Darker overlay from primary color */
+  z-index: 1;
+}
+
+.about-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  padding: 0 1rem;
+}
+
+.about-hero-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+  color: white;
+  font-weight: 700;
+}
+
+.about-hero-content p {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- Clinic Story Section --- */
+.clinic-story-section {
+  padding: 5rem 0;
+  background-color: white;
+  border-radius: 20px; /* Rounded corners for the whole section block */
+  margin: 0 2rem 5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); /* Soft shadow */
+  opacity: 0; /* Hidden by default for animation */
+  transform: translateY(50px); /* Start lower */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.clinic-story-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.story-content {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.story-text {
+  flex: 1;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--text-color);
+}
+
+.story-text p:first-of-type {
+  margin-bottom: 1.5rem;
+}
+
+.story-text strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.story-images {
+  flex: 0.8; /* Smaller flex basis for images */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  min-height: 350px; /* Ensure space for stacked images */
+}
+
+.image-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 60%; /* Aspect ratio hack for responsive height */
+}
+
+.image-wrapper {
+  position: absolute;
+  border-radius: 15px; /* Rounded rectangle for images */
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Stronger shadow for depth */
+  transition: transform 0.5s ease;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.image-1 {
+  width: 70%;
+  height: 70%;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  transform: rotate(-5deg); /* Slight rotation for uniqueness */
+}
+
+.image-2 {
+  width: 70%;
+  height: 70%;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  transform: rotate(5deg); /* Counter rotation */
+  filter: brightness(0.9); /* Slightly darker for depth */
+}
+
+.story-images .image-wrapper:hover {
+  transform: scale(1.03) rotate(0deg) !important; /* Straighter and slightly larger on hover */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  z-index: 3;
+}
+
+/* --- Facility Showcase Section --- */
+/* .facility-showcase-section {
+  padding: 5rem 0;
+  background-color: #f0f8ff; 
+  margin-bottom: 5rem;
+}
+
+.facility-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.facility-item {
+  background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+}
+
+.facility-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 50%); 
+  opacity: 0; 
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.facility-item:hover::after {
+  opacity: 1;
+}
+
+
+.facility-item img {
+  width: 100%;
+  height: 250px; 
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.facility-item:hover img {
+  transform: scale(1.05);
+}
+
+.facility-item.facility-large {
+  grid-column: span 2; 
+  height: 400px; 
+}
+.facility-item.facility-large img {
+  height: 100%;
+}
+
+.facility-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: left;
+  z-index: 1; 
+  transform: translateY(100%); 
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.facility-item:hover .facility-caption {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.facility-item.facility-large .facility-caption {
+    font-size: 1.5rem; 
+}
+
+
+.facility-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+} */
+
+.facility-showcase-section {
+  padding: 6rem 0; /* Slightly more padding */
+  background-color: var(--light-color); /* Using your defined light-color */
+  /* Remove margin-bottom if it causes unwanted space at the end of the page */
+}
+
+/* Base grid container for a flexible, multi-column layout */
+.facility-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Default: responsive columns */
+  grid-auto-rows: minmax(280px, auto); /* Set a base height for rows, allows content to expand */
+  gap: 1.5rem; /* Consistent spacing between items */
+  max-width: 1200px; /* Max width to keep content centered and readable */
+  margin: 0 auto; /* Center the grid */
+}
+
+/* Individual grid item styling */
+.facility-item {
+  background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  display: flex; /* Use flex to manage image/content within item */
+  flex-direction: column;
+}
+
+/* Overlay for caption readability */
+.facility-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 50%); /* Stronger gradient */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1; /* Above image, below caption */
+  pointer-events: none; /* Allows clicks to pass through to actual content if needed */
+}
+
+.facility-item:hover::after {
+  opacity: 1;
+}
+
+/* Image styling within grid items */
+.facility-item img {
+  width: 100%;
+  height: 100%; /* Image fills its container */
+  object-fit: cover; /* Cover the area, cropping if necessary */
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.facility-item:hover img {
+  transform: scale(1.05); /* Subtle zoom on hover */
+}
+
+/* Caption styling */
+.facility-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.2rem 1.5rem; /* Slightly more padding for caption */
+  color: white;
+  font-size: 1.15rem; /* Slightly larger font */
+  font-weight: 600;
+  text-align: left;
+  z-index: 2; /* Above the overlay */
+  transform: translateY(100%); /* Start hidden */
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.facility-item:hover .facility-caption {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.facility-item:hover {
+  transform: translateY(-8px); /* Lift up on hover */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18); /* Stronger shadow */
+}
+
+/* --- Why Choose Us Section --- */
+.why-choose-us-section {
+  padding: 5rem 0;
+  background-color: white;
+  border-radius: 20px; /* Rounded corners for the whole section block */
+  margin: 0 2rem 5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); /* Soft shadow */
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.benefit-card {
+  background-color: #f8fbfd; /* Slightly different background for card */
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.benefit-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.icon-wrapper {
+  background-color: var(--secondary-color); /* Green background for icon */
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+}
+
+.icon-wrapper img {
+  width: 45px;
+  height: 45px;
+  filter: invert(100%); /* Make icons white if they are black SVG/PNG */
+}
+
+.benefit-card h3 {
+  font-size: 1.3rem;
+  color: var(--primary-color);
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.benefit-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* --- Global Animation Classes (add these to App.css or a global animation file) --- */
+/* These ensure elements start invisible and animate when 'in-view' class is applied */
+
+/* Fade In Up */
+.animate-fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.in-view .animate-fade-in-up,
+.about-hero-content .animate-fade-in-up { /* Hero content is always visible so it animates immediately */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Scale In */
+.animate-scale-in {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.in-view .animate-scale-in,
+.about-hero-content .animate-scale-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Slide Right */
+.animate-slide-right {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.in-view .animate-slide-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Slide Left */
+.animate-slide-left {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.in-view .animate-slide-left {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Zoom In */
+.animate-zoom-in {
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.in-view .animate-zoom-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+/* Animation Delays (for staggered effects) */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+.delay-5 { transition-delay: 0.5s; }
+
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+  .about-hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .about-hero-content p {
+    font-size: 1.2rem;
+  }
+  .section-header h2 {
+    font-size: 2.2rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  .story-content {
+    flex-direction: column; /* Stack on smaller screens */
+    gap: 2rem;
+  }
+  .story-text, .story-images {
+    flex: none; /* Remove flex basis */
+    width: 100%;
+  }
+  .image-stack {
+    padding-bottom: 80%; /* Adjust aspect ratio for stacked images on small screens */
+    min-height: auto;
+  }
+  .image-1, .image-2 {
+    width: 80%;
+    height: 80%;
+  }
+
+  /* .facility-item.facility-large {
+    grid-column: span 1; 
+    height: auto; 
+  }
+  .facility-item.facility-large img {
+    height: 200px; 
+  }
+   .facility-item.facility-large .facility-caption {
+    font-size: 1.1rem; 
+} */
+
+.facility-grid {
+    grid-template-columns: repeat(6, 1fr); /* Define 6 equal columns */
+    grid-auto-rows: 250px; /* Fixed row height for precise layout */
+  }
+
+  .facility-item-lg { /* Large item: spans 3 columns and 2 rows */
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+
+  .facility-item-md { /* Medium item: spans 2 columns and 1 row */
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .facility-item-sm { /* Small item: spans 1 column and 1 row */
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .benefits-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .about-page {
+    padding-top: 60px; /* Adjust for smaller navbar */
+  }
+  .about-hero {
+    height: 40vh;
+    min-height: 250px;
+  }
+  .about-hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .about-hero-content p {
+    font-size: 1rem;
+  }
+  .section-header h2 {
+    font-size: 1.8rem;
+  }
+  .section-subtitle {
+    font-size: 0.95rem;
+  }
+  .clinic-story-section, .why-choose-us-section {
+    margin: 0 1rem 4rem; /* Less margin on sides */
+  }
+  .story-images {
+    min-height: 280px;
+  }
+  .image-stack {
+    padding-bottom: 100%; /* Make square on mobile */
+  }
+  .benefit-card h3 {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .about-hero-content h1 {
+    font-size: 1.8rem;
+  }
+  .about-hero-content p {
+    font-size: 0.9rem;
+  }
+  .section-header h2 {
+    font-size: 1.6rem;
+  }
+  .icon-wrapper {
+    width: 60px;
+    height: 60px;
+  }
+  .icon-wrapper img {
+    width: 35px;
+    height: 35px;
+  }
+}
