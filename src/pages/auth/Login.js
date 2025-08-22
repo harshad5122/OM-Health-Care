@@ -3,12 +3,14 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../../styles/Auth.css'; // Path to your Auth.css
+import '../../styles/Auth.css';
 // import { ReactComponent as ArrowLeftIcon } from '../../assets/icons/arrow-left.svg';
-import loginIllustration from '../../assets/auth/login-illustration.png'; // Your illustration for login
+import loginIllustration from '../../assets/auth/login-illustration.png';
+import { signinUser } from "../../api/authApi";
 
 const Login = () => {
   const [loginMethod, setLoginMethod] = useState('phone');
+  const [countryCode, setCountryCode] = useState("+91");
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,19 +18,53 @@ const Login = () => {
   const [otp, setOtp] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+      try {
     if (loginMethod === 'phone' && !otpSent) {
-      console.log('Sending OTP to:', phone);
-      setOtpSent(true);
+
+       // Step 1: Request OTP
+        const res = await signinUser({
+          loginType: "phone",
+          countryCode,
+          phone,
+        });
+        alert(res.msg); // "OTP Sent"
+        setOtpSent(true);
+      // console.log('Sending OTP to:', phone);
+      // setOtpSent(true);
     } else if (loginMethod === 'phone' && otpSent) {
-      console.log('Verifying OTP:', otp);
-      // Simulate successful login
-      navigate('/');
+      // console.log('Verifying OTP:', otp);
+      // // Simulate successful login
+      // navigate('/');
+
+       // Step 2: Verify OTP
+        const res = await signinUser({
+          loginType: "phone",
+          countryCode,
+          phone,
+          otp,
+        });
+        alert(res.msg); // "Logged in successfully"
+        localStorage.setItem("token", res.body.token); // save token
+        navigate("/");
     } else {
-      console.log('Attempting email login with:', email, password);
-      // Simulate successful login
-      navigate('/');
+      // console.log('Attempting email login with:', email, password);
+      // // Simulate successful login
+      // navigate('/');
+       // Login with email + password
+        const res = await signinUser({
+          loginType: "email",
+          email,
+          password,
+        });
+        alert(res.msg); // "Logged in successfully"
+        localStorage.setItem("token", res.body.token);
+        navigate("/");
+    }
+    } catch (err) {
+      alert(err.msg || "Login failed");
     }
   };
 
@@ -56,12 +92,14 @@ const Login = () => {
 
           <div className="auth-method-toggle">
             <button
+            type="button"
               className={`toggle-option ${loginMethod === 'phone' ? 'active' : ''}`}
               onClick={() => { setLoginMethod('phone'); setOtpSent(false); }} // Reset OTP state on method change
             >
               Login with Phone
             </button>
             <button
+            type="button"
               className={`toggle-option ${loginMethod === 'email' ? 'active' : ''}`}
               onClick={() => { setLoginMethod('email'); setOtpSent(false); }} // Reset OTP state on method change
             >
@@ -76,7 +114,12 @@ const Login = () => {
                   <div className="form-group">
                     <label htmlFor="mobile">Mobile Number</label>
                     <div className="phone-input">
-                      <select id="country-code" className="country-code">
+                      <select 
+                      id="country-code" 
+                      className="country-code"
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
+                      >
                         <option value="+91">+91 (IN)</option>
                         <option value="+1">+1 (US)</option>
                         {/* Add more country codes as needed */}
@@ -102,7 +145,13 @@ const Login = () => {
                       onChange={(e) => setOtp(e.target.value)}
                       required
                     />
-                    <p className="resend-otp">Didn't receive code? <button type="button" className="link-button">Resend OTP</button></p>
+                    <p className="resend-otp">Didn't receive code?{" "} 
+                      <button type="button" 
+                      className="link-button"
+                      onClick={() =>
+                          signinUser({ loginType: "phone", countryCode, phone })
+                        }
+                      >Resend OTP</button></p>
                   </div>
                 )}
               </>

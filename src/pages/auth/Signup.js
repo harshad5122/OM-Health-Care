@@ -2,24 +2,42 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { signupUser } from "../../api/authApi";
 import '../../styles/Auth.css';
 import registerIllustration from '../../assets/auth/login-illustration.png';
 
 const Register = () => {
+  // const [formData, setFormData] = useState({
+  //   firstName: '',
+  //   lastName: '',
+  //   mobile: '',
+  //   email: '',
+  //   password: '',
+  //   confirmPassword: '',
+  //   address: '',
+  //   gender: '',
+  //   country: 'India',
+  //   state: '',
+  //   city: ''
+  // });
+
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    mobile: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    address: '',
-    gender: '',
-    country: 'India',
-    state: '',
-    city: ''
+    firstname: "",
+    lastname: "",
+    countryCode: "+91",
+    phone: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    address: "",
+    country: "India",
+    state: "",
+    city: "",
+    gender: "",
+    role: 1,
   });
 
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -30,13 +48,28 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password && formData.password !== formData.confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
-    navigate('/');
+
+    try {
+      setLoading(true);
+      const payload = { ...formData };
+      delete payload.confirmPassword; // backend doesn’t need this
+
+      const res = await signupUser(payload); // ✅ call API
+      alert(res.msg || "User registered successfully!");
+      // navigate("/auth/login"); 
+      navigate('/');
+    } catch (err) {
+      alert(err.msg || "Signup failed!");
+    } finally {
+      setLoading(false);
+    }
+    // navigate('/');
   };
 
   return (
@@ -65,26 +98,26 @@ const Register = () => {
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="firstName">First Name*</label>
+                <label htmlFor="firstname">First Name*</label>
                 <input
                   type="text"
-                  id="firstName"
-                  name="firstName"
+                  id="firstname"
+                  name="firstname"
                   placeholder="Enter your first name"
-                  value={formData.firstName}
+                  value={formData.firstname}
                   onChange={handleChange}
                   required
                 />
               </div>
               <div> </div>
               <div className="form-group">
-                <label htmlFor="lastName">Last Name*</label>
+                <label htmlFor="lastname">Last Name*</label>
                 <input
                   type="text"
-                  id="lastName"
-                  name="lastName"
+                  id="lastname"
+                  name="lastname"
                   placeholder="Enter your last name"
-                  value={formData.lastName}
+                  value={formData.lastname}
                   onChange={handleChange}
                   required
                 />
@@ -92,29 +125,34 @@ const Register = () => {
               <div> </div>
             </div>
 
-        
+
 
             <div className="form-group">
-                    <label htmlFor="mobile">Mobile Number</label>
-                    <div className="phone-input">
-                      <select id="country-code" className="country-code">
-                        <option value="+91">+91 (IN)</option>
-                        <option value="+1">+1 (US)</option>
-                        {/* Add more country codes as needed */}
-                      </select>
-                      <input
-                        type="tel"
-                        id="mobile"
-                        placeholder="Enter your mobile number"
-                       value={formData.mobile}
+              <label htmlFor="mobile">Mobile Number</label>
+              <div className="phone-input">
+                <select id="country-code"
+                  name="countryCode"
+                  value={formData.countryCode}
                   onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
+                  className="country-code">
+                  <option value="+91">+91 (IN)</option>
+                  <option value="+1">+1 (US)</option>
+                  {/* Add more country codes as needed */}
+                </select>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  placeholder="Enter your mobile number"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email (Optional)</label>
+              <label htmlFor="email">Email</label>
               <input
                 type="email"
                 id="email"
@@ -127,7 +165,7 @@ const Register = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="password">Password (Optional)</label>
+                <label htmlFor="password">Password</label>
                 <input
                   type="password"
                   id="password"
@@ -202,7 +240,7 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-               <div> </div>
+              <div> </div>
             </div>
 
             <div className="form-group">
@@ -220,8 +258,9 @@ const Register = () => {
               </select>
             </div>
 
-            <button type="submit" className="auth-button">
-              Register Account
+            <button type="submit" className="auth-button" disabled={loading}>
+              {/* Register Account */}
+              {loading ? "Registering..." : "Register Account"}
             </button>
           </form>
 
