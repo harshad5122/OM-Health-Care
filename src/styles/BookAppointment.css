@@ -1,10 +1,10 @@
 /* General Appointment Page Styles */
 .appointment-page {
-  padding-top: 80px; /* Adjust for fixed navbar */
-  background-color: #f8fbfd; /* Very light subtle blue background */
+  padding-top: 80px; 
+  background-color: #f8fbfd; 
   color: #333;
   font-family: 'Poppins', sans-serif;
-  overflow-x: hidden; /* Prevent horizontal scroll from animations */
+  overflow-x: hidden; 
 }
 
 .container {
@@ -16,7 +16,7 @@
 /* --- Appointment Hero Section --- */
 .appointment-hero {
   position: relative;
-  height: 50vh; /* Shorter hero for inner pages */
+  height: 50vh; 
   min-height: 350px;
   background-position: center;
   background-size: cover;
@@ -35,7 +35,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(26, 111, 139, 0.7); /* Darker overlay from primary color */
+  background-color: rgba(26, 111, 139, 0.7); 
   z-index: 1;
 }
 
@@ -73,14 +73,14 @@
 .form-content-wrapper {
   display: flex;
   gap: 3rem;
-  align-items: stretch; /* Stretch children to fill height */
+  align-items: stretch; 
   background-color: white;
   border-radius: 20px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1); /* Stronger shadow for this main block */
-  overflow: hidden; /* Ensures border-radius applies to children */
-  opacity: 0; /* Hidden by default for animation */
-  transform: translateY(50px); /* Start lower */
-  transition: opacity 1s ease-out, transform 1s ease-out; /* Slower animation */
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1); 
+  overflow: hidden; 
+  opacity: 0; 
+  transform: translateY(50px); 
+  transition: opacity 1s ease-out, transform 1s ease-out; 
 }
 
 .appointment-form-section.in-view .form-content-wrapper {

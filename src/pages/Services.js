@@ -1,20 +1,21 @@
-// import React, { useEffect, useRef, useState } from 'react';
+// import React, { useEffect, useState } from 'react';
 // import '../styles/Services.css';
-// import { useInView } from 'react-intersection-observer'; // For scroll-based animations
-// import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'; // For scroll arrows
+// import { useInView } from 'react-intersection-observer';
+// import { FaChevronDown, FaChevronUp } from 'react-icons/fa'; // For expand/collapse icons
 // import { Link } from 'react-router-dom';
 
-// // --- Service Images (Replace with your actual image paths) ---
+// // --- Service Images (Ensure correct paths) ---
+// // Using placeholder images for demonstration. Replace with your actual paths.
 // import serviceImgBackPain from '../assets/images/services/back-pain.jpg';
 // import serviceImgNeckPain from '../assets/images/services/neck-pain.jpg';
 // import serviceImgHeelPain from '../assets/images/services/heel-pain.jpg';
-// import serviceImgMusclePain from '../assets/images/services/muscle.jpg';
+// import serviceImgMusclePain from '../assets/images/services/muscle.jpg'; // Changed from muscle-pain.jpg to muscle.jpg
 // import serviceImgLowerBack from '../assets/images/services/lower-back.jpg';
 // import serviceImgArmLeg from '../assets/images/services/arm-leg.jpg';
-// import serviceImgShoulder from '../assets/images/services/shoulder-pain.jpg';
+// import serviceImgShoulder from '../assets/images/services/shoulder-pain.jpg'; // Changed from shoulder.jpg to shoulder-pain.jpg
 // import serviceImgHip from '../assets/images/services/hip.jpg';
 // import serviceImgLigament from '../assets/images/services/ligament.jpg';
-// import serviceImgPrePostNatal from '../assets/images/services/pre-post-natal.jpeg';
+// import serviceImgPrePostNatal from '../assets/images/services/pre-post-natal.jpeg'; // Changed from pre-post-natal.jpg to pre-post-natal.jpeg
 // import serviceImgNumbness from '../assets/images/services/numbness.jpg';
 // import serviceImgJointReplacement from '../assets/images/services/joint-replacement.jpg';
 // import serviceImgFracture from '../assets/images/services/fracture.jpg';
@@ -24,7 +25,7 @@
 // import serviceImgNeurological from '../assets/images/services/neurological.jpg';
 // import serviceImgManualTherapy from '../assets/images/services/manual-therapy.jpg';
 
-// // Service Data
+// // Service Data (your existing comprehensive data)
 // const allServices = [
 //   {
 //     id: 'back-pain',
@@ -185,35 +186,59 @@
 //     shortDescription: 'Hands-on techniques to mobilize joints, reduce pain, and restore movement.',
 //     longDescription: 'Manual therapy involves skilled, hands-on techniques including mobilization, manipulation, and massage to treat musculoskeletal pain and dysfunction. It is effective for reducing stiffness, improving range of motion, and alleviating chronic pain.',
 //     conditionsTreated: ['Joint stiffness', 'Muscle spasms', 'Headaches', 'Spinal dysfunction', 'Soft tissue restrictions'],
-//     benefits: ['Immediate pain relief', 'Increased joint flexibility', 'Reduced muscle tension', 'Improved circulation', 'Faster healing of soft tissues'],
+//     benefits: ['Immediate pain reduction', 'Increased joint flexibility', 'Reduced muscle tension', 'Improved circulation', 'Faster healing of soft tissues'],
 //     image: serviceImgManualTherapy,
 //   },
 // ];
 
-// const ServiceCard = ({ service, index, inView }) => {
+// // ServiceCard component modified for expandable content
+// const ServiceCard = ({ service, index, inView, expandedCardId, setExpandedCardId }) => {
+//   const isExpanded = expandedCardId === service.id;
+
+//   const toggleExpand = () => {
+//     setExpandedCardId(isExpanded ? null : service.id);
+//   };
+
 //   return (
-//     <div className={`service-detail-card ${inView ? 'animated' : ''}`} style={{ animationDelay: `${index * 0.1}s` }}>
-//       <div className="card-image-wrapper">
-//         <img src={service.image} alt={service.name} loading="lazy" />
-//       </div>
-//       <div className="card-content">
-//         <h3>{service.name}</h3>
-//         <p className="short-desc">{service.shortDescription}</p>
-//         <div className="full-desc-toggle">
-//           <p className="long-desc">{service.longDescription}</p>
-//           <h4>Conditions We Treat:</h4>
-//           <ul>
-//             {service.conditionsTreated.map((condition, i) => (
-//               <li key={i}>{condition}</li>
-//             ))}
-//           </ul>
-//           <h4>Benefits You'll Experience:</h4>
-//           <ul>
-//             {service.benefits.map((benefit, i) => (
-//               <li key={i}>{benefit}</li>
-//             ))}
-//           </ul>
+//     <div
+//       className={`service-grid-card ${isExpanded ? 'expanded' : ''} ${inView ? 'animated' : ''}`}
+//       style={{ animationDelay: `${index * 0.05}s` }} // Faster staggered animation for grid
+//     >
+//       <div className="card-top-section" onClick={toggleExpand}>
+//         <div className="card-image-wrapper">
+//           <img src={service.image} alt={service.name} loading="lazy" /> {/* Lazy loading */}
 //         </div>
+//         <div className="card-title-overlay">
+//           <h3>{service.name}</h3>
+//         </div>
+//         <div className="expand-icon-wrapper">
+//           {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+//         </div>
+//       </div>
+
+//       <div className="card-bottom-section">
+//         <p className="short-desc">{service.shortDescription}</p>
+//         {isExpanded && (
+//           <div className="full-details-content">
+//             <p className="long-desc">{service.longDescription}</p>
+//             <h4>Conditions We Treat:</h4>
+//             <ul>
+//               {service.conditionsTreated.map((condition, i) => (
+//                 <li key={i}>{condition}</li>
+//               ))}
+//             </ul>
+//             <h4>Benefits You'll Experience:</h4>
+//             <ul>
+//               {service.benefits.map((benefit, i) => (
+//                 <li key={i}>{benefit}</li>
+//               ))}
+//             </ul>
+//             {/* Optional: Add a call to action within the expanded view */}
+//             <Link to="/appointment" className="expanded-cta-button">
+//               Book This Service
+//             </Link>
+//           </div>
+//         )}
 //       </div>
 //     </div>
 //   );
@@ -221,67 +246,21 @@
 
 
 // const Services = () => {
-//   const scrollRef = useRef(null);
-//   const scrollInterval = useRef(null);
-//   const [isHovered, setIsHovered] = useState(false);
+//   const [expandedCardId, setExpandedCardId] = useState(null); // State to manage which card is expanded
 
+//   // Animation hooks for main sections
 //   const { ref: heroRef, inView: heroInView } = useInView({ triggerOnce: true, threshold: 0.2 });
-//   const { ref: servicesSectionRef, inView: servicesSectionInView } = useInView({ triggerOnce: true, threshold: 0.1 });
-
-//   // Define stopAutoScroll and startAutoScroll outside useEffect
-//   const stopAutoScroll = () => {
-//     if (scrollInterval.current) {
-//       clearInterval(scrollInterval.current);
-//       scrollInterval.current = null; // Clear the ref
-//     }
-//   };
-
-//   const startAutoScroll = () => {
-//     if (!scrollInterval.current && !isHovered && scrollRef.current) {
-//       scrollInterval.current = setInterval(() => {
-//         const { scrollWidth, clientWidth, scrollLeft } = scrollRef.current;
-//         const maxScrollLeft = scrollWidth - clientWidth;
-
-//         if (scrollLeft >= maxScrollLeft) {
-//           scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-//         } else {
-//           scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
-//         }
-//       }, 3000);
-//     }
-//   };
+//   const { ref: servicesGridRef, inView: servicesGridInView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
 //   useEffect(() => {
-//     window.scrollTo(0, 0);
-
-//     if (isHovered) {
-//       stopAutoScroll();
-//     } else {
-//       startAutoScroll();
-//     }
-
-//     return () => stopAutoScroll();
-//   }, [isHovered]);
-
-
-//   const handleManualScroll = (direction) => {
-//     if (scrollRef.current) {
-//       stopAutoScroll(); // Now accessible
-//       const scrollAmount = 400;
-//       if (direction === 'left') {
-//         scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-//       } else {
-//         scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-//       }
-//       // Auto-scroll will resume when isHovered becomes false again
-//     }
-//   };
+//     window.scrollTo(0, 0); // Scroll to top on component mount
+//   }, []);
 
 
 //   return (
 //     <div className="services-page">
 //       {/* Hero Section */}
-//       <section ref={heroRef} className={`services-hero ${heroInView ? 'in-view' : ''}`}> {/* <-- MODIFIED HERE */}
+//       <section ref={heroRef} className={`services-hero ${heroInView ? 'in-view' : ''}`}>
 //         <div className="services-hero-overlay"></div>
 //         <div className="services-hero-content animate-fade-in-up">
 //           <h1>Our Specialized Physiotherapy Services</h1>
@@ -289,32 +268,26 @@
 //         </div>
 //       </section>
 
-//       {/* Main Services Carousel Section */}
-//       <section ref={servicesSectionRef} className={`main-services-section ${servicesSectionInView ? 'in-view' : ''}`}>
+//       {/* Main Services Grid Section */}
+//       <section ref={servicesGridRef} className={`main-services-grid-section ${servicesGridInView ? 'in-view' : ''}`}>
 //         <div className="container">
 //           <div className="section-header">
 //             <h2>Comprehensive Care for Every Need</h2>
 //             <p className="section-subtitle">Discover how our expert team can help you regain mobility, reduce pain, and improve your quality of life.</p>
 //           </div>
 
-//           <div
-//             className="services-carousel-wrapper"
-//             onMouseEnter={() => setIsHovered(true)}
-//             onMouseLeave={() => setIsHovered(false)}
-//           >
-//             <button className="carousel-nav left" onClick={() => handleManualScroll('left')}>
-//               <FaChevronLeft />
-//             </button>
-//             <div className="services-carousel" ref={scrollRef}>
-//               {allServices.map((service, index) => (
-//                 <ServiceCard key={service.id} service={service} index={index} inView={servicesSectionInView} />
-//               ))}
-//             </div>
-//             <button className="carousel-nav right" onClick={() => handleManualScroll('right')}>
-//               <FaChevronRight />
-//             </button>
+//           <div className="services-grid-container">
+//             {allServices.map((service, index) => (
+//               <ServiceCard
+//                 key={service.id}
+//                 service={service}
+//                 index={index}
+//                 inView={servicesGridInView}
+//                 expandedCardId={expandedCardId}
+//                 setExpandedCardId={setExpandedCardId}
+//               />
+//             ))}
 //           </div>
-//           <p className="carousel-hint">Hover over cards to pause auto-scroll. Click arrows or drag to navigate.</p>
 //         </div>
 //       </section>
 
@@ -323,26 +296,23 @@
 //         <div className="container">
 //           <h2>Ready to Start Your Recovery?</h2>
 //           <p>Contact us today to schedule a consultation and begin your personalized treatment plan.</p>
-//           <Link to="/contact" className="cta-button">Schedule Consultation</Link> {/* <-- Link component used here */}
+//           <Link to="/contact" className="cta-button">Schedule Consultation</Link>
 //         </div>
 //       </section>
 //     </div>
 //   );
 // };
 
-
 // export default Services;
-
-
 
 import React, { useEffect, useState } from 'react';
 import '../styles/Services.css';
 import { useInView } from 'react-intersection-observer';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa'; // For expand/collapse icons
 import { Link } from 'react-router-dom';
+import { FaTimes } from 'react-icons/fa';
 
-// --- Service Images (Ensure correct paths) ---
-// Using placeholder images for demonstration. Replace with your actual paths.
+// Import all service images (keep your existing imports)
+
 import serviceImgBackPain from '../assets/images/services/back-pain.jpg';
 import serviceImgNeckPain from '../assets/images/services/neck-pain.jpg';
 import serviceImgHeelPain from '../assets/images/services/heel-pain.jpg';
@@ -362,7 +332,6 @@ import serviceImgParalysis from '../assets/images/services/paralysis.jpg';
 import serviceImgNeurological from '../assets/images/services/neurological.jpg';
 import serviceImgManualTherapy from '../assets/images/services/manual-therapy.jpg';
 
-// Service Data (your existing comprehensive data)
 const allServices = [
   {
     id: 'back-pain',
@@ -528,54 +497,137 @@ const allServices = [
   },
 ];
 
-// ServiceCard component modified for expandable content
-const ServiceCard = ({ service, index, inView, expandedCardId, setExpandedCardId }) => {
-  const isExpanded = expandedCardId === service.id;
+// Service Data (keep your existing allServices array)
 
-  const toggleExpand = () => {
-    setExpandedCardId(isExpanded ? null : service.id);
-  };
-
+const ServiceCard = ({ service, index, inView, onViewMore }) => {
   return (
     <div
-      className={`service-grid-card ${isExpanded ? 'expanded' : ''} ${inView ? 'animated' : ''}`}
-      style={{ animationDelay: `${index * 0.05}s` }} // Faster staggered animation for grid
+      className={`service-grid-card ${inView ? 'animated' : ''}`}
+      style={{ animationDelay: `${index * 0.05}s` }}
     >
-      <div className="card-top-section" onClick={toggleExpand}>
+      <div className="card-top-section">
         <div className="card-image-wrapper">
-          <img src={service.image} alt={service.name} loading="lazy" /> {/* Lazy loading */}
+          <img src={service.image} alt={service.name} loading="lazy" />
         </div>
         <div className="card-title-overlay">
           <h3>{service.name}</h3>
-        </div>
-        <div className="expand-icon-wrapper">
-          {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
         </div>
       </div>
 
       <div className="card-bottom-section">
         <p className="short-desc">{service.shortDescription}</p>
-        {isExpanded && (
-          <div className="full-details-content">
-            <p className="long-desc">{service.longDescription}</p>
-            <h4>Conditions We Treat:</h4>
+        <button 
+          className="view-more-button"
+          onClick={() => onViewMore(service)}
+        >
+          View More
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// const ServiceModal = ({ service, onClose }) => {
+//   if (!service) return null;
+
+//   return (
+//     <div className="modal-overlay" onClick={onClose}>
+//       <div className="modal-content" onClick={e => e.stopPropagation()}>
+//         <button className="modal-close-button" onClick={onClose}>
+//           <FaTimes />
+//         </button>
+        
+//         <div className="modal-image-container">
+//           <img src={service.image} alt={service.name} />
+//         </div>
+        
+//         <div className="modal-text-content">
+//           <h3>{service.name}</h3>
+//           <p className="modal-description">{service.longDescription}</p>
+          
+//           <div className="modal-details-section">
+//             <div className="modal-details-column">
+//               <h4>Conditions We Treat:</h4>
+//               <ul>
+//                 {service.conditionsTreated.map((condition, i) => (
+//                   <li key={i}>{condition}</li>
+//                 ))}
+//               </ul>
+//             </div>
+            
+//             <div className="modal-details-column">
+//               <h4>Benefits You'll Experience:</h4>
+//               <ul>
+//                 {service.benefits.map((benefit, i) => (
+//                   <li key={i}>{benefit}</li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+          
+//           <Link to="/appointment" className="modal-cta-button">
+//             Book This Service
+//           </Link>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+
+const ServiceModal = ({ service, onClose }) => {
+  if (!service) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <button className="modal-close-button" onClick={onClose}>
+          <FaTimes />
+        </button>
+        
+        <div className="modal-grid-container">
+          <div className="modal-image-container">
+            <img src={service.image} alt={service.name} />
+          </div>
+          
+          <div className="modal-text-content">
+            <h3>{service.name}</h3>
+            <p className="modal-short-desc">{service.shortDescription}</p>
+            <p className="modal-long-desc">{service.longDescription}</p>
+          </div>
+        </div>
+        
+        <div className="modal-details-grid">
+          <div className="modal-details-column conditions-column">
+            <h4>Conditions We Treat</h4>
             <ul>
               {service.conditionsTreated.map((condition, i) => (
-                <li key={i}>{condition}</li>
+                <li key={i}>
+                  <span className="bullet-icon">•</span>
+                  {condition}
+                </li>
               ))}
             </ul>
-            <h4>Benefits You'll Experience:</h4>
+          </div>
+          
+          <div className="modal-details-column benefits-column">
+            <h4>Benefits You'll Experience</h4>
             <ul>
               {service.benefits.map((benefit, i) => (
-                <li key={i}>{benefit}</li>
+                <li key={i}>
+                  <span className="bullet-icon">•</span>
+                  {benefit}
+                </li>
               ))}
             </ul>
-            {/* Optional: Add a call to action within the expanded view */}
-            <Link to="/appointment" className="expanded-cta-button">
-              Book This Service
-            </Link>
           </div>
-        )}
+        </div>
+        
+        <div className="modal-cta-container">
+          <Link to="/appointment" className="modal-cta-button">
+            Book This Service
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -583,28 +635,28 @@ const ServiceCard = ({ service, index, inView, expandedCardId, setExpandedCardId
 
 
 const Services = () => {
-  const [expandedCardId, setExpandedCardId] = useState(null); // State to manage which card is expanded
-
-  // Animation hooks for main sections
-  const { ref: heroRef, inView: heroInView } = useInView({ triggerOnce: true, threshold: 0.2 });
+  const [selectedService, setSelectedService] = useState(null);
+  // const { ref: heroRef, inView: heroInView } = useInView({ triggerOnce: true, threshold: 0.2 });
   const { ref: servicesGridRef, inView: servicesGridInView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Scroll to top on component mount
+    window.scrollTo(0, 0);
   }, []);
 
+  const handleViewMore = (service) => {
+    setSelectedService(service);
+    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+  };
+
+  const handleCloseModal = () => {
+    setSelectedService(null);
+    document.body.style.overflow = 'auto'; // Re-enable scrolling
+  };
 
   return (
     <div className="services-page">
-      {/* Hero Section */}
-      <section ref={heroRef} className={`services-hero ${heroInView ? 'in-view' : ''}`}>
-        <div className="services-hero-overlay"></div>
-        <div className="services-hero-content animate-fade-in-up">
-          <h1>Our Specialized Physiotherapy Services</h1>
-          <p className="delay-1">Tailored treatments for your unique journey to wellness.</p>
-        </div>
-      </section>
-
+      {/* Hero Section (keep your existing hero section) */}
+      
       {/* Main Services Grid Section */}
       <section ref={servicesGridRef} className={`main-services-grid-section ${servicesGridInView ? 'in-view' : ''}`}>
         <div className="container">
@@ -620,22 +672,17 @@ const Services = () => {
                 service={service}
                 index={index}
                 inView={servicesGridInView}
-                expandedCardId={expandedCardId}
-                setExpandedCardId={setExpandedCardId}
+                onViewMore={handleViewMore}
               />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Optional: Add a general CTA section at the end */}
-      <section className="services-cta-section">
-        <div className="container">
-          <h2>Ready to Start Your Recovery?</h2>
-          <p>Contact us today to schedule a consultation and begin your personalized treatment plan.</p>
-          <Link to="/contact" className="cta-button">Schedule Consultation</Link>
-        </div>
-      </section>
+      {/* CTA Section (keep your existing CTA section) */}
+      
+      {/* Service Modal */}
+      <ServiceModal service={selectedService} onClose={handleCloseModal} />
     </div>
   );
 };

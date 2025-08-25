@@ -7,8 +7,10 @@ import '../../styles/Auth.css';
 // import { ReactComponent as ArrowLeftIcon } from '../../assets/icons/arrow-left.svg';
 import loginIllustration from '../../assets/auth/login-illustration.png';
 import { signinUser } from "../../api/authApi";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
+  const { login } = useAuth();
   const [loginMethod, setLoginMethod] = useState('phone');
   const [countryCode, setCountryCode] = useState("+91");
   const [phone, setPhone] = useState('');
@@ -18,55 +20,92 @@ const Login = () => {
   const [otp, setOtp] = useState('');
   const navigate = useNavigate();
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //     try {
+  //   if (loginMethod === 'phone' && !otpSent) {
+
+  //      // Step 1: Request OTP
+  //       const res = await signinUser({
+  //         loginType: "phone",
+  //         countryCode,
+  //         phone,
+  //       });
+  //       alert(res.msg); // "OTP Sent"
+  //       setOtpSent(true);
+      
+  //   } else if (loginMethod === 'phone' && otpSent) {
+  //       const res = await signinUser({
+  //         loginType: "phone",
+  //         countryCode,
+  //         phone,
+  //         otp,
+  //       });
+  //       alert(res.msg); // "Logged in successfully"
+  //       localStorage.setItem("token", res.body.token); // save token
+  //       navigate("/");
+  //   } else {
+  //       const res = await signinUser({
+  //         loginType: "email",
+  //         email,
+  //         password,
+  //       });
+  //       alert(res.msg); // "Logged in successfully"
+  //       localStorage.setItem("token", res.body.token);
+  //       navigate("/");
+  //   }
+  //   } catch (err) {
+  //     alert(err.msg || "Login failed");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-      try {
+  try {
+    let res;
+
     if (loginMethod === 'phone' && !otpSent) {
-
-       // Step 1: Request OTP
-        const res = await signinUser({
-          loginType: "phone",
-          countryCode,
-          phone,
-        });
-        alert(res.msg); // "OTP Sent"
-        setOtpSent(true);
-      // console.log('Sending OTP to:', phone);
-      // setOtpSent(true);
-    } else if (loginMethod === 'phone' && otpSent) {
-      // console.log('Verifying OTP:', otp);
-      // // Simulate successful login
-      // navigate('/');
-
-       // Step 2: Verify OTP
-        const res = await signinUser({
-          loginType: "phone",
-          countryCode,
-          phone,
-          otp,
-        });
-        alert(res.msg); // "Logged in successfully"
-        localStorage.setItem("token", res.body.token); // save token
-        navigate("/");
-    } else {
-      // console.log('Attempting email login with:', email, password);
-      // // Simulate successful login
-      // navigate('/');
-       // Login with email + password
-        const res = await signinUser({
-          loginType: "email",
-          email,
-          password,
-        });
-        alert(res.msg); // "Logged in successfully"
-        localStorage.setItem("token", res.body.token);
-        navigate("/");
+      // Step 1: Request OTP
+      res = await signinUser({
+        loginType: "phone",
+        countryCode,
+        phone,
+      });
+      alert(res.msg); // "OTP Sent"
+      setOtpSent(true);
+      return; // stop here
+    } 
+    
+    if (loginMethod === 'phone' && otpSent) {
+      res = await signinUser({
+        loginType: "phone",
+        countryCode,
+        phone,
+        otp,
+      });
+    } 
+    
+    if (loginMethod === 'email') {
+      res = await signinUser({
+        loginType: "email",
+        email,
+        password,
+      });
     }
-    } catch (err) {
-      alert(err.msg || "Login failed");
-    }
-  };
+
+    // Common global save logic (no condition changes above)
+    login(res.body); // Save globally with AuthContext
+    localStorage.setItem("token", res.body.token); // still save in localStorage if you want persistence
+    alert(res.msg);
+    navigate("/");
+
+  } catch (err) {
+    alert(err.msg || "Login failed");
+  }
+};
+
 
   return (
     <div className="auth-wrapper"> {/* New wrapper for the split layout */}
@@ -157,6 +196,7 @@ const Login = () => {
               </>
             ) : (
               <>
+              <div className="form-row single-col">
                 <div className="form-group">
                   <label htmlFor="email">Email Address</label>
                   <input
@@ -168,6 +208,8 @@ const Login = () => {
                     required
                   />
                 </div>
+                </div>
+                <div className="form-row single-col">
                 <div className="form-group">
                   <label htmlFor="password">Password</label>
                   <input
@@ -178,6 +220,7 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                </div>
                 </div>
               </>
             )}

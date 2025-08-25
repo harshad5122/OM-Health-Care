@@ -7,19 +7,6 @@ import '../../styles/Auth.css';
 import registerIllustration from '../../assets/auth/login-illustration.png';
 
 const Register = () => {
-  // const [formData, setFormData] = useState({
-  //   firstName: '',
-  //   lastName: '',
-  //   mobile: '',
-  //   email: '',
-  //   password: '',
-  //   confirmPassword: '',
-  //   address: '',
-  //   gender: '',
-  //   country: 'India',
-  //   state: '',
-  //   city: ''
-  // });
 
   const [formData, setFormData] = useState({
     firstname: "",
@@ -60,7 +47,7 @@ const Register = () => {
       const payload = { ...formData };
       delete payload.confirmPassword; // backend doesn’t need this
 
-      const res = await signupUser(payload); // ✅ call API
+      const res = await signupUser(payload); //  call API
       alert(res.msg || "User registered successfully!");
       // navigate("/auth/login"); 
       navigate('/');
@@ -109,7 +96,7 @@ const Register = () => {
                   required
                 />
               </div>
-              <div> </div>
+              {/* <div> </div> */}
               <div className="form-group">
                 <label htmlFor="lastname">Last Name*</label>
                 <input
@@ -122,7 +109,7 @@ const Register = () => {
                   required
                 />
               </div>
-              <div> </div>
+              {/* <div> </div> */}
             </div>
 
 
@@ -151,6 +138,7 @@ const Register = () => {
               </div>
             </div>
 
+     <div className="form-row single-col">
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <input
@@ -161,6 +149,7 @@ const Register = () => {
                 value={formData.email}
                 onChange={handleChange}
               />
+            </div>
             </div>
 
             <div className="form-row">
@@ -175,7 +164,7 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-              <div> </div>
+              {/* <div> </div> */}
               <div className="form-group">
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 <input
@@ -188,9 +177,10 @@ const Register = () => {
                   disabled={!formData.password}
                 />
               </div>
-              <div> </div>
+              {/* <div> </div> */}
             </div>
 
+         <div className="form-row single-col">
             <div className="form-group">
               <label htmlFor="address">Address</label>
               <input
@@ -202,11 +192,12 @@ const Register = () => {
                 onChange={handleChange}
               />
             </div>
+            </div>
 
             <div className="form-row three-col">
               <div className="form-group">
                 <label htmlFor="country">Country</label>
-                <select
+                {/* <select
                   id="country"
                   name="country"
                   value={formData.country}
@@ -215,7 +206,15 @@ const Register = () => {
                   <option value="India">India</option>
                   <option value="USA">USA</option>
                   <option value="UK">UK</option>
-                </select>
+                </select> */}
+                 <input
+                  type="text"
+                  id="country"
+                  name="country"
+                  placeholder="Your country"
+                  value={formData.country}
+                  onChange={handleChange}
+                />
               </div>
               <div className="form-group">
                 <label htmlFor="state">State</label>
@@ -228,7 +227,7 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-              <div> </div>
+              {/* <div> </div> */}
               <div className="form-group">
                 <label htmlFor="city">City</label>
                 <input
@@ -240,7 +239,7 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-              <div> </div>
+              {/* <div> </div> */}
             </div>
 
             <div className="form-group">

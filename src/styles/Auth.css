@@ -18,30 +18,30 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 3rem;
+  padding: 2rem;
   position: relative; /* For absolute positioning of go-back-button */
   animation: slideInLeft 0.8s ease-out; /* Entrance animation */
 }
 
 .go-back-button {
   position: absolute;
-  top: 2rem;
-  left: 2rem;
+  top: 1.5rem;
+  left: 1.5rem;
   background: none;
   border: none;
   color: var(--primary-color);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   transition: transform 0.2s ease, color 0.2s ease;
   z-index: 10; /* Ensure it's above other elements */
 }
 
 .go-back-button:hover {
-  transform: translateX(-5px);
+  transform: translateX(-4px);
   color: var(--primary-color);
 }
 
@@ -54,8 +54,8 @@
 .illustration-content {
   text-align: center;
   color: white;
-  padding: 2rem;
-  max-width: 450px; /* Limit width of content */
+  padding: 1rem;
+  max-width: 400px; /* Limit width of content */
   animation: fadeIn 1s ease-out 0.3s forwards; /* Delayed fade-in */
   opacity: 0; /* Start hidden for animation */
 }
@@ -63,20 +63,20 @@
 .auth-illustration {
   max-width: 100%;
   height: auto;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2)); /* Subtle shadow for illustration */
 }
 
 .illustration-title {
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  margin-bottom: 0.6rem;
   font-weight: 700;
-  line-height: 1.2;
+  /* line-height: 1.2; */
 }
 
 .illustration-subtitle {
-  font-size: 1.1rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  /* line-height: 1.6; */
   opacity: 0.9;
 }
 
@@ -87,18 +87,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 3rem;
+  padding: 2rem;
   /* background-color: #fcfcfc;  */
   animation: slideInRight 0.8s ease-out; /* Entrance animation */
 }
 
 .auth-card {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); 
-  padding: 3rem 2.5rem; /* Increased padding */
+  border-radius: 12px;
+  /* box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);  */
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem 2rem; /* Increased padding */
   width: 100%;
-  max-width: 500px;
+  max-width: 460px;
   transform: translateY(0); /* Resetting animation from previous version */
   animation: fadeInScale 0.6s ease-out 0.2s forwards; /* Delayed fade-in and slight scale */
   opacity: 0;
@@ -106,19 +107,19 @@
 
 .auth-header {
   text-align: center;
-  margin-bottom: 2.5rem; /* Increased margin */
+  margin-bottom: 1.5rem; /* Increased margin */
 }
 
 .auth-header h2 {
   color: var(--primary-color);
-  font-size: 2.2rem; /* Larger font size */
-  margin-bottom: 0.75rem;
+  font-size: 1.8rem; /* Larger font size */
+  margin-bottom: 0.4rem;
   font-weight: 700;
 }
 
 .auth-header p {
   color: var(--text-color);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
 }
 
 /* Auth Method Toggle (Tabs/Pills) */
@@ -159,63 +160,77 @@
 
 /* Form Styles */
 .auth-form {
-  margin-top: 1.5rem; /* Adjusted margin */
+  margin-top: 1rem; /* Adjusted margin */
 }
 
 .form-row {
   display: flex;
-  gap: 1.5rem; /* Increased gap */
+  gap: 3rem; /* Increased gap */
+  margin-right: 35px;
 }
+
 
 .form-row.three-col .form-group {
     /* flex: 1 1 30%;  */
     flex: 1;
+     /* min-width: 120px;  */
 }
 
 .form-group {
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1rem; 
   flex: 1;
   position: relative; 
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.6rem; 
+  margin-bottom: 0.4rem; 
   color: var(--text-color);
   font-weight: 500;
-  font-size: 0.95rem; 
+  font-size: 0.9rem; 
   text-align: left;
 }
 
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 1rem 1.2rem; /* More padding for a richer feel */
+  padding: 0.7rem 1rem; /* More padding for a richer feel */
   border: 1px solid #c9d8e5; /* Softer border color */
-  border-radius: 10px; /* More rounded corners */
-  font-size: 1rem;
+  border-radius: 8px; /* More rounded corners */
+  font-size: 0.95rem;
   color: var(--text-color);
   transition: all 0.3s ease;
   background-color: #fdfdfd; /* Subtle background for input */
+}
+
+.form-row:only-child,
+.form-row.single-col {
+  justify-content: space-between;
+}
+
+.form-row.single-col .form-group {
+  flex: 1;
+  width: 80%; /* Fill full width */
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px rgba(26, 111, 139, 0.15); /* Stronger focus shadow */
+  box-shadow: 0 0 0 3px rgba(26, 111, 139, 0.15); 
   background-color: white;
 }
 
 .phone-input {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Space between select and input */
+  gap: 1rem; /* Space between select and input */
 }
 
 .phone-input .country-code {
   width: auto; /* Auto width based on content */
   padding-right: 0.5rem; /* Ensure space for arrow */
+  font-size: 0.9rem;
 }
 
 .country-code {
@@ -251,13 +266,13 @@
 /* Button Styles */
 .auth-button {
   width: 100%;
-  padding: 1.1rem; /* More padding */
+  padding: 0.9rem; /* More padding */
   background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 10px; /* More rounded */
-  font-size: 1.1rem; /* Larger text */
-  font-weight: 700; /* Bolder */
+  border-radius: 8px; /* More rounded */
+  font-size: 1rem; /* Larger text */
+  font-weight: 600; /* Bolder */
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 1rem; /* Space from last form group */
@@ -267,7 +282,8 @@
 .auth-button:hover {
   background-color: #145369; /* Darker primary */
   transform: translateY(-3px); /* Lift effect */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Enhanced shadow on hover */
+  /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);  */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Footer Links */
