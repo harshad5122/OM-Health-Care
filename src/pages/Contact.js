@@ -123,6 +123,7 @@ const Contact = () => {
         </div>
       </section>
 
+
       {/* Contact Form Section */}
       <section ref={formSectionRef} className={`contact-form-section ${formSectionInView ? 'in-view' : ''}`}>
         <div className="container">

@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation  } from 'react-router-dom';
 import "./App.css";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
@@ -12,8 +12,18 @@ import BookAppointment from "./pages/BookAppointment";
 import AuthLayout from "./pages/auth/AuthLayout";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Signup";
+import FloatingChatButton from "./components/FloatingChatButton";
+import Chat from "./pages/chat";
+
 
 function App() {
+  const location = useLocation();
+
+  const hideFloatingButton =
+    location.pathname.startsWith("/auth/login") ||
+    location.pathname.startsWith("/auth/register")||
+     location.pathname.startsWith("/chat");
+
   return (
     <div className="App">
       <Routes>
@@ -26,6 +36,7 @@ function App() {
           <Route path="/team" element={<Team />} />
           <Route path="/testimonials" element={<Testimonials />} />
           <Route path="/appointment" element={<BookAppointment />} />
+          <Route path="/chat" element={<Chat />} />
         </Route>
 
         {/* Auth routes without Navbar/Footer */}
@@ -34,6 +45,8 @@ function App() {
           <Route path="register" element={<Register />} />
         </Route>
       </Routes>
+      {/* <FloatingChatButton /> */}
+        {!hideFloatingButton && <FloatingChatButton />}
     </div>
   );
 }

@@ -4,13 +4,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/Auth.css';
-// import { ReactComponent as ArrowLeftIcon } from '../../assets/icons/arrow-left.svg';
 import loginIllustration from '../../assets/auth/login-illustration.png';
 import { signinUser } from "../../api/authApi";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext"; 
+
 
 const Login = () => {
-  const { login } = useAuth();
+// const { saveToken } = useAuth();
+const { saveAuthData } = useAuth();
   const [loginMethod, setLoginMethod] = useState('phone');
   const [countryCode, setCountryCode] = useState("+91");
   const [phone, setPhone] = useState('');
@@ -20,91 +21,97 @@ const Login = () => {
   const [otp, setOtp] = useState('');
   const navigate = useNavigate();
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //     try {
-  //   if (loginMethod === 'phone' && !otpSent) {
-
-  //      // Step 1: Request OTP
-  //       const res = await signinUser({
-  //         loginType: "phone",
-  //         countryCode,
-  //         phone,
-  //       });
-  //       alert(res.msg); // "OTP Sent"
-  //       setOtpSent(true);
-      
-  //   } else if (loginMethod === 'phone' && otpSent) {
-  //       const res = await signinUser({
-  //         loginType: "phone",
-  //         countryCode,
-  //         phone,
-  //         otp,
-  //       });
-  //       alert(res.msg); // "Logged in successfully"
-  //       localStorage.setItem("token", res.body.token); // save token
-  //       navigate("/");
-  //   } else {
-  //       const res = await signinUser({
-  //         loginType: "email",
-  //         email,
-  //         password,
-  //       });
-  //       alert(res.msg); // "Logged in successfully"
-  //       localStorage.setItem("token", res.body.token);
-  //       navigate("/");
-  //   }
-  //   } catch (err) {
-  //     alert(err.msg || "Login failed");
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    let res;
-
+      try {
     if (loginMethod === 'phone' && !otpSent) {
-      // Step 1: Request OTP
-      res = await signinUser({
-        loginType: "phone",
-        countryCode,
-        phone,
-      });
-      alert(res.msg); // "OTP Sent"
-      setOtpSent(true);
-      return; // stop here
-    } 
-    
-    if (loginMethod === 'phone' && otpSent) {
-      res = await signinUser({
-        loginType: "phone",
-        countryCode,
-        phone,
-        otp,
-      });
-    } 
-    
-    if (loginMethod === 'email') {
-      res = await signinUser({
-        loginType: "email",
-        email,
-        password,
-      });
+
+       // Step 1: Request OTP
+        const res = await signinUser({
+          loginType: "phone",
+          countryCode,
+          phone,
+        });
+        alert(res.msg); // "OTP Sent"
+        setOtpSent(true);
+      
+    } else if (loginMethod === 'phone' && otpSent) {
+        const res = await signinUser({
+          loginType: "phone",
+          countryCode,
+          phone,
+          otp,
+        });
+        alert(res.msg); // "Logged in successfully"
+        // localStorage.setItem("token", res.body.token); 
+        // saveToken(res.body.token);
+        saveAuthData(res.body.token, res.body);
+        console.log("Login Token:", res.body.token, res.body); 
+        navigate("/");
+    } else {
+        const res = await signinUser({
+          loginType: "email",
+          email,
+          password,
+        });
+        alert(res.msg); // "Logged in successfully"
+        // localStorage.setItem("token", res.body.token);
+        //  saveToken(res.body.token); 
+        saveAuthData(res.body.token, res.body);
+         console.log("Login Token:", res.body.token, res.body); 
+        navigate("/");
     }
+    } catch (err) {
+      alert(err.msg || "Login failed");
+    }
+  };
 
-    // Common global save logic (no condition changes above)
-    login(res.body); // Save globally with AuthContext
-    localStorage.setItem("token", res.body.token); // still save in localStorage if you want persistence
-    alert(res.msg);
-    navigate("/");
+//   const handleSubmit = async (e) => {
+//   e.preventDefault();
 
-  } catch (err) {
-    alert(err.msg || "Login failed");
-  }
-};
+//   try {
+//     let res;
+
+//     if (loginMethod === 'phone' && !otpSent) {
+//       // Step 1: Request OTP
+//       res = await signinUser({
+//         loginType: "phone",
+//         countryCode,
+//         phone,
+//       });
+//       alert(res.msg); // "OTP Sent"
+//       setOtpSent(true);
+//       return; // stop here
+//     } 
+    
+//     if (loginMethod === 'phone' && otpSent) {
+//       res = await signinUser({
+//         loginType: "phone",
+//         countryCode,
+//         phone,
+//         otp,
+//       });
+//     } 
+    
+//     if (loginMethod === 'email') {
+//       res = await signinUser({
+//         loginType: "email",
+//         email,
+//         password,
+//       });
+//     }
+
+//     // Common global save logic (no condition changes above)
+//     login(res.body); // Save globally with AuthContext
+//     localStorage.setItem("token", res.body.token); // still save in localStorage if you want persistence
+//     alert(res.msg);
+//     navigate("/");
+
+//   } catch (err) {
+//     alert(err.msg || "Login failed");
+//   }
+// };
 
 
   return (
