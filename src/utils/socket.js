@@ -57,8 +57,9 @@ let socket = null;
 
 export const initSocket = (userId) => {
   if (!socket) {
-    socket = io("https://c16ebadfc0bd.ngrok-free.app", {
+    socket = io("http://localhost:3005", {
       transports: ["websocket"],
+      withCredentials: true,
     });
 
     socket.on("connect", () => {

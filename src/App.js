@@ -36,7 +36,7 @@ function App() {
           <Route path="/team" element={<Team />} />
           <Route path="/testimonials" element={<Testimonials />} />
           <Route path="/appointment" element={<BookAppointment />} />
-          <Route path="/chat" element={<Chat />} />
+          {/* <Route path="/chat" element={<Chat />} /> */}
         </Route>
 
         {/* Auth routes without Navbar/Footer */}
@@ -44,6 +44,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>
+         <Route path="/chat" element={<Chat />} />
       </Routes>
       {/* <FloatingChatButton /> */}
         {!hideFloatingButton && <FloatingChatButton />}
