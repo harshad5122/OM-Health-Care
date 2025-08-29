@@ -15,6 +15,15 @@ import Register from "./pages/auth/Signup";
 import FloatingChatButton from "./components/FloatingChatButton";
 import Chat from "./pages/chat";
 
+import ProtectedRoute from "./pages/auth/ProtectedRoute";
+import AdminDashboard from "./dashboard/AdminDashboard";
+import StaffDashboard from "./dashboard/StaffDashboard";
+import UserDashboard from "./dashboard/UserDashboard";
+
+import Home2 from "./dashboard/pages/Home";
+import Profile from "./dashboard/pages/Profile";
+import Messages from "./dashboard/pages/Messages";
+
 
 function App() {
   const location = useLocation();
@@ -22,6 +31,7 @@ function App() {
   const hideFloatingButton =
     location.pathname.startsWith("/auth/login") ||
     location.pathname.startsWith("/auth/register")||
+    location.pathname.startsWith("/dashboard/")||
      location.pathname.startsWith("/chat");
 
   return (
@@ -45,6 +55,76 @@ function App() {
           <Route path="register" element={<Register />} />
         </Route>
          <Route path="/chat" element={<Chat />} />
+
+         {/* Dashboard routes (protected) */}
+        {/* <Route
+          path="/dashboard/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/staff/*"
+          element={
+            <ProtectedRoute allowedRoles={[3]}>
+              <StaffDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/user/*"
+          element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <UserDashboard />
+            </ProtectedRoute>
+          }
+        /> */}
+        {/* Admin Dashboard */}
+      <Route
+        path="/dashboard/admin"
+        element={
+          <ProtectedRoute allowedRoles={[2]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Home2 title="Admin Home" />} />
+        <Route path="home" element={<Home2 />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="messages" element={<Messages />} />
+      </Route>
+
+      {/* Staff Dashboard */}
+      <Route
+        path="/dashboard/staff"
+        element={
+          <ProtectedRoute allowedRoles={[3]}>
+            <StaffDashboard />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Home2 title="Staff Home" />} />
+        <Route path="home" element={<Home2/>} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="messages" element={<Messages />} />
+      </Route>
+
+      {/* User Dashboard */}
+      <Route
+        path="/dashboard/user"
+        element={
+          <ProtectedRoute allowedRoles={[1]}>
+            <UserDashboard />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Home2 title="User Home" />} /> 
+        <Route path="home" element={<Home2/>} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="messages" element={<Chat />} />
+      </Route>
       </Routes>
       {/* <FloatingChatButton /> */}
         {!hideFloatingButton && <FloatingChatButton />}

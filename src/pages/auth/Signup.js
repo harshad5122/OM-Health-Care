@@ -49,8 +49,8 @@ const Register = () => {
 
       const res = await signupUser(payload); //  call API
       alert(res.msg || "User registered successfully!");
-      // navigate("/auth/login"); 
-      navigate('/');
+      navigate("/auth/login"); 
+      // navigate('/');
     } catch (err) {
       alert(err.msg || "Signup failed!");
     } finally {

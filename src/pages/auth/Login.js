@@ -1,12 +1,15 @@
-
-
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/Auth.css';
 import loginIllustration from '../../assets/auth/login-illustration.png';
 import { signinUser } from "../../api/authApi";
 import { useAuth } from "../../context/AuthContext"; 
+
+const UserTypes = Object.freeze({
+  USER: 1,
+  ADMIN: 2,
+  STAFF: 3,
+});
 
 
 const Login = () => {
@@ -44,11 +47,10 @@ const { saveAuthData } = useAuth();
           otp,
         });
         alert(res.msg); // "Logged in successfully"
-        // localStorage.setItem("token", res.body.token); 
-        // saveToken(res.body.token);
         saveAuthData(res.body.token, res.body);
         console.log("Login Token:", res.body.token, res.body); 
-        navigate("/");
+        // navigate("/");
+        redirectUser(res.body.role);
     } else {
         const res = await signinUser({
           loginType: "email",
@@ -56,63 +58,30 @@ const { saveAuthData } = useAuth();
           password,
         });
         alert(res.msg); // "Logged in successfully"
-        // localStorage.setItem("token", res.body.token);
-        //  saveToken(res.body.token); 
         saveAuthData(res.body.token, res.body);
          console.log("Login Token:", res.body.token, res.body); 
-        navigate("/");
+        // navigate("/");
+        redirectUser(res.body.role);
     }
     } catch (err) {
       alert(err.msg || "Login failed");
     }
   };
 
-//   const handleSubmit = async (e) => {
-//   e.preventDefault();
-
-//   try {
-//     let res;
-
-//     if (loginMethod === 'phone' && !otpSent) {
-//       // Step 1: Request OTP
-//       res = await signinUser({
-//         loginType: "phone",
-//         countryCode,
-//         phone,
-//       });
-//       alert(res.msg); // "OTP Sent"
-//       setOtpSent(true);
-//       return; // stop here
-//     } 
-    
-//     if (loginMethod === 'phone' && otpSent) {
-//       res = await signinUser({
-//         loginType: "phone",
-//         countryCode,
-//         phone,
-//         otp,
-//       });
-//     } 
-    
-//     if (loginMethod === 'email') {
-//       res = await signinUser({
-//         loginType: "email",
-//         email,
-//         password,
-//       });
-//     }
-
-//     // Common global save logic (no condition changes above)
-//     login(res.body); // Save globally with AuthContext
-//     localStorage.setItem("token", res.body.token); // still save in localStorage if you want persistence
-//     alert(res.msg);
-//     navigate("/");
-
-//   } catch (err) {
-//     alert(err.msg || "Login failed");
-//   }
-// };
-
+  const redirectUser = (role) => {
+  switch (role) {
+    case UserTypes.ADMIN:
+      navigate("/dashboard/admin");
+      break;
+    case UserTypes.STAFF:
+      navigate("/dashboard/staff");
+      break;
+    case UserTypes.USER:
+    default:
+      navigate("/dashboard/user/home");
+      break;
+  }
+};
 
   return (
     <div className="auth-wrapper"> {/* New wrapper for the split layout */}
