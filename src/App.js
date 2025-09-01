@@ -20,9 +20,9 @@ import AdminDashboard from "./dashboard/AdminDashboard";
 import StaffDashboard from "./dashboard/StaffDashboard";
 import UserDashboard from "./dashboard/UserDashboard";
 
-import Home2 from "./dashboard/pages/Home";
+import Dashboard from "./dashboard/pages/Dashboard";
 import Profile from "./dashboard/pages/Profile";
-import Messages from "./dashboard/pages/Messages";
+// import Messages from "./dashboard/pages/Messages";
 
 
 function App() {
@@ -90,10 +90,10 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Home2 title="Admin Home" />} />
-        <Route path="home" element={<Home2 />} />
+        <Route index element={<Dashboard title="Admin Home" />} />
+        <Route path="home" element={<Dashboard />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="messages" element={<Messages />} />
+        <Route path="messages" element={<Chat />} />
       </Route>
 
       {/* Staff Dashboard */}
@@ -105,10 +105,10 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Home2 title="Staff Home" />} />
-        <Route path="home" element={<Home2/>} />
+        <Route index element={<Dashboard title="Staff Home" />} />
+        <Route path="home" element={<Dashboard/>} />
         <Route path="profile" element={<Profile />} />
-        <Route path="messages" element={<Messages />} />
+        <Route path="messages" element={<Chat />} />
       </Route>
 
       {/* User Dashboard */}
@@ -120,8 +120,8 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Home2 title="User Home" />} /> 
-        <Route path="home" element={<Home2/>} />
+        <Route index element={<Dashboard title="User Home" />} /> 
+        <Route path="home" element={<Dashboard/>} />
         <Route path="profile" element={<Profile />} />
         <Route path="messages" element={<Chat />} />
       </Route>

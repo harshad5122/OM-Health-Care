@@ -21,3 +21,20 @@ export const signinUser = async (loginData) => {
   }
 };
 
+
+export const logoutUser = async (token) => {
+  try {
+    const response = await axiosInstance.post(
+      `/auth/logout`,
+      {},
+      {
+        headers: {
+          Authorization: `${token}`, 
+        },
+      }
+    );
+    return response.data.body;
+  } catch (error) {
+    throw error.response?.data || { msg: "Failed to logout" };
+  }
+};

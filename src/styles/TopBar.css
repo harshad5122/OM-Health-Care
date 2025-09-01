@@ -25,6 +25,11 @@
   font-size: 1.5rem;
   cursor: pointer;
   color: var(--primary-color);
+  display: block;
+  opacity: 1;     
+  visibility: visible; 
+  transition: none;
+  /* padding-right: 96%;  */
 }
 
 .title {
@@ -37,6 +42,20 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.user-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 25px;
+  transition: background 0.2s ease;
+}
+
+.user-profile-link:hover {
+  background: rgba(0, 119, 204, 0.1); /* soft highlight */
 }
 
 .user-name {

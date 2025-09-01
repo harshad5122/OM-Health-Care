@@ -4,13 +4,17 @@ import { Outlet } from 'react-router-dom';
 import DrawerMenu from '../components/DrawerMenu';
 import TopBar from '../components/TopBar';
 import '../styles/DashboardLayout.css';
+import { useAuth } from "../context/AuthContext"; 
+
 
 const DashboardLayout = ({ userRole, title }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 //   const navigate = useNavigate();
 
+  const { user } = useAuth();
+
   const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
-  const user = { name: "John Doe", role: userRole };
+  // const user = { name: "John Doe", role: userRole };
 
   return (
     <div className="dashboard-layout">
@@ -18,6 +22,7 @@ const DashboardLayout = ({ userRole, title }) => {
         toggleDrawer={toggleDrawer} 
         title={title} 
         user={user} 
+        userRole={userRole} 
       />
       
       <DrawerMenu 
