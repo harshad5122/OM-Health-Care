@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import MenuIcon from "@mui/icons-material/Menu";
+import DehazeIcon from '@mui/icons-material/Dehaze';
 import CloseIcon from "@mui/icons-material/Close";
 import "../styles/Navbar.css";
 
@@ -39,7 +39,7 @@ const Navbar = () => {
           onClick={() => setMenuOpen(true)}
           className="xl:hidden flex items-center mr-2"
         >
-          <MenuIcon className="text-[#1a6f8b]" />
+          <DehazeIcon className="text-[#1a6f8b]" />
         </button>
         {!menuOpen && (
           <Link
