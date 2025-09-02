@@ -30,7 +30,7 @@ h1, h2, h3, h4 {
 p {
   color: var(--text-color);
   font-size: 1rem;
-  margin-bottom: 1.5rem;
+  /* margin-bottom: 1.5rem; */
 }
 
 /* Animation Classes */
