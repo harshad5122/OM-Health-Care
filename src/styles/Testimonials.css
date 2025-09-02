@@ -1,9 +1,9 @@
 .testimonials-page {
-  /* padding-top: 80px;  */
-  background-color: #f8fbfd; /* Very light subtle blue background */
+
+  background-color: #f8fbfd; 
   color: #333;
   font-family: 'Poppins', sans-serif;
-  overflow-x: hidden; /* Prevent horizontal scroll from animations */
+  overflow-x: hidden;
 }
 
 .container {
@@ -12,7 +12,7 @@
   padding: 0 2rem;
 }
 
-/* Section Header Styles (consistent with other pages) */
+
 .section-header {
   text-align: center;
   margin-bottom: 4rem;
@@ -49,12 +49,11 @@
   line-height: 1.6;
 }
 
-/* --- Testimonials Hero Section --- */
 .testimonials-hero {
   position: relative;
-  height: 50vh; /* Shorter hero for inner pages */
+  height: 50vh; 
   min-height: 350px;
-  background: url('../assets/images/hero-image.jpg') center/cover no-repeat; /* Replace with a suitable background */
+  background: url('../assets/images/hero-image.jpg') center/cover no-repeat; 
   background-size: cover;
   background-position: center;
   display: flex;
@@ -71,7 +70,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(26, 111, 139, 0.7); /* Darker overlay from primary color */
+  background-color: rgba(26, 111, 139, 0.7);
   z-index: 1;
 }
 
@@ -95,15 +94,15 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* --- Testimonials List/Grid Section --- */
+
 .testimonials-list-section {
   padding: 5rem 0;
   background-color: white;
   border-radius: 20px;
   margin: 0 2rem 5rem;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
-  opacity: 0; /* Hidden by default for animation */
-  transform: translateY(50px); /* Start lower */
+  opacity: 0;
+  transform: translateY(50px);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
@@ -115,22 +114,22 @@
 .testimonials-grid {
   display: flex;
   flex-direction: column;
-  gap: 6rem; /* Large gap between testimonial items */
+  gap: 6rem; 
 }
 
-/* --- Testimonial Item Styles (Zigzag Layout) --- */
+
 .testimonial-item {
   display: flex;
   align-items: center;
-  gap: 3rem; /* Space between media and content */
+  gap: 3rem;
   position: relative;
   padding: 2rem;
-  background-color: #fcfdfe; /* Light background for card */
+  background-color: #fcfdfe; 
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 
-  opacity: 0; /* Initial state for animation */
+  opacity: 0;
   transform: translateY(50px);
 }
 
@@ -144,36 +143,36 @@
   box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18);
 }
 
-/* Zigzag Layout Specifics */
+
 .testimonial-item.layout-left .media-container {
-  order: 0; /* Default order */
-  padding-right: 1.5rem; /* Space before content on left layout */
+  order: 0; 
+  padding-right: 1.5rem;
 }
 
 .testimonial-item.layout-left .content-container {
   order: 1;
-  padding-left: 1.5rem; /* Space after media on left layout */
-  border-left: 3px solid var(--secondary-color); /* Separator line */
+  padding-left: 1.5rem; 
+  border-left: 3px solid var(--secondary-color);
 }
 
 .testimonial-item.layout-right {
-  flex-direction: row-reverse; /* Swap order for right layout */
+  flex-direction: row-reverse; 
 }
 
 .testimonial-item.layout-right .media-container {
-  order: 0; /* Default order after flex-direction change */
-  padding-left: 1.5rem; /* Space before content on right layout */
+  order: 0; 
+  padding-left: 1.5rem; 
 }
 
 .testimonial-item.layout-right .content-container {
   order: 1;
-  padding-right: 1.5rem; /* Space after media on right layout */
-  border-right: 3px solid var(--secondary-color); /* Separator line */
+  padding-right: 1.5rem; 
+  border-right: 3px solid var(--secondary-color);
 }
 
 
 .media-container {
-  flex: 0 0 400px; /* Fixed width for media container */
+  flex: 0 0 400px; 
   height: 250px;
   border-radius: 15px;
   overflow: hidden;
@@ -197,7 +196,7 @@
   width: 100%;
   height: 100%;
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  padding-bottom: 56.25%; 
   height: 0;
   overflow: hidden;
 }
@@ -215,7 +214,7 @@
   position: absolute;
   bottom: 1rem;
   left: 1rem;
-  background-color: rgba(26, 111, 139, 0.9); /* Primary color semi-transparent */
+  background-color: rgba(26, 111, 139, 0.9); 
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 5px;
@@ -226,9 +225,9 @@
 }
 
 .content-container {
-  flex: 1; /* Take remaining space */
+  flex: 1; 
   position: relative;
-  padding: 1rem 0; /* Vertical padding */
+  padding: 1rem 0; 
 }
 
 .quote-icon-left {
@@ -256,8 +255,8 @@
   color: var(--primary-color);
   line-height: 1.4;
   margin-bottom: 1.5rem;
-  padding: 0 2rem; /* Space for quote icons */
-  position: relative; /* For z-index over icons */
+  padding: 0 2rem;
+  position: relative; 
   z-index: 1;
 }
 
@@ -274,7 +273,7 @@
 }
 
 
-/* --- Call to Action Section (consistent with other pages) --- */
+
 .testimonials-cta-section {
   padding: 5rem 0;
   background-color: var(--primary-color);
@@ -316,29 +315,28 @@
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* --- Global Animation Classes (Ideally in App.css) --- */
-/* fade-in-up */
+
+
 .animate-fade-in-up {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
-.testimonials-hero-content.animate-fade-in-up { /* Hero content animates immediately */
+.testimonials-hero-content.animate-fade-in-up {
   opacity: 1;
   transform: translateY(0);
 }
-/* For sections that animate on scroll */
+
 .in-view .animate-fade-in-up {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Animation Delays */
 .delay-1 { transition-delay: 0.1s; }
 .delay-2 { transition-delay: 0.2s; }
 
 
-/* --- Responsive Design --- */
+
 @media (max-width: 992px) {
   .testimonials-hero-content h1 {
     font-size: 2.8rem;
@@ -350,28 +348,28 @@
     margin: 0 1rem 4rem;
   }
   .testimonial-item {
-    flex-direction: column; /* Stack on smaller screens */
+    flex-direction: column; 
     gap: 2rem;
   }
-  /* Reset order for stacked layout */
+ 
   .testimonial-item.layout-right {
     flex-direction: column;
   }
   .testimonial-item .media-container,
   .testimonial-item .content-container {
-    order: unset; /* Reset order */
+    order: unset; 
     padding-left: 0;
     padding-right: 0;
   }
   .content-container {
-    border-left: none !important; /* Remove border when stacked */
+    border-left: none !important; 
     border-right: none !important;
-    padding-top: 1rem; /* Add some space if needed */
+    padding-top: 1rem;
   }
   .media-container {
-    flex: 0 0 auto; /* Allow media container to auto-size height */
-    width: 100%; /* Take full width */
-    height: 250px; /* Keep consistent height */
+    flex: 0 0 auto; 
+    width: 100%; 
+    height: 250px;
   }
   .result-headline {
     font-size: 1.6rem;
@@ -387,7 +385,7 @@
 
 @media (max-width: 768px) {
   .testimonials-page {
-    padding-top: 60px; /* Adjust for smaller navbar */
+    padding-top: 60px; 
   }
   .testimonials-hero {
     height: 40vh;
@@ -410,7 +408,7 @@
     gap: 1.5rem;
   }
   .media-container {
-    height: 200px; /* Smaller media height */
+    height: 200px; 
   }
   .identifier-tag {
     font-size: 0.8rem;

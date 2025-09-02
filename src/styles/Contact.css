@@ -1,9 +1,8 @@
-.contact-page {
-  /* padding-top: 80px;  */
-  background-color: #f8fbfd; /* Very light subtle blue background */
+/* .contact-page {
+  background-color: #f8fbfd; 
   color: #333;
   font-family: 'Poppins', sans-serif;
-  overflow-x: hidden; /* Prevent horizontal scroll from animations */
+  overflow-x: hidden; 
 }
 
 .container {
@@ -12,10 +11,10 @@
   padding: 0 2rem;
 }
 
-/* --- Contact Hero Section --- */
+
 .contact-hero {
   position: relative;
-  height: 50vh; /* Shorter hero for inner pages */
+  height: 50vh;
   min-height: 350px;
   background-position: center;
   background-size: cover;
@@ -34,7 +33,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(26, 111, 139, 0.7); /* Darker overlay from primary color */
+  background-color: rgba(26, 111, 139, 0.7); 
   z-index: 1;
 }
 
@@ -58,15 +57,14 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* --- Contact Info Section (Address, Phone, Email in one row) --- */
 .contact-info-section {
   padding: 4rem 0;
   background-color: white;
-  border-radius: 20px; /* Rounded corners for the whole section block */
+  border-radius: 20px; 
   margin: 0 2rem 5rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); /* Soft shadow */
-  opacity: 0; /* Hidden by default for animation */
-  transform: translateY(50px); /* Start lower */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); 
+  opacity: 0; 
+  transform: translateY(50px); 
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
@@ -83,7 +81,7 @@
 }
 
 .info-card {
-  background-color: #f8fbfd; /* Light background for cards */
+  background-color: #f8fbfd;
   border-radius: 15px;
   padding: 2.5rem 1.5rem;
   text-align: center;
@@ -101,7 +99,7 @@
 }
 
 .info-icon-wrapper {
-  background-color: var(--secondary-color); /* Green background for icon */
+  background-color: var(--secondary-color); 
   border-radius: 50%;
   width: 70px;
   height: 70px;
@@ -153,7 +151,7 @@
   width: 100%;
 }
 
-/* --- Contact Form Section (Image & Form Side-by-Side) --- */
+
 .contact-form-section {
   padding: 5rem 0;
   margin-bottom: 5rem;
@@ -167,14 +165,14 @@
 .form-content-wrapper {
   display: flex;
   gap: 3rem;
-  align-items: stretch; /* Stretch children to fill height */
+  align-items: stretch;
   background-color: white;
   border-radius: 20px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1); /* Stronger shadow for this main block */
-  overflow: hidden; /* Ensures border-radius applies to children */
-  opacity: 0; /* Hidden by default for animation */
-  transform: translateY(50px); /* Start lower */
-  transition: opacity 1s ease-out, transform 1s ease-out; /* Slower animation */
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1); 
+  overflow: hidden; 
+  opacity: 0; 
+  transform: translateY(50px); 
+  transition: opacity 1s ease-out, transform 1s ease-out; 
 }
 
 .contact-form-section.in-view .form-content-wrapper {
@@ -185,10 +183,10 @@
 
 .form-image-container {
   flex: 1;
-  min-width: 300px; /* Ensure image doesn't get too small */
+  min-width: 300px; 
   position: relative;
   overflow: hidden;
-  border-radius: 20px 0 0 20px; /* Rounded only on the left side */
+  border-radius: 20px 0 0 20px; 
 }
 
 .form-image-container img {
@@ -200,12 +198,12 @@
 }
 
 .form-image-container:hover img {
-  transform: scale(1.05); /* Zoom effect on hover */
+  transform: scale(1.05);
 }
 
 
 .contact-form-container {
-  flex: 1.2; /* Form takes more space */
+  flex: 1.2;
   padding: 3rem;
   display: flex;
   flex-direction: column;
@@ -230,7 +228,7 @@
 .contact-form .form-group {
   margin-bottom: 1.5rem;
   text-align: left;
-  position: relative; /* For error messages */
+  position: relative; 
 }
 
 .contact-form label {
@@ -252,24 +250,24 @@
   font-size: 1rem;
   font-family: 'Poppins', sans-serif;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  box-sizing: border-box; /* Include padding in width */
+  box-sizing: border-box; 
   background-color: #fcfcfc;
 }
 
 .contact-form input:focus,
 .contact-form textarea:focus {
   border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2); /* Light green glow */
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2); 
   outline: none;
 }
 
 .contact-form textarea {
-  resize: vertical; /* Allow vertical resizing */
+  resize: vertical; 
   min-height: 120px;
 }
 
 .contact-form .input-error {
-  border-color: #ff4d4f; /* Red for errors */
+  border-color: #ff4d4f; 
 }
 
 .error-message {
@@ -291,7 +289,7 @@
   transition: all 0.3s ease;
   box-shadow: 0 5px 15px rgba(26, 111, 139, 0.3);
   margin-top: 1rem;
-  width: auto; /* Allow button to size to content */
+  width: auto; 
 }
 
 .submit-button:hover {
@@ -313,31 +311,31 @@
   border-radius: 8px;
   font-weight: 500;
   font-size: 0.95rem;
-  opacity: 0; /* Hidden by default for animation */
+  opacity: 0; 
   transform: translateY(20px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.form-submission-message.animate-fade-in-up { /* Ensure it animates */
+.form-submission-message.animate-fade-in-up { 
   opacity: 1;
   transform: translateY(0);
 }
 
 .success-message {
-  background-color: #e6ffe6; /* Light green */
-  color: #28a745; /* Dark green text */
+  background-color: #e6ffe6; 
+  color: #28a745; 
   border: 1px solid #28a745;
 }
 
 .error-message {
-  background-color: #ffe6e6; /* Light red */
-  color: #dc3545; /* Dark red text */
+  background-color: #ffe6e6; 
+  color: #dc3545; 
   border: 1px solid #dc3545;
 }
 
-/* --- Google Maps Section --- */
+
 .map-section {
-  padding: 0 0 5rem 0; /* Padding only at bottom */
+  padding: 0 0 5rem 0; 
   display: none !important;
 }
 
@@ -345,9 +343,9 @@
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
-  background-color: white; /* Fallback */
+  background-color: white;
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  padding-bottom: 56.25%;
   height: 0;
   width: 100%;
   margin: 0 auto;
@@ -367,23 +365,22 @@
 }
 
 .map-section .section-title {
-  margin-bottom: 3rem; /* Space below title */
-  margin-top: 2rem; /* Space above title */
+  margin-bottom: 3rem;
+  margin-top: 2rem; 
 }
 
-/* --- Global Animation Classes (re-copied for context, but should be in App.css) --- */
-/* Fade In Up */
+
 .animate-fade-in-up {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
-.contact-hero-content .animate-fade-in-up { /* Hero content animates immediately */
+.contact-hero-content .animate-fade-in-up {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Zoom In */
+
 .animate-zoom-in {
   opacity: 0;
   transform: scale(0.7);
@@ -394,7 +391,7 @@
   transform: scale(1);
 }
 
-/* Fade In Left */
+
 .animate-fade-in-left {
   opacity: 0;
   transform: translateX(-50px);
@@ -405,7 +402,7 @@
   transform: translateX(0);
 }
 
-/* Fade In Right */
+
 .animate-fade-in-right {
   opacity: 0;
   transform: translateX(50px);
@@ -417,14 +414,11 @@
 }
 
 
-/* Animation Delays */
 .delay-1 { transition-delay: 0.1s; }
 .delay-2 { transition-delay: 0.2s; }
 .delay-3 { transition-delay: 0.3s; }
-/* ... (add more delays as needed in App.css if global) */
 
 
-/* --- Responsive Design --- */
 @media (max-width: 992px) {
   .contact-hero-content h1 {
     font-size: 2.8rem;
@@ -433,18 +427,18 @@
     font-size: 1.2rem;
   }
   .contact-info-section, .contact-form-section {
-    margin: 0 1rem 4rem; /* Less margin on sides */
+    margin: 0 1rem 4rem; 
   }
   .info-grid {
-    grid-template-columns: 1fr; /* Stack cards */
+    grid-template-columns: 1fr; 
   }
   .form-content-wrapper {
-    flex-direction: column; /* Stack image and form */
-    border-radius: 20px; /* Full rounded corners */
+    flex-direction: column; 
+    border-radius: 20px; 
   }
   .form-image-container {
-    height: 250px; /* Give image a fixed height when stacked */
-    border-radius: 20px 20px 0 0; /* Rounded top corners */
+    height: 250px; 
+    border-radius: 20px 20px 0 0; 
   }
   .contact-form-container {
     padding: 2rem;
@@ -459,7 +453,7 @@
 
 @media (max-width: 768px) {
   .contact-page {
-    padding-top: 60px; /* Adjust for smaller navbar */
+    padding-top: 60px; 
   }
   .contact-hero {
     height: 40vh;
@@ -504,7 +498,7 @@
     font-size: 0.9rem;
   }
   .submit-button {
-    width: 100%; /* Full width button on small screens */
+    width: 100%; 
   }
 }
-
+ */

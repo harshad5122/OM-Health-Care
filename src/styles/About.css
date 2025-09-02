@@ -1,6 +1,6 @@
 /* General About Page Styles */
 .about-page {
-  padding-top: 80px;
+  padding-top: 80px; /* Adjust for fixed navbar */
   background-color: #f8fbfd; /* Very light subtle blue background */
   color: #333;
   font-family: 'Poppins', sans-serif;

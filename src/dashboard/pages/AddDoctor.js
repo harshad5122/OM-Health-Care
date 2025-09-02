@@ -338,7 +338,7 @@ function AddDoctor() {
     };
 
 
-    const sectionClass = "bg-white rounded-lg shadow-sm p-4 px-[40px] md:p-6";
+    const sectionClass = "bg-white rounded-lg shadow-sm p-4 px-[40px] md:p-8";
     const labelClass = "block mb-[0.4rem] font-semibold text-[#495057] text-[0.9rem] text-left";
     const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus-primary";
     const selectClass = inputClass;
@@ -372,7 +372,7 @@ function AddDoctor() {
                             <div className="flex gap-2">
                                 {/* Country code dropdown */}
                                 <select
-                                    className={`${inputClass} w-20`}   // narrow width for country code
+                                    className={` rounded-md border border-gray-300 px-2 py-2 text-sm focus-primary w-20`}   // narrow width for country code
                                     value={personalInfo.countryCode}
                                     onChange={(e) => handlePersonalChange("countryCode", e.target.value)}
                                 >
@@ -450,7 +450,7 @@ function AddDoctor() {
                 {personalInfo.professionalStatus === "Experienced" && (
                     <section className={sectionClass}>
                         <h2 className="dashboard-section-title">Work Experience</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label className={labelClass}>Total Years of Experience<span className="text-red-500">*</span></label>
                                 <input className={inputClass} type="number" min={0} value={personalInfo.totalExperienceYears} onChange={(e) => handlePersonalChange("totalExperienceYears", e.target.value)} />
