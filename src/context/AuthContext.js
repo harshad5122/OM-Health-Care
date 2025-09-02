@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
   const saveAuthData = (newToken, userData) => {
     localStorage.setItem("token", newToken);
     localStorage.setItem("role", userData.role); 
-    localStorage.setItem("user", JSON.stringify(userData));  // save user also
+    localStorage.setItem("user", JSON.stringify(userData));  
     setToken(newToken);
     setUser(userData);
   };

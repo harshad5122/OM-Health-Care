@@ -105,7 +105,7 @@
 .user-list {
   flex: 1;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* For smoother scrolling on iOS */
+  -webkit-overflow-scrolling: touch; 
 }
 
 .user-list-item {

@@ -22,6 +22,9 @@ import UserDashboard from "./dashboard/UserDashboard";
 
 import Dashboard from "./dashboard/pages/Dashboard";
 import Profile from "./dashboard/pages/Profile";
+import AddDoctor from "./dashboard/pages/AddDoctor";
+import AddUser from "./dashboard/pages/AddUser";
+import Members from "./dashboard/pages/Members";
 // import Messages from "./dashboard/pages/Messages";
 
 
@@ -94,6 +97,9 @@ function App() {
         <Route path="home" element={<Dashboard />} />
         <Route path="profile" element={<Profile />} />
         <Route path="messages" element={<Chat />} />
+        <Route path="add-doctor" element={<AddDoctor />} />
+        <Route path="add-user" element={<AddUser />} />
+        <Route path="members" element={<Members />} />
       </Route>
 
       {/* Staff Dashboard */}

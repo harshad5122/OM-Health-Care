@@ -17,12 +17,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
         </button>
         <h1 className="title">{title}</h1>
       </div>
-      {/* <div className="right-section">
-        <span className="user-name">{user.firstname} {user.lastname}</span>
-        <div className="user-avatar">
-          {user.firstname?.charAt(0).toUpperCase()}
-        </div>
-      </div> */}
+     
        <div className="right-section">
         {user && (
           <Link 
