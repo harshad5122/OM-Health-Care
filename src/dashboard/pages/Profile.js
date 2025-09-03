@@ -1,14 +1,15 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/dashboard/Profile.css';
-import { getProfile, updateProfile } from "../../api/userApi";
+// import { getProfile, updateProfile } from "../../api/userApi";
 import { useAuth } from "../../context/AuthContext";
+import { useUserApi } from '../../api/userApi';
 
 
 
 const Profile = () => {
 
-   const { token } = useAuth();
+  const { token } = useAuth();
 
   // Static data - replace with API calls later
   // const [profileData, setProfileData] = useState({
@@ -26,14 +27,17 @@ const Profile = () => {
 
   const [profileData, setProfileData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [tempData, setTempData] = useState({...profileData});
+  const [tempData, setTempData] = useState({ ...profileData });
   const [loading, setLoading] = useState(true);
+  const { getProfile, updateProfile } = useUserApi();
 
   useEffect(() => {
+    if (!token) return;
+
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const data = await getProfile(token);
+        const data = await getProfile();
         setProfileData(data);
         setTempData(data);
       } catch (error) {
@@ -43,8 +47,10 @@ const Profile = () => {
         setLoading(false);
       }
     };
-    if (token) fetchProfile();
+
+    fetchProfile();
   }, [token]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,7 +65,7 @@ const Profile = () => {
   //   setIsEditing(false);
   //   alert("Profile updated successfully!");
   // };
-   const handleSave = async () => {
+  const handleSave = async () => {
     try {
       const updated = await updateProfile(token, tempData);
       setProfileData(updated);
@@ -77,7 +83,7 @@ const Profile = () => {
   };
 
   if (loading) return <p>Loading profile...</p>;
-  if (!profileData) return <p>No profile data found.</p>; 
+  if (!profileData) return <p>No profile data found.</p>;
 
   return (
     <div className="profile-container">
@@ -105,129 +111,129 @@ const Profile = () => {
         <div className="profile-section">
           <h3>Personal Information</h3>
           <div className="profile-grid">
-          {/* Row 1: First Name, Last Name, Email */}
-          <div className="form-row triple">
-            <div className="form-group">
-              <label>First Name</label>
-              {isEditing ? (
-                <input type="text" name="firstname" value={tempData.firstname || ""} onChange={handleChange} />
-              ) : (
-                <p>{profileData.firstname}</p>
-              )}
+            {/* Row 1: First Name, Last Name, Email */}
+            <div className="form-row triple">
+              <div className="form-group">
+                <label>First Name</label>
+                {isEditing ? (
+                  <input type="text" name="firstname" value={tempData.firstname || ""} onChange={handleChange} />
+                ) : (
+                  <p>{profileData.firstname}</p>
+                )}
+              </div>
+              <div className="form-group">
+                <label>Last Name</label>
+                {isEditing ? (
+                  <input type="text" name="lastname" value={tempData.lastname || ""} onChange={handleChange} />
+                ) : (
+                  <p>{profileData.lastname}</p>
+                )}
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                {isEditing ? (
+                  <input type="email" name="email" value={tempData.email || ""} onChange={handleChange} />
+                ) : (
+                  <p>{profileData.email}</p>
+                )}
+              </div>
             </div>
-            <div className="form-group">
-              <label>Last Name</label>
-              {isEditing ? (
-                <input type="text" name="lastname" value={tempData.lastname || ""} onChange={handleChange} />
-              ) : (
-                <p>{profileData.lastname}</p>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              {isEditing ? (
-                <input type="email" name="email" value={tempData.email || ""} onChange={handleChange} />
-              ) : (
-                <p>{profileData.email}</p>
-              )}
-            </div>
-          </div>
 
-          {/* Row 2: Phone, Date of Birth, Gender */}
-          <div className="form-row triple">
-            <div className="form-group">
-              <label>Phone Number</label>
-              {isEditing ? (
-                <input type="tel" name="phone" value={tempData.phone ||""} onChange={handleChange} />
-              ) : (
-                <p>{profileData.phone}</p>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Date of Birth</label>
-              {isEditing ? (
-                <input type="date" name="birthDate" value={tempData.birthDate
-                        ? tempData.birthDate.split("T")[0]
-                        : ""} onChange={handleChange} />
-              ) : (
-                <p>
-                  {/* {new Date(profileData.birthDate).toLocaleDateString()} */}
-                  {profileData.birthDate
-                      ? new Date(profileData.birthDate).toLocaleDateString()
+            {/* Row 2: Phone, Date of Birth, Gender */}
+            <div className="form-row triple">
+              <div className="form-group">
+                <label>Phone Number</label>
+                {isEditing ? (
+                  <input type="tel" name="phone" value={tempData.phone || ""} onChange={handleChange} />
+                ) : (
+                  <p>{profileData.phone}</p>
+                )}
+              </div>
+              <div className="form-group">
+                <label>Date of Birth</label>
+                {isEditing ? (
+                  <input type="date" name="dob" value={tempData.dob
+                    ? tempData.dob.split("T")[0]
+                    : ""} onChange={handleChange} />
+                ) : (
+                  <p>
+                    {/* {new Date(profileData.birthDate).toLocaleDateString()} */}
+                    {profileData.dob
+                      ? new Date(profileData.dob).toLocaleDateString()
                       : ""}
                   </p>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Gender</label>
-              {isEditing ? (
-                <div className="select-wrapper">
-                  <select name="gender" value={tempData.gender||""} onChange={handleChange}>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              ) : (
-                <p>
-                  {/* {profileData.gender.charAt(0).toUpperCase() + profileData.gender.slice(1)} */}
-                  {profileData.gender
+                )}
+              </div>
+              <div className="form-group">
+                <label>Gender</label>
+                {isEditing ? (
+                  <div className="select-wrapper">
+                    <select name="gender" value={tempData.gender || ""} onChange={handleChange}>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                ) : (
+                  <p>
+                    {/* {profileData.gender.charAt(0).toUpperCase() + profileData.gender.slice(1)} */}
+                    {profileData.gender
                       ? profileData.gender.charAt(0).toUpperCase() +
-                        profileData.gender.slice(1)
+                      profileData.gender.slice(1)
                       : ""}
                   </p>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
         </div>
 
         <div className="profile-section">
           <h3>Address Information</h3>
-          
+
           {/* Row 3: Full Address */}
           <div className="profile-grid">
-          <div className="form-row group">
-            <div className="form-group full-width">
-              <label>Address</label>
-              {isEditing ? (
-                <input type="text" name="address" value={tempData.address||""} onChange={handleChange} />
-              ) : (
-                <p>{profileData.address}</p>
-              )}
+            <div className="form-row group">
+              <div className="form-group full-width">
+                <label>Address</label>
+                {isEditing ? (
+                  <input type="text" name="address" value={tempData.address || ""} onChange={handleChange} />
+                ) : (
+                  <p>{profileData.address}</p>
+                )}
+              </div>
             </div>
-          </div>
-         
 
-          {/* Row 4: City, State, Country */}
-          <div className="form-row triple">
-            <div className="form-group">
-              <label>City</label>
-              {isEditing ? (
-                <input type="text" name="city" value={tempData.city||""} onChange={handleChange} />
-              ) : (
-                <p>{profileData.city}</p>
-              )}
-            </div>
-            <div className="form-group">
-              <label>State</label>
-              {isEditing ? (
-                <input type="text" name="state" value={tempData.state||""} onChange={handleChange} />
-              ) : (
-                <p>{profileData.state}</p>
-              )}
-            </div>
-            <div className="form-group">
-              <label>Country</label>
-              {isEditing ? (
-                <input type="text" name="country" value={tempData.country||""} onChange={handleChange} />
-              ) : (
-                <p>{profileData.country}</p>
-              )}
+
+            {/* Row 4: City, State, Country */}
+            <div className="form-row triple">
+              <div className="form-group">
+                <label>City</label>
+                {isEditing ? (
+                  <input type="text" name="city" value={tempData.city || ""} onChange={handleChange} />
+                ) : (
+                  <p>{profileData.city}</p>
+                )}
+              </div>
+              <div className="form-group">
+                <label>State</label>
+                {isEditing ? (
+                  <input type="text" name="state" value={tempData.state || ""} onChange={handleChange} />
+                ) : (
+                  <p>{profileData.state}</p>
+                )}
+              </div>
+              <div className="form-group">
+                <label>Country</label>
+                {isEditing ? (
+                  <input type="text" name="country" value={tempData.country || ""} onChange={handleChange} />
+                ) : (
+                  <p>{profileData.country}</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
- </div>
         <div className="profile-actions-bottom">
           <Link to="/dashboard/user" className="btn btn-tertiary">
             Back to Dashboard

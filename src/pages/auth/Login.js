@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/Auth.css';
 import loginIllustration from '../../assets/auth/login-illustration.png';
-import { signinUser } from "../../api/authApi";
-import { useAuth } from "../../context/AuthContext"; 
+// import { signinUser } from "../../api/authApi";
+import { useAuth } from "../../context/AuthContext";
+import { useAuthApi } from '../../api/authApi';
 
 const UserTypes = Object.freeze({
   USER: 1,
@@ -13,8 +14,8 @@ const UserTypes = Object.freeze({
 
 
 const Login = () => {
-// const { saveToken } = useAuth();
-const { saveAuthData } = useAuth();
+  // const { saveToken } = useAuth();
+  const { saveAuthData } = useAuth();
   const [loginMethod, setLoginMethod] = useState('phone');
   const [countryCode, setCountryCode] = useState("+91");
   const [phone, setPhone] = useState('');
@@ -23,14 +24,15 @@ const { saveAuthData } = useAuth();
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const navigate = useNavigate();
+  const { signinUser } = useAuthApi();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-      try {
-    if (loginMethod === 'phone' && !otpSent) {
+    try {
+      if (loginMethod === 'phone' && !otpSent) {
 
-       // Step 1: Request OTP
+        // Step 1: Request OTP
         const res = await signinUser({
           loginType: "phone",
           countryCode,
@@ -38,8 +40,8 @@ const { saveAuthData } = useAuth();
         });
         alert(res.msg); // "OTP Sent"
         setOtpSent(true);
-      
-    } else if (loginMethod === 'phone' && otpSent) {
+
+      } else if (loginMethod === 'phone' && otpSent) {
         const res = await signinUser({
           loginType: "phone",
           countryCode,
@@ -48,10 +50,16 @@ const { saveAuthData } = useAuth();
         });
         alert(res.msg); // "Logged in successfully"
         saveAuthData(res.body.token, res.body);
-        console.log("Login Token:", res.body.token, res.body); 
+        console.log("Login Token:", res.body.token, res.body);
         // navigate("/");
-        redirectUser(res.body.role);
-    } else {
+        console.log(res, ">> result")
+        if (res.body.addedByAdmin) {
+          redirectUser("changePassword")
+        } else {
+          redirectUser(res.body.role);
+        }
+
+      } else {
         const res = await signinUser({
           loginType: "email",
           email,
@@ -59,29 +67,36 @@ const { saveAuthData } = useAuth();
         });
         alert(res.msg); // "Logged in successfully"
         saveAuthData(res.body.token, res.body);
-         console.log("Login Token:", res.body.token, res.body); 
+        console.log("Login Token:", res.body.token, res.body);
         // navigate("/");
-        redirectUser(res.body.role);
-    }
+        if (res.body.addedByAdmin) {
+          redirectUser("changePassword")
+        } else {
+          redirectUser(res.body.role);
+        }
+      }
     } catch (err) {
       alert(err.msg || "Login failed");
     }
   };
 
   const redirectUser = (role) => {
-  switch (role) {
-    case UserTypes.ADMIN:
-      navigate("/dashboard/admin");
-      break;
-    case UserTypes.STAFF:
-      navigate("/dashboard/staff");
-      break;
-    case UserTypes.USER:
-    default:
-      navigate("/dashboard/user/home");
-      break;
-  }
-};
+    switch (role) {
+      case "changePassword":
+        navigate("/auth/change-password");
+        break;
+      case UserTypes.ADMIN:
+        navigate("/dashboard/admin");
+        break;
+      case UserTypes.STAFF:
+        navigate("/dashboard/staff");
+        break;
+      case UserTypes.USER:
+      default:
+        navigate("/dashboard/user/home");
+        break;
+    }
+  };
 
   return (
     <div className="auth-wrapper"> {/* New wrapper for the split layout */}
@@ -107,14 +122,14 @@ const { saveAuthData } = useAuth();
 
           <div className="auth-method-toggle">
             <button
-            type="button"
+              type="button"
               className={`toggle-option ${loginMethod === 'phone' ? 'active' : ''}`}
               onClick={() => { setLoginMethod('phone'); setOtpSent(false); }} // Reset OTP state on method change
             >
               Login with Phone
             </button>
             <button
-            type="button"
+              type="button"
               className={`toggle-option ${loginMethod === 'email' ? 'active' : ''}`}
               onClick={() => { setLoginMethod('email'); setOtpSent(false); }} // Reset OTP state on method change
             >
@@ -129,11 +144,11 @@ const { saveAuthData } = useAuth();
                   <div className="form-group">
                     <label htmlFor="mobile">Mobile Number</label>
                     <div className="phone-input">
-                      <select 
-                      id="country-code" 
-                      className="country-code"
-                      value={countryCode}
-                      onChange={(e) => setCountryCode(e.target.value)}
+                      <select
+                        id="country-code"
+                        className="country-code"
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
                       >
                         <option value="+91">+91 (IN)</option>
                         <option value="+1">+1 (US)</option>
@@ -160,10 +175,10 @@ const { saveAuthData } = useAuth();
                       onChange={(e) => setOtp(e.target.value)}
                       required
                     />
-                    <p className="resend-otp">Didn't receive code?{" "} 
-                      <button type="button" 
-                      className="link-button"
-                      onClick={() =>
+                    <p className="resend-otp">Didn't receive code?{" "}
+                      <button type="button"
+                        className="link-button"
+                        onClick={() =>
                           signinUser({ loginType: "phone", countryCode, phone })
                         }
                       >Resend OTP</button></p>
@@ -172,31 +187,31 @@ const { saveAuthData } = useAuth();
               </>
             ) : (
               <>
-              <div className="form-row single-col">
-                <div className="form-group">
-                  <label htmlFor="email">Email Address</label>
-                  <input
-                    type="email"
-                    id="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
+                <div className="form-row single-col">
+                  <div className="form-group">
+                    <label htmlFor="email">Email Address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
                 </div>
                 <div className="form-row single-col">
-                <div className="form-group">
-                  <label htmlFor="password">Password</label>
-                  <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
+                  <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <input
+                      type="password"
+                      id="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                  </div>
                 </div>
               </>
             )}

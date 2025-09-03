@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../../styles/dashboard/Profile.css";
-import { addDoctor } from "../../api/doctorApi";
-import { useAuth } from "../../context/AuthContext";
+import { useDoctorApi } from "../../api/doctorApi";
+// import { addDoctor } from "../../api/doctorApi";
 
 function AddDoctor() {
     const defaultCountry = "India";
-    const { token } = useAuth();
 
     const initialAddress = {
         addressLine1: "",
@@ -26,7 +25,7 @@ function AddDoctor() {
         qualification: "",
         specialization: "",
         occupation: "",
-        professionalStatus: "Experienced",
+        professionalStatus: "experienced",
         totalExperienceYears: "",
         lastHospitalName: "",
         positionHeld: "",
@@ -121,6 +120,7 @@ function AddDoctor() {
         "Gynecology",
         "General Medicine",
     ];
+    const { addDoctor } = useDoctorApi();
 
     useEffect(() => {
         if (isPermanentSameAsCurrent) {
@@ -176,7 +176,7 @@ function AddDoctor() {
         if (!currentAddress.country.trim()) errors.currentCountry = "Country is required";
         if (!validatePincode(currentAddress.pincode)) errors.currentPincode = "Valid 6-digit pincode is required";
 
-        if (personalInfo.professionalStatus === "Experienced") {
+        if (personalInfo.professionalStatus === "experienced") {
             if (!personalInfo.totalExperienceYears) errors.totalExperienceYears = "Total years is required";
             if (!personalInfo.lastHospitalName.trim()) errors.lastHospitalName = "Last hospital/clinic is required";
             if (!personalInfo.positionHeld.trim()) errors.positionHeld = "Position held is required";
@@ -241,7 +241,7 @@ function AddDoctor() {
                 specialization: personalInfo.specialization,
                 occupation: personalInfo.occupation,
 
-                workExperience: personalInfo.professionalStatus === "Experienced" ? {
+                workExperience: personalInfo.professionalStatus === "experienced" ? {
                     totalYears: personalInfo.totalExperienceYears,
                     lastHospital: personalInfo.lastHospitalName,
                     position: personalInfo.positionHeld,
@@ -291,7 +291,7 @@ function AddDoctor() {
                     }
                 }
             };
-            const result = await addDoctor(token, payload);
+            const result = await addDoctor(payload);
             if (result?.success) {
                 resetForm();
             }
@@ -312,7 +312,7 @@ function AddDoctor() {
             qualification: "",
             specialization: "",
             occupation: "",
-            professionalStatus: "Experienced",
+            professionalStatus: "experienced",
             totalExperienceYears: "",
             lastHospitalName: "",
             positionHeld: "",
@@ -403,42 +403,46 @@ function AddDoctor() {
                         </div>
 
                         <div>
-                            <label className={labelClass}>Gender</label>
+                            <label className={labelClass}>Gender<span className="text-red-500">*</span></label>
                             <select className={selectClass} value={personalInfo.gender} onChange={(e) => handlePersonalChange("gender", e.target.value)}>
                                 <option value="">Select gender</option>
                                 {genderOptions.map((g) => (
                                     <option key={g.value} value={g.value}>{g.label}</option>
                                 ))}
                             </select>
+                            {formErrors.gender && <p className={errorClass}>{formErrors.gender}</p>}
                         </div>
                         <div>
-                            <label className={labelClass}>Qualification</label>
+                            <label className={labelClass}>Qualification<span className="text-red-500">*</span></label>
                             <input className={inputClass} type="text" placeholder="e.g., BPT, MPT" value={personalInfo.qualification} onChange={(e) => handlePersonalChange("qualification", e.target.value)} />
+                            {formErrors.qualification && <p className={errorClass}>{formErrors.qualification}</p>}
                         </div>
                         <div>
-                            <label className={labelClass}>Specialization</label>
+                            <label className={labelClass}>Specialization<span className="text-red-500">*</span></label>
                             <select className={selectClass} value={personalInfo.specialization} onChange={(e) => handlePersonalChange("specialization", e.target.value)}>
                                 <option value="">Select specialization</option>
                                 {specializationOptions.map((s) => (
                                     <option key={s} value={s}>{s}</option>
                                 ))}
                             </select>
+                            {formErrors.specialization && <p className={errorClass}>{formErrors.specialization}</p>}
                         </div>
                         <div className="md:col-span-2">
-                            <label className={labelClass}>Occupation</label>
+                            <label className={labelClass}>Occupation<span className="text-red-500">*</span></label>
                             <input className={inputClass} type="text" value={personalInfo.occupation} onChange={(e) => handlePersonalChange("occupation", e.target.value)} />
+                            {formErrors.occupation && <p className={errorClass}>{formErrors.occupation}</p>}
                         </div>
                     </div>
 
                     <div className="mt-4">
-                        <p className={labelClass}>Professional status</p>
+                        <p className={labelClass}>Professional status<span className="text-red-500">*</span></p>
                         <div className="flex flex-wrap gap-4">
                             <label className="inline-flex items-center gap-2">
-                                <input type="radio" className="h-4 w-4" name="professionalStatus" value="Fresher" checked={personalInfo.professionalStatus === "Fresher"} onChange={(e) => handlePersonalChange("professionalStatus", e.target.value)} />
+                                <input type="radio" className="h-4 w-4" name="professionalStatus" value="fresher" checked={personalInfo.professionalStatus === "fresher"} onChange={(e) => handlePersonalChange("professionalStatus", e.target.value)} />
                                 <span className="text-sm text-gray-700">Fresher</span>
                             </label>
                             <label className="inline-flex items-center gap-2">
-                                <input type="radio" className="h-4 w-4" name="professionalStatus" value="Experienced" checked={personalInfo.professionalStatus === "Experienced"} onChange={(e) => handlePersonalChange("professionalStatus", e.target.value)} />
+                                <input type="radio" className="h-4 w-4" name="professionalStatus" value="experienced" checked={personalInfo.professionalStatus === "experienced"} onChange={(e) => handlePersonalChange("professionalStatus", e.target.value)} />
                                 <span className="text-sm text-gray-700">Experienced</span>
                             </label>
                         </div>
@@ -447,7 +451,7 @@ function AddDoctor() {
 
 
 
-                {personalInfo.professionalStatus === "Experienced" && (
+                {personalInfo.professionalStatus === "experienced" && (
                     <section className={sectionClass}>
                         <h2 className="dashboard-section-title">Work Experience</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -546,7 +550,7 @@ function AddDoctor() {
 
                         {/* Father Name */}
                         <div>
-                            <label className={labelClass}>Father’s name</label>
+                            <label className={labelClass}>Father’s name<span className="text-red-500">*</span></label>
                             <input
                                 className={inputClass}
                                 type="text"
@@ -560,7 +564,7 @@ function AddDoctor() {
 
                         {/* Father Contact */}
                         <div>
-                            <label className={labelClass}>Father’s contact number</label>
+                            <label className={labelClass}>Father’s contact number<span className="text-red-500">*</span></label>
                             <input
                                 className={inputClass}
                                 type="tel"
@@ -574,7 +578,7 @@ function AddDoctor() {
 
                         {/* Father Occupation */}
                         <div>
-                            <label className={labelClass}>Father’s occupation</label>
+                            <label className={labelClass}>Father’s occupation<span className="text-red-500">*</span></label>
                             <input
                                 className={inputClass}
                                 type="text"
@@ -588,7 +592,7 @@ function AddDoctor() {
 
                         {/* Mother Name */}
                         <div>
-                            <label className={labelClass}>Mother’s name</label>
+                            <label className={labelClass}>Mother’s name<span className="text-red-500">*</span></label>
                             <input
                                 className={inputClass}
                                 type="text"
@@ -602,7 +606,7 @@ function AddDoctor() {
 
                         {/* Mother Contact */}
                         <div>
-                            <label className={labelClass}>Mother’s contact number</label>
+                            <label className={labelClass}>Mother’s contact number<span className="text-red-500">*</span></label>
                             <input
                                 className={inputClass}
                                 type="tel"
@@ -616,7 +620,7 @@ function AddDoctor() {
 
                         {/* Mother Occupation */}
                         <div>
-                            <label className={labelClass}>Mother’s occupation</label>
+                            <label className={labelClass}>Mother’s occupation<span className="text-red-500">*</span></label>
                             <input
                                 className={inputClass}
                                 type="text"
@@ -629,8 +633,6 @@ function AddDoctor() {
                         </div>
                     </div>
                 </section>
-
-
                 <section className={sectionClass}>
                     <h2 className="dashboard-section-title">Permanent Address</h2>
                     <div className="flex items-center gap-2 mb-4">
@@ -639,31 +641,36 @@ function AddDoctor() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="md:col-span-2">
-                            <label className={labelClass}>Address</label>
+                            <label className={labelClass}>Address<span className="text-red-500">*</span></label>
                             <input className={inputClass} type="text" value={permanentAddress.addressLine1} onChange={(e) => handleAddressChange("permanent", "addressLine1", e.target.value)} disabled={isPermanentSameAsCurrent} />
+                            {formErrors.permanentAddressLine1 && <p className={errorClass}>{formErrors.permanentAddressLine1}</p>}
                         </div>
                         <div>
-                            <label className={labelClass}>City</label>
+                            <label className={labelClass}>City<span className="text-red-500">*</span></label>
                             <input className={inputClass} type="text" value={permanentAddress.city} onChange={(e) => handleAddressChange("permanent", "city", e.target.value)} disabled={isPermanentSameAsCurrent} />
+                            {formErrors.permanentCity && <p className={errorClass}>{formErrors.permanentCity}</p>}
                         </div>
                         <div>
-                            <label className={labelClass}>State</label>
+                            <label className={labelClass}>State<span className="text-red-500">*</span></label>
                             <select className={selectClass} value={permanentAddress.state} onChange={(e) => handleAddressChange("permanent", "state", e.target.value)} disabled={isPermanentSameAsCurrent}>
-                                <option value="">Select state</option>
+                                <option value="">Select state<span className="text-red-500">*</span></option>
                                 {stateOptions.map((s) => (
                                     <option key={s} value={s}>{s}</option>
                                 ))}
                             </select>
+                            {formErrors.permanentState && <p className={errorClass}>{formErrors.permanentState}</p>}
                         </div>
                         <div>
-                            <label className={labelClass}>Country</label>
+                            <label className={labelClass}>Country<span className="text-red-500">*</span></label>
                             <select className={selectClass} value={permanentAddress.country} onChange={(e) => handleAddressChange("permanent", "country", e.target.value)} disabled={isPermanentSameAsCurrent}>
                                 <option value="India">India</option>
                             </select>
+                            {formErrors.permanentCountry && <p className={errorClass}>{formErrors.permanentCountry}</p>}
                         </div>
                         <div>
-                            <label className={labelClass}>Pincode</label>
+                            <label className={labelClass}>Pincode<span className="text-red-500">*</span></label>
                             <input className={inputClass} type="text" inputMode="numeric" pattern="[0-9]*" maxLength={6} value={permanentAddress.pincode} onChange={(e) => handleAddressChange("permanent", "pincode", digitsOnly(e.target.value))} disabled={isPermanentSameAsCurrent} />
+                            {formErrors.permanentPincode && <p className={errorClass}>{formErrors.permanentPincode}</p>}
                         </div>
                     </div>
                 </section>
@@ -695,10 +702,10 @@ function AddDoctor() {
                 </section>
 
                 <div className="flex justify-end gap-3">
-                    <button type="button" className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50" onClick={resetForm}>Clear</button>
+                    <button type="button" className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 custom-button-secondary" onClick={resetForm}>Clear</button>
                     <button
                         type="submit"
-                        className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50" disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Save Doctor"}</button>
+                        className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 custom-button-primary" disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Save Doctor"}</button>
                 </div>
             </form>
         </div>

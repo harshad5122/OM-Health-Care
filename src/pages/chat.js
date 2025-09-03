@@ -74,13 +74,13 @@
 //           message: input,
 //           message_type: "text"
 //         });
-        
+
 //         // Optimistic update
 //         setMessages(prev => prev.map(msg => 
 //           msg._id === editingMessage._id ? 
 //           { ...msg, message: input, edited: true } : msg
 //         ));
-        
+
 //         setEditingMessage(null);
 //         setInput("");
 //         return;
@@ -143,7 +143,7 @@
 //         userId: user._id,
 //         deleteForEveryone: true
 //       });
-      
+
 //       // Optimistic update
 //       setMessages(prev => prev.map(msg => 
 //         msg._id === messageId ? { ...msg, is_deleted: true } : msg
@@ -195,7 +195,7 @@
 //         {messages.map((msg, i) => (
 //           !msg.is_deleted && (
 //             <div key={i} className={`chat-message ${msg.sender_id === user?._id ? "sent" : "received"}`}>
-              
+
 //               {msg.reply_to && (
 //   <div className="reply-preview">
 //     {(() => {
@@ -209,7 +209,7 @@
 //           return <p>{originalMsg.message}</p>;
 //         case "image":
 //           return (
-           
+
 //              <img 
 //                   src={att?.url}
 //               alt={att?.name || ""}
@@ -250,14 +250,14 @@
 //   </div>
 // )}
 
-              
+
 //               {msg.message_type === "text" && (
 //                 <p className="chat-text">
 //                   {msg.message}
 //                   {msg.edited && <span className="edited-label"> (edited)</span>}
 //                 </p>
 //               )}
-              
+
 //               {msg.message_type === "image" && Array.isArray(msg.attechment_details) && (
 //                 <img 
 //                   src={msg.attechment_details[0]?.url} 
@@ -266,11 +266,11 @@
 //                    loading="lazy"
 //                 />
 //               )}
-              
+
 //               {msg.message_type === "video" && Array.isArray(msg.attechment_details) && (
 //                 <video src={msg.attechment_details[0]?.url} controls className="chat-video" />
 //               )}
-              
+
 //               {msg.message_type === "audio" && Array.isArray(msg.attechment_details) && (
 //                 <audio src={msg.attechment_details[0]?.url} controls className="chat-audio" />
 //               )}
@@ -290,7 +290,7 @@
 //     </a>
 //   );
 // })()}
-              
+
 //               <div className="message-meta">
 //                 <span className="time">{formatTime(msg.created_at)}</span>
 //                 {msg.sender_id === user?._id && (
@@ -299,7 +299,7 @@
 //                   </button>
 //                 )}
 //               </div>
-              
+
 //               {activeMessageMenu === msg._id && (
 //                 <div className="message-menu">
 //                   {msg.message_type === "text" && (
@@ -353,7 +353,7 @@
 //           onChange={(e) => setInput(e.target.value)}
 //           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
 //         />
-        
+
 //         {editingMessage ? (
 //           <div className="edit-actions">
 //             <button className="cancel-edit" onClick={cancelEditing}>
@@ -385,10 +385,13 @@ import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chat.css";
 import { getSocket, initSocket } from "../utils/socket";
 import { useAuth } from "../context/AuthContext";
-import { getMessageList } from "../api/messageApi";
-import { uploadFile } from "../api/uploadFileApi";
-import { getAdminList, getStaffList, getUserList } from "../api/userApi";
+// import { getMessageList } from "../api/messageApi";
+// import { uploadFile } from "../api/uploadFileApi";
+// import { getAdminList, getStaffList, getUserList } from "../api/userApi";
 import { Paperclip, Send, Trash2, Edit, CornerUpLeft, Check, X, ChevronDown } from "lucide-react";
+import { useUserApi } from "../api/userApi";
+import { useMessageApi } from "../api/messageApi";
+import { useUploadFile } from "../api/uploadFileApi";
 
 const Chat = () => {
   const { user, token } = useAuth();
@@ -405,6 +408,9 @@ const Chat = () => {
   const [users, setUsers] = useState([]);
   const fileInputRef = useRef(null);
   const chatBoxRef = useRef(null);
+  const { getAdminList, getStaffList, getUserList } = useUserApi();
+  const { getMessageList } = useMessageApi()
+  const { uploadFile } = useUploadFile();
 
   // Fetch user lists based on role
   useEffect(() => {
@@ -434,7 +440,7 @@ const Chat = () => {
     if (admins.length > 0 && !selectedUser) {
       setSelectedUser(admins[0]);
     }
-  }, [admins, selectedUser]); 
+  }, [admins, selectedUser]);
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -444,7 +450,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (!user || !user._id || !selectedUser) {
-      setMessages([]); 
+      setMessages([]);
       return;
     }
 
@@ -456,7 +462,7 @@ const Chat = () => {
         setMessages(oldMsgs.reverse());
       } catch (error) {
         console.error("Error fetching messages:", error);
-        setMessages([]); 
+        setMessages([]);
       }
     };
     fetchMessages();
@@ -467,21 +473,21 @@ const Chat = () => {
         (msg.sender_id === user._id && msg.receiver_id === selectedUser._id)
       ) {
         // setMessages(prev => [...prev, msg]);
-            setMessages(prev => {
-        const exists = prev.some(m => m._id === msg._id || (m._id.startsWith('temp-') && m.created_at === msg.created_at));
-        return exists ? prev : [...prev, msg];
-      });
+        setMessages(prev => {
+          const exists = prev.some(m => m._id === msg._id || (m._id.startsWith('temp-') && m.created_at === msg.created_at));
+          return exists ? prev : [...prev, msg];
+        });
       }
     };
 
     const handleMessageUpdated = (updatedMsg) => {
-      setMessages(prev => prev.map(msg => 
+      setMessages(prev => prev.map(msg =>
         msg._id === updatedMsg._id ? { ...updatedMsg, edited: true } : msg
       ));
     };
 
     const handleMessageDeleted = (deletedMsg) => {
-      setMessages(prev => prev.map(msg => 
+      setMessages(prev => prev.map(msg =>
         msg._id === deletedMsg.messageId ? { ...msg, is_deleted: true } : msg
       ));
     };
@@ -493,9 +499,9 @@ const Chat = () => {
     return () => {
       socket.off("chat_message", handleIncoming);
       socket.off("message_updated", handleMessageUpdated);
-      socket.off("message_deleted", handleMessageDeleted);  
+      socket.off("message_deleted", handleMessageDeleted);
     };
-  }, [user, token, selectedUser]); 
+  }, [user, token, selectedUser]);
   const sendMessage = () => {
     if (!input.trim() || !selectedUser) return;
 
@@ -507,12 +513,12 @@ const Chat = () => {
           message: input,
           message_type: "text"
         });
-        
-        setMessages(prev => prev.map(msg => 
-          msg._id === editingMessage._id ? 
-          { ...msg, message: input, edited: true } : msg
+
+        setMessages(prev => prev.map(msg =>
+          msg._id === editingMessage._id ?
+            { ...msg, message: input, edited: true } : msg
         ));
-        
+
         setEditingMessage(null);
         setInput("");
         return;
@@ -523,19 +529,19 @@ const Chat = () => {
         receiver_id: selectedUser._id,
         message: input,
         message_type: attachment ? attachment.type : 'text',
-        created_at: new Date().toISOString(), 
+        created_at: new Date().toISOString(),
         ...(replyingTo && { reply_to: replyingTo._id })
       };
 
       socket.emit("chat_message", msgData);
-      setMessages(prev => [...prev, { 
-        ...msgData, 
-        _id: `temp-${Date.now()}`, 
+      setMessages(prev => [...prev, {
+        ...msgData,
+        _id: `temp-${Date.now()}`,
         sender_id: user._id,
         edited: false
       }]);
       setInput("");
-      setAttachment(null); 
+      setAttachment(null);
       setReplyingTo(null);
     }
   };
@@ -546,7 +552,7 @@ const Chat = () => {
 
     try {
       const uploaded = await uploadFile(file, token);
-      
+
       const msgData = {
         sender_id: user._id,
         receiver_id: selectedUser._id,
@@ -561,14 +567,14 @@ const Chat = () => {
       if (socket && socket.connected) {
         socket.emit("chat_message", msgData);
         setMessages(prev => [...prev, {
-            ...msgData,
-            _id: `temp-${Date.now()}`, 
-            sender_id: user._id
+          ...msgData,
+          _id: `temp-${Date.now()}`,
+          sender_id: user._id
         }]);
         setReplyingTo(null);
-        setAttachment(null); 
+        setAttachment(null);
       }
-      fileInputRef.current.value = null; 
+      fileInputRef.current.value = null;
     } catch (err) {
       console.error("File upload failed:", err);
     }
@@ -577,13 +583,13 @@ const Chat = () => {
   const handleDeleteMessage = (messageId) => {
     const socket = getSocket();
     if (socket && socket.connected) {
-      socket.emit("delete_message", { 
+      socket.emit("delete_message", {
         messageId,
         userId: user._id,
         deleteForEveryone: true
       });
-      
-      setMessages(prev => prev.map(msg => 
+
+      setMessages(prev => prev.map(msg =>
         msg._id === messageId ? { ...msg, is_deleted: true } : msg
       ));
     }
@@ -645,8 +651,8 @@ const Chat = () => {
       if (activeTab === "admins") list = admins;
       else if (activeTab === "staff") list = staff;
       else if (activeTab === "users") list = users;
-    } else { 
-      list = admins; 
+    } else {
+      list = admins;
     }
 
     if (list.length === 0) {
@@ -654,7 +660,7 @@ const Chat = () => {
     }
 
     return list.map((person) => (
-      <div 
+      <div
         key={person._id}
         className={`user-list-item ${selectedUser?._id === person._id ? "active" : ""}`}
         onClick={() => setSelectedUser(person)}
@@ -677,27 +683,27 @@ const Chat = () => {
       <div id="chat-sidebar" className="chat-sidebar">
         {user.role === 2 && (
           <div className="user-tabs">
-            <button 
+            <button
               className={activeTab === "admins" ? "active" : ""}
               onClick={() => setActiveTab("admins")}
             >
               Admins
             </button>
-            <button 
+            <button
               className={activeTab === "staff" ? "active" : ""}
               onClick={() => setActiveTab("staff")}
             >
               Staff
             </button>
-            <button 
+            <button
               className={activeTab === "users" ? "active" : ""}
               onClick={() => setActiveTab("users")}
             >
               Users
-            </button> 
+            </button>
           </div>
         )}
-        
+
         <div className="user-list">
           {renderUserList()}
         </div>
@@ -739,10 +745,10 @@ const Chat = () => {
                           switch (originalMsg.message_type) {
                             case "text": return <p>{originalMsg.message}</p>;
                             case "image": return (
-                              <img 
+                              <img
                                 src={att?.url}
                                 alt={att?.name || ""}
-                                className="reply-image" 
+                                className="reply-image"
                                 loading="lazy"
                               />
                             );
@@ -775,31 +781,31 @@ const Chat = () => {
                         })()}
                       </div>
                     )}
-                    
+
                     {msg.message_type === "text" && (
                       <p className="chat-text">
                         {msg.message}
                         {msg.edited && <span className="edited-label"> Edited</span>}
                       </p>
                     )}
-                    
+
                     {msg.message_type === "image" && Array.isArray(msg.attechment_details) && (
-                      <img 
-                        src={msg.attechment_details[0]?.url} 
-                        alt={msg.attechment_details[0]?.name || "image"} 
-                        className="chat-image" 
+                      <img
+                        src={msg.attechment_details[0]?.url}
+                        alt={msg.attechment_details[0]?.name || "image"}
+                        className="chat-image"
                         loading="lazy"
                       />
                     )}
-                    
+
                     {msg.message_type === "video" && Array.isArray(msg.attechment_details) && (
                       <video src={msg.attechment_details[0]?.url} controls className="chat-video" />
                     )}
-                    
+
                     {msg.message_type === "audio" && Array.isArray(msg.attechment_details) && (
                       <audio src={msg.attechment_details[0]?.url} controls className="chat-audio" />
                     )}
-                    
+
                     {msg.message_type === "document" && (() => {
                       const att = getFirstAttachment(msg);
                       return (
@@ -810,12 +816,12 @@ const Chat = () => {
                           className="chat-document"
                           title={att?.name}
                         >
-                          📄 {att?.name || "Document"}   
+                          📄 {att?.name || "Document"}
                           {att?.size ? ` • ${bytesToKB(att.size)}` : ""}
                         </a>
                       );
                     })()}
-                    
+
                     <div className="message-meta">
                       {/* <span className="time">{formatTime(msg.created_at)}</span> */}
                       {msg.sender_id === user?._id && (
@@ -825,7 +831,7 @@ const Chat = () => {
                       )}
                       <span className="time">{formatTime(msg.created_at)}</span>
                     </div>
-                    
+
                     {activeMessageMenu === msg._id && (
                       <div className="message-menu" ref={messageMenuRef}>
                         {msg.message_type === "text" && (
@@ -865,11 +871,11 @@ const Chat = () => {
               <button className="file-btn" onClick={() => fileInputRef.current.click()}>
                 <Paperclip size={20} />
               </button>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
+              <input
+                type="file"
+                ref={fileInputRef}
                 style={{ display: "none" }}
-                onChange={handleFileUpload} 
+                onChange={handleFileUpload}
               />
               <input
                 type="text"
@@ -878,7 +884,7 @@ const Chat = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendMessage()}
               />
-              
+
               {editingMessage ? (
                 <div className="edit-actions">
                   <button className="cancel-edit" onClick={cancelEditing}>

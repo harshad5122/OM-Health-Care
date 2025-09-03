@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signupUser } from "../../api/authApi";
+// import { signupUser } from "../../api/authApi";
 import '../../styles/Auth.css';
 import registerIllustration from '../../assets/auth/login-illustration.png';
+import { useAuthApi } from '../../api/authApi';
+
 
 const Register = () => {
 
@@ -25,6 +27,7 @@ const Register = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const { signupUser } = useAuthApi();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -49,7 +52,7 @@ const Register = () => {
 
       const res = await signupUser(payload); //  call API
       alert(res.msg || "User registered successfully!");
-      navigate("/auth/login"); 
+      navigate("/auth/login");
       // navigate('/');
     } catch (err) {
       alert(err.msg || "Signup failed!");
@@ -138,18 +141,18 @@ const Register = () => {
               </div>
             </div>
 
-     <div className="form-row single-col">
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
+            <div className="form-row single-col">
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
 
             <div className="form-row">
@@ -180,18 +183,18 @@ const Register = () => {
               {/* <div> </div> */}
             </div>
 
-         <div className="form-row single-col">
-            <div className="form-group">
-              <label htmlFor="address">Address</label>
-              <input
-                type="text"
-                id="address"
-                name="address"
-                placeholder="Enter your address"
-                value={formData.address}
-                onChange={handleChange}
-              />
-            </div>
+            <div className="form-row single-col">
+              <div className="form-group">
+                <label htmlFor="address">Address</label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  placeholder="Enter your address"
+                  value={formData.address}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
 
             <div className="form-row three-col">
@@ -207,7 +210,7 @@ const Register = () => {
                   <option value="USA">USA</option>
                   <option value="UK">UK</option>
                 </select> */}
-                 <input
+                <input
                   type="text"
                   id="country"
                   name="country"

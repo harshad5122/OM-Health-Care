@@ -63,18 +63,20 @@ import {
   FaUser,
   FaEnvelope,
   FaSignOutAlt,
-  FaUserMd, 
-  FaUserPlus, 
+  FaUserMd,
+  FaUserPlus,
   FaUsers,
 
 } from "react-icons/fa";
 import "../styles/DrawerMenu.css";
-import { logoutUser } from "../api/authApi";
+// import { logoutUser } from "../api/authApi";
 import ConfirmModal from "../components/ConfirmModal";
+import { useAuthApi } from "../api/authApi";
 
 const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
   const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
+  const { logoutUser } = useAuthApi();
 
 
   const basePaths = {
@@ -93,9 +95,9 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       { path: "home", label: "Dashboard", icon: <FaCubes /> },
       { path: "profile", label: "Profile", icon: <FaUser /> },
       { path: "messages", label: "Messages", icon: <FaEnvelope /> },
-      { path: "add-doctor", label: "Add Doctor", icon: <FaUserMd /> },  
-      { path: "add-user", label: "Add User", icon: <FaUserPlus /> },   
-      { path: "members", label: "Members", icon: <FaUsers /> },   
+      { path: "add-doctor", label: "Add Doctor", icon: <FaUserMd /> },
+      { path: "add-user", label: "Add User", icon: <FaUserPlus /> },
+      { path: "members", label: "Members", icon: <FaUsers /> },
     ],
     3: [
       { path: "home", label: "Dashboard", icon: <FaCubes /> },

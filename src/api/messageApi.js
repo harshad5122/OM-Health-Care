@@ -1,29 +1,36 @@
 // src/api/messageApi.js
-import axiosInstance from "../utils/axiosConfig";
+
+import { useAxios } from "../utils/axiosConfig";
 
 
-export const getMessageList = async ( adminId, token) => {
-  try {
-    const response = await axiosInstance.get(
-      `/message/list?user_id=${adminId}`, 
-      {
-        headers: {
-          Authorization: `${token}`,
-        },
-      }
-    );
-    console.log('response->',response.data)
-    return response.data.body; 
-    
-  } catch (error) {
-    throw error.response?.data || { msg: "Failed to fetch messages" };
-  }
-};
+export const useMessageApi = () => {
+  const axiosInstance = useAxios();
+  const getMessageList = async (adminId, token) => {
+    try {
+      const response = await axiosInstance.get(
+        `/message/list?user_id=${adminId}`,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+      console.log('response->', response.data)
+      return response.data.body;
+
+    } catch (error) {
+      throw error.response?.data || { msg: "Failed to fetch messages" };
+    }
+  };
+  return {
+    getMessageList
+  };
+}
 
 // // api/messageApi.js
 // import axios from "axios";
 
-// const BASE_URL = "http://localhost:3005/api"; 
+// const BASE_URL = "http://localhost:3005/api";
 // // later you can replace with your deployed backend URL
 
 // export const getMessageList = async (userId, token) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, useLocation  } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import "./App.css";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
@@ -25,6 +25,7 @@ import Profile from "./dashboard/pages/Profile";
 import AddDoctor from "./dashboard/pages/AddDoctor";
 import AddUser from "./dashboard/pages/AddUser";
 import Members from "./dashboard/pages/Members";
+import ChangePassword from "./pages/auth/ResetPassword";
 // import Messages from "./dashboard/pages/Messages";
 
 
@@ -33,9 +34,9 @@ function App() {
 
   const hideFloatingButton =
     location.pathname.startsWith("/auth/login") ||
-    location.pathname.startsWith("/auth/register")||
-    location.pathname.startsWith("/dashboard/")||
-     location.pathname.startsWith("/chat");
+    location.pathname.startsWith("/auth/register") ||
+    location.pathname.startsWith("/dashboard/") ||
+    location.pathname.startsWith("/chat");
 
   return (
     <div className="App">
@@ -56,10 +57,12 @@ function App() {
         <Route path="/auth" element={<AuthLayout />}>
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
-        </Route>
-         <Route path="/chat" element={<Chat />} />
+          <Route path="change-password" element={<ChangePassword />} />
 
-         {/* Dashboard routes (protected) */}
+        </Route>
+        <Route path="/chat" element={<Chat />} />
+
+        {/* Dashboard routes (protected) */}
         {/* <Route
           path="/dashboard/admin/*"
           element={
@@ -85,55 +88,55 @@ function App() {
           }
         /> */}
         {/* Admin Dashboard */}
-      <Route
-        path="/dashboard/admin"
-        element={
-          <ProtectedRoute allowedRoles={[2]}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Dashboard title="Admin Home" />} />
-        <Route path="home" element={<Dashboard />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="messages" element={<Chat />} />
-        <Route path="add-doctor" element={<AddDoctor />} />
-        <Route path="add-user" element={<AddUser />} />
-        <Route path="members" element={<Members />} />
-      </Route>
+        <Route
+          path="/dashboard/admin"
+          element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Dashboard title="Admin Home" />} />
+          <Route path="home" element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="messages" element={<Chat />} />
+          <Route path="add-doctor" element={<AddDoctor />} />
+          <Route path="add-user" element={<AddUser />} />
+          <Route path="members" element={<Members />} />
+        </Route>
 
-      {/* Staff Dashboard */}
-      <Route
-        path="/dashboard/staff"
-        element={
-          <ProtectedRoute allowedRoles={[3]}>
-            <StaffDashboard />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Dashboard title="Staff Home" />} />
-        <Route path="home" element={<Dashboard/>} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="messages" element={<Chat />} />
-      </Route>
+        {/* Staff Dashboard */}
+        <Route
+          path="/dashboard/staff"
+          element={
+            <ProtectedRoute allowedRoles={[3]}>
+              <StaffDashboard />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Dashboard title="Staff Home" />} />
+          <Route path="home" element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="messages" element={<Chat />} />
+        </Route>
 
-      {/* User Dashboard */}
-      <Route
-        path="/dashboard/user"
-        element={
-          <ProtectedRoute allowedRoles={[1]}>
-            <UserDashboard />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Dashboard title="User Home" />} /> 
-        <Route path="home" element={<Dashboard/>} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="messages" element={<Chat />} />
-      </Route>
+        {/* User Dashboard */}
+        <Route
+          path="/dashboard/user"
+          element={
+            <ProtectedRoute allowedRoles={[1]}>
+              <UserDashboard />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Dashboard title="User Home" />} />
+          <Route path="home" element={<Dashboard />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="messages" element={<Chat />} />
+        </Route>
       </Routes>
       {/* <FloatingChatButton /> */}
-        {!hideFloatingButton && <FloatingChatButton />}
+      {!hideFloatingButton && <FloatingChatButton />}
     </div>
   );
 }
