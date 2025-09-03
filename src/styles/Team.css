@@ -1,19 +1,19 @@
-.team-page {
-  padding-top: 80px; 
-  background-color: #f8fbfd; /* Very light subtle blue background */
+/* .team-page {
+  padding-top: 10px; 
+  background-color: #f8fbfd; 
   color: #333;
   font-family: 'Poppins', sans-serif;
-  overflow-x: hidden; /* Prevent horizontal scroll from animations */
-}
+  overflow-x: hidden; 
+} */
 
-.container {
+/* .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
-}
+} */
 
 /* Section Header Styles (consistent with other pages) */
-.section-header {
+/* .section-header {
   text-align: center;
   margin-bottom: 4rem;
 }
@@ -47,42 +47,42 @@
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
-}
+} */
 
 /* --- Team Hero Section --- */
 .team-hero {
-  position: relative;
-  height: 50vh; /* Shorter hero for inner pages */
-  min-height: 350px;
+  /* position: relative;
+  height: 50vh; 
+  min-height: 350px; */
   background: url('../assets/images/hero-image.jpg') center/cover no-repeat; /* Replace with a suitable background */
-  background-size: cover;
+  /* background-size: cover;
   background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   color: white;
-  margin-bottom: 5rem;
+  margin-bottom: 5rem; */
 }
 
-.team-hero-overlay {
+/* .team-hero-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(26, 111, 139, 0.7); /* Darker overlay from primary color */
+  background-color: rgba(26, 111, 139, 0.7); 
   z-index: 1;
-}
+} */
 
-.team-hero-content {
+/* .team-hero-content {
   position: relative;
   z-index: 2;
   max-width: 900px;
   padding: 0 1rem;
-}
+} */
 
-.team-hero-content h1 {
+/* .team-hero-content h1 {
   font-size: 3.5rem;
   margin-bottom: 0.8rem;
   line-height: 1.2;
@@ -93,19 +93,19 @@
 .team-hero-content p {
   font-size: 1.5rem;
   color: rgba(255, 255, 255, 0.9);
-}
+} */
 
 /* --- Team Members Section --- */
-.team-members-section {
+/* .team-members-section {
   padding: 5rem 0;
   background-color: white;
   border-radius: 20px;
   margin: 0 2rem 5rem;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
-  opacity: 0; /* Hidden by default for animation */
-  transform: translateY(50px); /* Start lower */
+  opacity: 0; 
+  transform: translateY(50px); 
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-}
+} */
 
 .team-members-section.in-view {
   opacity: 1;
@@ -121,19 +121,19 @@
 
 
 /* --- Team Member Card Styles --- */
-.team-member-card {
-  background-color: #fcfdfe; /* Very light subtle white */
+/* .team-member-card {
+  background-color: #fcfdfe; 
   border-radius: 15px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: transform 0.4s ease, box-shadow 0.4s ease, height 0.5s ease; /* Smooth height transition */
+  transition: transform 0.4s ease, box-shadow 0.4s ease, height 0.5s ease; 
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  opacity: 0; /* Initial state for animation */
+  opacity: 0; 
   transform: scale(0.9);
-  align-self: start; /* Align cards to the start of their grid cell */
-}
+  align-self: start; 
+} */
 
 .team-member-card.animated {
   opacity: 1;
@@ -141,7 +141,7 @@
 }
 
 .team-member-card:hover {
-  transform: translateY(-10px); /* Lift slightly on hover */
+  transform: translateY(-10px); 
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
@@ -151,18 +151,18 @@
   padding: 1.5rem;
   gap: 1.5rem;
   border-bottom: 1px solid #eee;
-  position: relative; /* For expand indicator positioning */
+  position: relative;
 }
 
-.member-photo-wrapper {
+/* .member-photo-wrapper {
   width: 100px;
   height: 100px;
-  border-radius: 50%; /* Circular photo */
+  border-radius: 50%; 
   overflow: hidden;
-  border: 4px solid var(--secondary-color); /* Green border */
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); /* Shadow for photo */
-  flex-shrink: 0; /* Prevent photo from shrinking */
-}
+  border: 4px solid var(--secondary-color); 
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  flex-shrink: 0;
+} */
 
 .member-photo-wrapper img {
   width: 100%;
@@ -170,26 +170,26 @@
   object-fit: cover;
   display: block;
 }
-
+/* 
 .member-info {
   text-align: left;
   flex-grow: 1;
-  padding-right: 2.5rem; /* Space for expand indicator */
-}
+  padding-right: 2.5rem; 
+} */
 
-.member-info h3 {
+/* .member-info h3 {
   font-size: 1.6rem;
   color: var(--primary-color);
   margin-bottom: 0.3rem;
   font-weight: 700;
   line-height: 1.3;
-}
+} */
 
 .member-info .qualification {
   font-size: 1rem;
   color: var(--secondary-color);
   font-weight: 500;
-  display: block; /* New line for qualification */
+  display: block;
 }
 
 .member-info .title-spec {
@@ -222,20 +222,20 @@
 .card-details {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.5s ease-out; /* Smooth slide down */
-  background-color: #fcfdfe; /* Match card background */
+  transition: max-height 0.5s ease-out;
+  background-color: #fcfdfe; 
 }
 
 .card-details.active {
-  max-height: 1000px; /* Sufficiently large value */
+  max-height: 1000px;
 }
 
-.details-content {
-  padding: 0 1.5rem 1.5rem; /* No top padding, continues from header */
+/* .details-content {
+  padding: 0 1.5rem 1.5rem; 
   text-align: left;
-}
+} */
 
-.details-content h4 {
+/* .details-content h4 {
   font-size: 1.1rem;
   color: var(--secondary-color);
   margin-top: 1.5rem;
@@ -248,9 +248,9 @@
   line-height: 1.6;
   color: var(--text-color);
   margin-bottom: 1rem;
-}
+} */
 
-.details-content ul {
+/* .details-content ul {
   list-style: none;
   padding: 0;
   margin-bottom: 1.5rem;
@@ -266,11 +266,11 @@
 }
 
 .details-content ul li::before {
-  content: '★'; /* Star icon for achievements */
+  content: '★'; 
   color: var(--secondary-color);
   margin-right: 0.5rem;
   font-weight: bold;
-}
+} */
 
 .social-links {
   display: flex;
@@ -290,7 +290,7 @@
   transform: translateY(-3px) scale(1.1);
 }
 
-.book-appointment-btn {
+/* .book-appointment-btn {
   display: inline-block;
   background-color: var(--primary-color);
   color: white;
@@ -308,11 +308,11 @@
   background-color: #145369;
   transform: translateY(-2px);
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
-}
+} */
 
 
 /* --- Call to Action for Booking Section (Optional, consistent with others) --- */
-.team-cta-section {
+/* .team-cta-section {
   padding: 5rem 0;
   background-color: var(--primary-color);
   color: white;
@@ -332,9 +332,9 @@
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 3rem;
-}
+} */
 
-.cta-button {
+/* .cta-button {
   display: inline-block;
   background-color: var(--secondary-color);
   color: white;
@@ -351,7 +351,7 @@
   background-color: #3b8e3f;
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-}
+} */
 
 
 /* --- Global Animation Classes (Ideally in App.css) --- */
@@ -450,7 +450,7 @@
   }
   .expand-indicator {
     top: auto;
-    bottom: 0.5rem;
+    bottom: -1.5rem;
     right: 50%;
     transform: translateX(50%); /* Center indicator */
   }
@@ -486,5 +486,11 @@
   }
   .social-links a {
     font-size: 1.5rem;
+  }
+  .expand-indicator {
+    top: auto;
+    bottom: -1.5rem;
+    right: 50%;
+    transform: translateX(50%); /* Center indicator */
   }
 }

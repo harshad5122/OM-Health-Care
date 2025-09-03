@@ -1,24 +1,24 @@
 /* General About Page Styles */
-.about-page {
-  padding-top: 80px; /* Adjust for fixed navbar */
-  background-color: #f8fbfd; /* Very light subtle blue background */
+/* .about-page {
+  padding-top: 5px; 
+  background-color: #f8fbfd; 
   color: #333;
   font-family: 'Poppins', sans-serif;
-  overflow-x: hidden; /* Prevent horizontal scroll from animations */
-}
+  overflow-x: hidden; 
+} */
 
-.container {
+/* .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
-}
+} */
 
-.section-header {
+/* .section-header {
   text-align: center;
   margin-bottom: 4rem;
-}
+} */
 
-.section-header h2 {
+.section-about-header h2 {
   font-size: 2.8rem;
   color: var(--primary-color);
   margin-bottom: 1rem;
@@ -27,7 +27,7 @@
   display: inline-block;
 }
 
-.section-header h2::after {
+.section-about-header h2::after {
   content: '';
   position: absolute;
   width: 80px;
@@ -39,7 +39,7 @@
   border-radius: 2px;
 }
 
-.section-subtitle {
+/* .section-subtitle {
   font-size: 1.1rem;
   color: var(--text-color);
   margin-top: 2rem;
@@ -47,116 +47,115 @@
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
-}
+} */
 
 /* --- About Hero Section --- */
 .about-hero {
-  position: relative;
-  height: 50vh; /* Shorter hero for inner pages */
-  min-height: 350px;
+  /* position: relative;
+  height: 50vh; 
+  min-height: 350px; */
   background: url('../assets/images/hero-image.jpg') center/cover no-repeat; /* Replace with a suitable background */
-  display: flex;
+  /* display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   color: white;
-  margin-bottom: 5rem;
+  margin-bottom: 5rem; */
 }
 
-.about-hero-overlay {
+/* .about-hero-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(26, 111, 139, 0.7); /* Darker overlay from primary color */
+  background-color: rgba(26, 111, 139, 0.7); 
   z-index: 1;
-}
+} */
 
-.about-hero-content {
+/* .about-hero-content {
   position: relative;
   z-index: 2;
   max-width: 900px;
   padding: 0 1rem;
-}
+} */
 
-.about-hero-content h1 {
+/* .about-hero-content h1 {
   font-size: 3.5rem;
   margin-bottom: 0.8rem;
   line-height: 1.2;
   color: white;
   font-weight: 700;
-}
+} */
 
-.about-hero-content p {
+/* .about-hero-content p {
   font-size: 1.5rem;
   color: rgba(255, 255, 255, 0.9);
-}
+} */
 
 /* --- Clinic Story Section --- */
-.clinic-story-section {
+/* .clinic-story-section {
   padding: 5rem 0;
   background-color: white;
-  border-radius: 20px; /* Rounded corners for the whole section block */
-  margin: 0 2rem 5rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); /* Soft shadow */
-  opacity: 0; /* Hidden by default for animation */
-  transform: translateY(50px); /* Start lower */
+  border-radius: 20px; 
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  opacity: 0; 
+  transform: translateY(50px); 
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-}
+} */
 
 .clinic-story-section.in-view {
   opacity: 1;
   transform: translateY(0);
 }
 
-.story-content {
+/* .story-content {
   display: flex;
   align-items: center;
   gap: 3rem;
-}
+} */
 
-.story-text {
+/* .story-text {
   flex: 1;
   font-size: 1.1rem;
   line-height: 1.8;
   color: var(--text-color);
-}
+} */
 
-.story-text p:first-of-type {
+/* .story-text p:first-of-type {
   margin-bottom: 1.5rem;
 }
 
 .story-text strong {
   color: var(--primary-color);
   font-weight: 600;
-}
+} */
 
-.story-images {
-  flex: 0.8; /* Smaller flex basis for images */
+/* .story-images {
+  flex: 0.8; 
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  min-height: 350px; /* Ensure space for stacked images */
-}
+  min-height: 350px; 
+} */
 
-.image-stack {
+/* .image-stack {
   position: relative;
   width: 100%;
   height: 100%;
-  padding-bottom: 60%; /* Aspect ratio hack for responsive height */
-}
+  padding-bottom: 60%; 
+} */
 
-.image-wrapper {
+/* .image-wrapper {
   position: absolute;
-  border-radius: 15px; /* Rounded rectangle for images */
+  border-radius: 15px; 
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Stronger shadow for depth */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   transition: transform 0.5s ease;
-}
+} */
 
-.image-wrapper img {
+/* .image-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -169,121 +168,30 @@
   top: 0;
   left: 0;
   z-index: 2;
-  transform: rotate(-5deg); /* Slight rotation for uniqueness */
-}
+  transform: rotate(-5deg); 
+} */
 
-.image-2 {
+/* .image-2 {
   width: 70%;
   height: 70%;
   bottom: 0;
   right: 0;
   z-index: 1;
-  transform: rotate(5deg); /* Counter rotation */
-  filter: brightness(0.9); /* Slightly darker for depth */
-}
-
-.story-images .image-wrapper:hover {
-  transform: scale(1.03) rotate(0deg) !important; /* Straighter and slightly larger on hover */
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-  z-index: 3;
-}
-
-/* --- Facility Showcase Section --- */
-/* .facility-showcase-section {
-  padding: 5rem 0;
-  background-color: #f0f8ff; 
-  margin-bottom: 5rem;
-}
-
-.facility-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.facility-item {
-  background-color: white;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  position: relative;
-}
-
-.facility-item::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 50%); 
-  opacity: 0; 
-  transition: opacity 0.3s ease;
-  z-index: 0;
-}
-
-.facility-item:hover::after {
-  opacity: 1;
-}
-
-
-.facility-item img {
-  width: 100%;
-  height: 250px; 
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s ease;
-}
-
-.facility-item:hover img {
-  transform: scale(1.05);
-}
-
-.facility-item.facility-large {
-  grid-column: span 2; 
-  height: 400px; 
-}
-.facility-item.facility-large img {
-  height: 100%;
-}
-
-.facility-caption {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 1rem;
-  color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-align: left;
-  z-index: 1; 
-  transform: translateY(100%); 
-  opacity: 0;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-.facility-item:hover .facility-caption {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.facility-item.facility-large .facility-caption {
-    font-size: 1.5rem; 
-}
-
-
-.facility-item:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  transform: rotate(5deg); 
+  filter: brightness(0.9); 
 } */
 
-.facility-showcase-section {
-  padding: 6rem 0; /* Slightly more padding */
-  background-color: var(--light-color); /* Using your defined light-color */
-  /* Remove margin-bottom if it causes unwanted space at the end of the page */
-}
+/* .story-images .image-wrapper:hover {
+  transform: scale(1.03) rotate(0deg) !important; 
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  z-index: 3;
+} */
+
+
+/* .facility-showcase-section {
+  padding-bottom: 6rem;
+  background-color: var(--light-color); 
+} */
 
 /* Base grid container for a flexible, multi-column layout */
 .facility-grid {
@@ -367,13 +275,13 @@
 }
 
 /* --- Why Choose Us Section --- */
-.why-choose-us-section {
+/* .why-choose-us-section {
   padding: 5rem 0;
   background-color: white;
-  border-radius: 20px; /* Rounded corners for the whole section block */
+  border-radius: 20px; 
   margin: 0 2rem 5rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); /* Soft shadow */
-}
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); 
+} */
 
 .benefits-grid {
   display: grid;
@@ -417,7 +325,7 @@
   filter: invert(100%); /* Make icons white if they are black SVG/PNG */
 }
 
-.benefit-card h3 {
+/* .benefit-card h3 {
   font-size: 1.3rem;
   color: var(--primary-color);
   margin-bottom: 0.8rem;
@@ -428,10 +336,8 @@
   font-size: 0.95rem;
   line-height: 1.6;
   color: var(--text-color);
-}
+} */
 
-/* --- Global Animation Classes (add these to App.css or a global animation file) --- */
-/* These ensure elements start invisible and animate when 'in-view' class is applied */
 
 /* Fade In Up */
 .animate-fade-in-up {
@@ -507,7 +413,7 @@
   .about-hero-content p {
     font-size: 1.2rem;
   }
-  .section-header h2 {
+  .section-about-header h2 {
     font-size: 2.2rem;
   }
   .section-subtitle {
@@ -527,20 +433,9 @@
     min-height: auto;
   }
   .image-1, .image-2 {
-    width: 80%;
-    height: 80%;
+    width: 60%;
+    height: 60%;
   }
-
-  /* .facility-item.facility-large {
-    grid-column: span 1; 
-    height: auto; 
-  }
-  .facility-item.facility-large img {
-    height: 200px; 
-  }
-   .facility-item.facility-large .facility-caption {
-    font-size: 1.1rem; 
-} */
 
 .facility-grid {
     grid-template-columns: repeat(6, 1fr); /* Define 6 equal columns */
@@ -581,7 +476,7 @@
   .about-hero-content p {
     font-size: 1rem;
   }
-  .section-header h2 {
+  .section-about-header h2 {
     font-size: 1.8rem;
   }
   .section-subtitle {
@@ -611,7 +506,7 @@
   .about-hero-content p {
     font-size: 0.9rem;
   }
-  .section-header h2 {
+  .section-about-header h2 {
     font-size: 1.6rem;
   }
   .icon-wrapper {

@@ -57,3 +57,993 @@ p {
     opacity: 1;
   }
 }
+.section-title::after {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 3px;
+  background-color: var(--secondary-color);
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.hero-section {
+  position: relative;
+  height: 90vh; /* Takes 90% of viewport height */
+  min-height: 600px; /* Minimum height for larger screens */
+  background: url('../src/assets/images/hero-image.jpg') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  overflow: hidden; /* Ensure overlay doesn't overflow */
+}
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.animate-on-scroll.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* about page css */
+.section-about-header h2 {
+  font-size: 2.8rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-weight: 700;
+  position: relative;
+  display: inline-block;
+}
+
+.section-about-header h2::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 4px;
+  background-color: var(--secondary-color);
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+.about-hero {
+  background: url('../src/assets/images/hero-image.jpg') center/cover no-repeat; /* Replace with a suitable background */
+}
+.clinic-story-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.benefit-card {
+  background-color: #f8fbfd; /* Slightly different background for card */
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.benefit-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.icon-wrapper {
+  background-color: var(--secondary-color); /* Green background for icon */
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+}
+
+.icon-wrapper img {
+  width: 45px;
+  height: 45px;
+  filter: invert(100%); /* Make icons white if they are black SVG/PNG */
+}
+
+.facility-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Default: responsive columns */
+  grid-auto-rows: minmax(280px, auto); /* Set a base height for rows, allows content to expand */
+  gap: 1.5rem; /* Consistent spacing between items */
+  max-width: 1200px; /* Max width to keep content centered and readable */
+  margin: 0 auto; /* Center the grid */
+}
+
+/* Individual grid item styling */
+.facility-item {
+  background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  display: flex; /* Use flex to manage image/content within item */
+  flex-direction: column;
+}
+
+/* Overlay for caption readability */
+.facility-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 50%); /* Stronger gradient */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1; /* Above image, below caption */
+  pointer-events: none; /* Allows clicks to pass through to actual content if needed */
+}
+
+.facility-item:hover::after {
+  opacity: 1;
+}
+
+/* Image styling within grid items */
+.facility-item img {
+  width: 100%;
+  height: 100%; /* Image fills its container */
+  object-fit: cover; /* Cover the area, cropping if necessary */
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.facility-item:hover img {
+  transform: scale(1.05); /* Subtle zoom on hover */
+}
+
+/* Caption styling */
+.facility-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.2rem 1.5rem; /* Slightly more padding for caption */
+  color: white;
+  font-size: 1.15rem; /* Slightly larger font */
+  font-weight: 600;
+  text-align: left;
+  z-index: 2; /* Above the overlay */
+  transform: translateY(100%); /* Start hidden */
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.facility-item:hover .facility-caption {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.facility-item:hover {
+  transform: translateY(-8px); /* Lift up on hover */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18); /* Stronger shadow */
+}
+
+/* service page css */
+
+.main-services-grid-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+.service-grid-card.animated {
+  opacity: 1;
+  transform: scale(1);
+}
+.card-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.service-grid-card:hover .card-image-wrapper img {
+  transform: scale(1.05);
+}
+.modal-grid-container {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1.5rem;
+  margin-bottom: 0rem;
+}
+.modal-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.modal-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 1rem 0;
+  padding: 0.5rem 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+.bullet-icon {
+  padding-left: 15%;
+  position: absolute;
+  left: 0;
+  color: var(--secondary-color);
+  font-weight: bold;
+   flex-shrink: 0;           
+}
+
+/* team page css  */
+.team-hero {
+  background: url('../src/assets/images/hero-image.jpg') center/cover no-repeat; /* Replace with a suitable background */
+}
+.team-members-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Flexible grid, 320px min width */
+  gap: 2.5rem; /* Spacing between cards */
+  justify-content: center; /* Center cards if they don't fill the row */
+}
+.team-member-card.animated {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.team-member-card:hover {
+  transform: translateY(-10px); 
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  gap: 1.5rem;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+.member-photo-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.member-info .qualification {
+  font-size: 1rem;
+  color: var(--secondary-color);
+  font-weight: 500;
+  display: block;
+}
+
+.member-info .title-spec {
+  font-size: 1rem;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.member-info .experience {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.expand-indicator {
+  position: absolute;
+  top: 50%;
+  right: 1.5rem;
+  transform: translateY(-50%);
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.team-member-card.expanded .expand-indicator {
+  transform: translateY(-50%) rotate(180deg); /* Rotate arrow when expanded */
+}
+
+.card-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
+  background-color: #fcfdfe; 
+}
+
+.card-details.active {
+  max-height: 1000px;
+}
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.social-links a {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+  color: var(--secondary-color);
+  transform: translateY(-3px) scale(1.1);
+}
+.team-hero-content.animate-fade-in-up { /* Hero content animates immediately */
+  opacity: 1;
+  transform: translateY(0);
+}
+/* testimonials page css  */
+.testimonials-hero {
+  background: url('../src/assets/images/hero-image.jpg') center/cover no-repeat; 
+}
+.testimonials-list-section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.testimonials-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6rem; 
+}
+.testimonial-item.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.testimonial-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18);
+}
+
+
+.testimonial-item.layout-left .media-container {
+  order: 0; 
+  padding-right: 1.5rem;
+}
+
+.testimonial-item.layout-left .content-container {
+  order: 1;
+  padding-left: 1.5rem; 
+  border-left: 3px solid var(--secondary-color);
+}
+
+.testimonial-item.layout-right {
+  flex-direction: row-reverse; 
+}
+
+.testimonial-item.layout-right .media-container {
+  order: 0; 
+  padding-left: 1.5rem; 
+}
+
+.testimonial-item.layout-right .content-container {
+  order: 1;
+  padding-right: 1.5rem; 
+  border-right: 3px solid var(--secondary-color);
+}
+.media-container img {
+  width: 100%;
+  height: 90%;
+  object-fit: cover;
+  display: block;
+}
+.challenge-text, .result-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+/* animation */
+/* Fade In Up */
+.animate-fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.in-view .animate-fade-in-up,
+.about-hero-content .animate-fade-in-up { /* Hero content is always visible so it animates immediately */
+  opacity: 1;
+  transform: translateY(0);
+}
+.testimonials-hero-content.animate-fade-in-up {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Scale In */
+.animate-scale-in {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.in-view .animate-scale-in,
+.about-hero-content .animate-scale-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Slide Right */
+.animate-slide-right {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.in-view .animate-slide-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Slide Left */
+.animate-slide-left {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.in-view .animate-slide-left {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Zoom In */
+.animate-zoom-in {
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.in-view .animate-zoom-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+/* Animation Delays (for staggered effects) */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+.delay-5 { transition-delay: 0.5s; }
+
+/* Media Queries for Responsiveness home */
+@media (max-width: 1024px) {
+  .hero-content h1 {
+    font-size: 3rem;
+  }
+  .hero-content p {
+    font-size: 1.2rem;
+  }
+}
+@media (max-width: 768px) {
+  .home {
+    padding-top: 60px; /* Adjust for smaller navbar */
+  }
+  .section-title {
+    font-size: 1.8rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+  }
+  .hero-section {
+    height: 70vh;
+    min-height: 450px;
+  }
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+  .hero-content p {
+    font-size: 1rem;
+  }
+  .hero-button {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+  .services-grid, .team-grid, .testimonials-grid {
+    grid-template-columns: 1fr; /* Stack columns on small screens */
+  }
+  .service-card, .team-card, .testimonial-card {
+    margin: 0 1rem; /* Add some margin on smaller screens */
+  }
+  .contact-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  .team-card {
+    flex-direction: column;
+  }
+  
+  .profile-section {
+    padding-bottom: 1.5rem;
+  }
+  
+  .bio-section {
+    padding: 1.5rem;
+  }
+}
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .section-title {
+    font-size: 1.6rem;
+  }
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+}
+
+/* --- Responsive Design for about page--- */
+@media (max-width: 992px) {
+  .about-hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .about-hero-content p {
+    font-size: 1.2rem;
+  }
+  .section-about-header h2 {
+    font-size: 2.2rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  .story-content {
+    flex-direction: column; /* Stack on smaller screens */
+    gap: 2rem;
+  }
+  .story-text, .story-images {
+    flex: none; /* Remove flex basis */
+    width: 100%;
+  }
+  .image-stack {
+    padding-bottom: 80%; /* Adjust aspect ratio for stacked images on small screens */
+    min-height: auto;
+  }
+  .image-1, .image-2 {
+    width: 60%;
+    height: 60%;
+  }
+
+.facility-grid {
+    grid-template-columns: repeat(3, 1fr); /* Define 6 equal columns */
+    grid-auto-rows: 250px; /* Fixed row height for precise layout */
+  }
+
+  .facility-item-lg { /* Large item: spans 3 columns and 2 rows */
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+
+  .facility-item-md { /* Medium item: spans 2 columns and 1 row */
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .faclity-item-set{
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+  .facility-item-sm { /* Small item: spans 1 column and 1 row */
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+  .facility-item-i2{
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+  .benefits-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+@media (max-width: 768px) {
+  .about-page {
+    padding-top: 60px; /* Adjust for smaller navbar */
+  }
+  .about-hero {
+    height: 40vh;
+    min-height: 250px;
+  }
+  .about-hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .about-hero-content p {
+    font-size: 1rem;
+  }
+  .section-about-header h2 {
+    font-size: 1.8rem;
+  }
+  .section-subtitle {
+    font-size: 0.95rem;
+  }
+  .clinic-story-section, .why-choose-us-section {
+    margin: 0 1rem 4rem; /* Less margin on sides */
+  }
+  .story-images {
+    min-height: 280px;
+  }
+  .image-stack {
+    padding-bottom: 100%; /* Make square on mobile */
+  }
+  .benefit-card h3 {
+    font-size: 1.2rem;
+  }
+}
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .about-hero-content h1 {
+    font-size: 1.8rem;
+  }
+  .about-hero-content p {
+    font-size: 0.9rem;
+  }
+  .section-about-header h2 {
+    font-size: 1.6rem;
+  }
+  .icon-wrapper {
+    width: 60px;
+    height: 60px;
+  }
+  .icon-wrapper img {
+    width: 35px;
+    height: 35px;
+  }
+  .facility-grid {
+    grid-template-columns: repeat(3, 1fr); /* Define 6 equal columns */
+    grid-auto-rows: 100px; /* Fixed row height for precise layout */
+  }
+}
+
+/* responsive service page */
+@media (max-width: 900px) {
+  .modal-grid-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-image-container {
+    width: 100%;
+    height: 250px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .modal-content {
+    padding: 1.5rem;
+  }
+}
+@media (max-width: 768px) {
+
+
+  .modal-details-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .modal-text-content h3 {
+    font-size: 1.8rem;
+  }
+}
+@media (max-width: 480px) {
+  .modal-text-content {
+    padding: 1.5rem;
+  }
+  
+  .modal-text-content h3 {
+    font-size: 1.5rem;
+  }
+  
+  .modal-description {
+    font-size: 0.9rem;
+  }
+  
+  .modal-details-column ul li {
+    font-size: 0.85rem;
+  }
+  
+  .modal-cta-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* responsive team page  */
+@media (max-width: 992px) {
+  .team-hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .team-hero-content p {
+    font-size: 1.2rem;
+  }
+  .team-members-section, .team-cta-section {
+    margin: 0 1rem 4rem;
+  }
+  .team-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 2rem;
+  }
+  .member-info h3 {
+    font-size: 1.4rem;
+  }
+  .member-info .qualification, .member-info .title-spec {
+    font-size: 0.9rem;
+  }
+  .member-photo-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+}
+@media (max-width: 768px) {
+  .team-page {
+    padding-top: 60px; 
+  }
+  .team-hero {
+    height: 40vh;
+    min-height: 250px;
+  }
+  .team-hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .team-hero-content p {
+    font-size: 1rem;
+  }
+  .section-header h2 {
+    font-size: 2.2rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+  }
+  .team-grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 1.5rem;
+  }
+  .team-member-card {
+    max-width: 450px; /* Constrain width for single column */
+    margin: 0 auto; /* Center single card */
+  }
+  .card-header {
+    flex-direction: column; /* Stack photo and info on mobile */
+    text-align: center;
+    padding-bottom: 1rem; /* More space for border */
+  }
+  .member-photo-wrapper {
+    margin-bottom: 1rem;
+  }
+  .member-info {
+    padding-right: 0; /* Remove right padding */
+  }
+  .member-info h3 {
+    font-size: 1.5rem;
+  }
+  .member-info .qualification, .member-info .title-spec, .member-info .experience {
+    font-size: 0.95rem;
+  }
+  .expand-indicator {
+    top: auto;
+    bottom: -1.5rem;
+    right: 50%;
+    transform: translateX(50%); /* Center indicator */
+  }
+  .team-member-card.expanded .expand-indicator {
+    transform: translateX(50%) rotate(180deg); /* Rotate from center */
+  }
+  .details-content {
+    padding: 1rem 1.5rem 1.5rem; /* Add top padding to details */
+  }
+  .details-content h4 {
+    font-size: 1rem;
+  }
+  .details-content p, .details-content ul li {
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .team-hero-content h1 {
+    font-size: 1.8rem;
+  }
+  .team-hero-content p {
+    font-size: 0.9rem;
+  }
+  .section-header h2 {
+    font-size: 1.8rem;
+  }
+  .team-member-card {
+    max-width: 90%; /* Take more width on very small screens */
+  }
+  .social-links a {
+    font-size: 1.5rem;
+  }
+  .expand-indicator {
+    top: auto;
+    bottom: -1.5rem;
+    right: 50%;
+    transform: translateX(50%); /* Center indicator */
+  }
+}
+
+/* responsive testimonial page  */
+@media (max-width: 992px) {
+  .testimonials-hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .testimonials-hero-content p {
+    font-size: 1.2rem;
+  }
+  .testimonials-list-section, .testimonials-cta-section {
+    margin: 0 1rem 4rem;
+  }
+  .testimonial-item {
+    flex-direction: column; 
+    gap: 2rem;
+  }
+ 
+  .testimonial-item.layout-right {
+    flex-direction: column;
+  }
+  .testimonial-item .media-container,
+  .testimonial-item .content-container {
+    order: unset; 
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .content-container {
+    border-left: none !important; 
+    border-right: none !important;
+    padding-top: 1rem;
+  }
+  .media-container {
+    flex: 0 0 auto; 
+    width: 100%; 
+    height: 250px;
+  }
+  .result-headline {
+    font-size: 1.6rem;
+    padding: 0 1rem;
+  }
+  .quote-icon-left {
+    left: 10px;
+  }
+  .quote-icon-right {
+    right: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .testimonials-page {
+    padding-top: 60px; 
+  }
+  .testimonials-hero {
+    height: 40vh;
+    min-height: 250px;
+  }
+  .testimonials-hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .testimonials-hero-content p {
+    font-size: 1rem;
+  }
+  .section-header h2 {
+    font-size: 2.2rem;
+  }
+  .section-subtitle {
+    font-size: 1rem;
+  }
+  .testimonial-item {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  .media-container {
+    height: 200px; 
+  }
+  .identifier-tag {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+  .result-headline {
+    font-size: 1.4rem;
+  }
+  .challenge-text, .result-text {
+    font-size: 0.9rem;
+  }
+  .quote-icon-left, .quote-icon-right {
+    font-size: 2.5rem;
+  }
+}
+@media (max-width: 480px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .testimonials-hero-content h1 {
+    font-size: 1.8rem;
+  }
+  .testimonials-hero-content p {
+    font-size: 0.9rem;
+  }
+  .section-header h2 {
+    font-size: 1.8rem;
+  }
+  .testimonial-item {
+    padding: 1rem;
+  }
+  .media-container {
+    height: 180px;
+  }
+  .result-headline {
+    font-size: 1.2rem;
+  }
+  .cta-button {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+
+.custom-button-primary {
+  padding: 10px 12px;
+  background-color: var(--primary-color);
+  width: 12vw;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+.custom-button-primary:hover {
+  background-color: #145369;
+  transform: translateY(-3px);
+  /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.custom-button-secondary {
+  padding: 10px 12px;
+  width: 12vw;
+  background-color: #f5f7fa;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+.custom-button-secondary:hover {
+  background-color: #d0d9dd;
+  transform: translateY(-3px);
+  /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
