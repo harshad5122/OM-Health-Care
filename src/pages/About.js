@@ -43,7 +43,7 @@ const About = () => {
 	}, []);
 
 	return (
-		<div className="about-page pt-[5px] bg-[#f8fbfd] text-[#333] overflow-x-hidden">
+		<div className="about-page bg-[#f8fbfd] text-[#333] overflow-x-hidden">
 			{/* Hero Section */}
 			<section className="about-hero relative h-[50vh] min-h-[350px]  flex items-center justify-center text-center text-white mb-20">
 				<div className="absolute top-0 left-0 w-[100%] h-[100%] bg-[rgba(26,111,139,0.7)] z-10"></div>

@@ -119,7 +119,7 @@ const Team = () => {
   const { ref: teamSectionRef, inView: teamSectionInView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
   return (
-    <div className="team-page pt-[10px] bg-[#f8fbfd] text-[#333]  overflow-x-hidden">
+    <div className="team-page bg-[#f8fbfd] text-[#333]  overflow-x-hidden">
       {/* Hero Section */}
       <section ref={heroRef} className={`team-hero relative h-[50vh] min-h-[350px] bg-cover bg-center flex items-center justify-center text-center text-white mb-20 ${heroInView ? 'in-view' : ''}`}>
         <div className="absolute inset-0 bg-[rgba(26,111,139,0.7)] z-[1]"></div>

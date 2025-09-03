@@ -317,7 +317,7 @@ const Services = () => {
       {/* Main Services Grid Section */}
       <section ref={servicesGridRef} className={`main-services-grid-section py-20 bg-white rounded-[20px] mx-8 mb-20 shadow-[0_10px_40px_rgba(0,0,0,0.05)] opacity-0 translate-y-[50px] transition-opacity transition-transform duration-800 ease-out ${servicesGridInView ? 'in-view' : ''}`}>
         <div className="container max-w-[1200px] mx-auto px-8">
-          <div className="section-header">
+          <div className="section-about-header">
             <h2>Comprehensive Care for Every Need</h2>
             <p className="section-subtitle text-[1.1rem] text-[#495057] mt-8 max-w-[700px] mx-auto leading-relaxed animate-fade-in delay-1">Discover how our expert team can help you regain mobility, reduce pain, and improve your quality of life.</p>
           </div>
