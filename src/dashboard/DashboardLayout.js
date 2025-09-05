@@ -17,7 +17,7 @@ const DashboardLayout = ({ userRole, title }) => {
   // const user = { name: "John Doe", role: userRole };
 
   return (
-    <div className="dashboard-layout">
+    <div className="dashboard-layout h-full overflow-auto no-scrollbar" >
       <TopBar 
         toggleDrawer={toggleDrawer} 
         title={title} 
