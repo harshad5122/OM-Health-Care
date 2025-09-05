@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import "../../styles/Auth.css";
 import loginIllustration from "../../assets/auth/login-illustration.png";
 import { useAuthApi } from "../../api/authApi";
@@ -10,6 +10,11 @@ const ChangePassword = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const from = params.get("from");
+    console.log(from,"from")
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -31,10 +36,20 @@ const ChangePassword = () => {
         }
     };
 
+    const handleBack = () => {
+    if (from === "profile") {
+      navigate("/dashboard/admin/profile");
+    } else {
+      navigate("/");
+    }
+  };
     return (
         <div className="auth-wrapper">
             <div className="auth-illustration-section">
-                <button onClick={() => navigate("/")} className="go-back-button">
+                <button 
+                // onClick={() => navigate("/")} 
+                onClick={handleBack}
+                className="go-back-button">
                     <svg
                         className="go-back-icon"
                         xmlns="http://www.w3.org/2000/svg"

@@ -1,4 +1,7 @@
-
+* {
+  margin: 0;
+  padding: 0;
+}
 :root {
   --primary-color: #1a6f8b;
   --secondary-color: #4caf50;
@@ -8,14 +11,13 @@
   --text-color: #495057;
 }
 
-body {
+/* body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
   background-color: #f9f9f9;
   color: var(--text-color);
   line-height: 1.6;
-}
-
+} */
 .App {
   text-align: center;
   overflow-x: hidden;
@@ -26,7 +28,10 @@ h1, h2, h3, h4 {
   margin-bottom: 1rem;
   font-weight: 600;
 }
-
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
 p {
   color: var(--text-color);
   font-size: 1rem;

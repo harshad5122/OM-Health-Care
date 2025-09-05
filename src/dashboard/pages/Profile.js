@@ -86,9 +86,11 @@ const Profile = () => {
   if (!profileData) return <p>No profile data found.</p>;
 
   return (
-    <div className="profile-container">
-      <div className="profile-header">
-        <h2>My Profile</h2>
+    <div className="profile-container py-[20px]" style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
+      <div className="profile-header px-[20px]">
+        <span className='text-[1.8rem] text-[#1a6f8b] m-0 font-semibold flex sticky top-0 z-10'>
+          My Profile
+        </span>
         <div className="profile-actions-top">
           {!isEditing ? (
             <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
@@ -107,9 +109,9 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="profile-content">
+      <div className="profile-content px-[20px] pt-[20px]" style={{ flex: 1, overflowY: "auto" }}>
         <div className="profile-section">
-          <h3>Personal Information</h3>
+          <h3 className='text-left'>Personal Information</h3>
           <div className="profile-grid">
             {/* Row 1: First Name, Last Name, Email */}
             <div className="form-row triple">
@@ -189,7 +191,7 @@ const Profile = () => {
         </div>
 
         <div className="profile-section">
-          <h3>Address Information</h3>
+          <h3 className='text-left'>Address Information</h3>
 
           {/* Row 3: Full Address */}
           <div className="profile-grid">
@@ -208,11 +210,11 @@ const Profile = () => {
             {/* Row 4: City, State, Country */}
             <div className="form-row triple">
               <div className="form-group">
-                <label>City</label>
+                <label>Country</label>
                 {isEditing ? (
-                  <input type="text" name="city" value={tempData.city || ""} onChange={handleChange} />
+                  <input type="text" name="country" value={tempData.country || ""} onChange={handleChange} />
                 ) : (
-                  <p>{profileData.city}</p>
+                  <p>{profileData.country}</p>
                 )}
               </div>
               <div className="form-group">
@@ -223,24 +225,24 @@ const Profile = () => {
                   <p>{profileData.state}</p>
                 )}
               </div>
-              <div className="form-group">
-                <label>Country</label>
+             <div className="form-group">
+                <label>City</label>
                 {isEditing ? (
-                  <input type="text" name="country" value={tempData.country || ""} onChange={handleChange} />
+                  <input type="text" name="city" value={tempData.city || ""} onChange={handleChange} />
                 ) : (
-                  <p>{profileData.country}</p>
+                  <p>{profileData.city}</p>
                 )}
               </div>
             </div>
           </div>
         </div>
         <div className="profile-actions-bottom">
-          <Link to="/dashboard/user" className="btn btn-tertiary">
+          <Link to="/dashboard/admin/home" className="btn btn-tertiary">
             Back to Dashboard
           </Link>
-          <button className="btn btn-primary" onClick={() => alert('Password change coming soon')}>
+          <Link className="btn btn-primary" to="/auth/change-password?from=profile">
             Change Password
-          </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -57,7 +57,7 @@
 
 
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useLocation } from "react-router-dom";
 import {
   FaCubes,
   FaUser,
@@ -77,7 +77,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
   const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
   const { logoutUser } = useAuthApi();
-
+   const location = useLocation();
 
   const basePaths = {
     1: "/dashboard/user",
@@ -136,21 +136,23 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
           &times;
         </button>
       </div>
-
-      {/* Menu Items */}
       <nav className="drawer-nav">
-        {menuItems[userRole]?.map((item) => (
+      {menuItems[userRole]?.map((item) => {
+        // Check if current path matches the menu item
+        const isActive = location.pathname === `${basePaths[userRole]}/${item.path}`;
+
+        return (
           <Link
             key={item.path}
             to={`${basePaths[userRole]}/${item.path}`}
-            className="sidebar-link"
-          // onClick={toggleDrawer}
+            className={`sidebar-link ${isActive ? "active-link" : ""}`}
           >
             <span className="icon">{item.icon}</span>
             <span className="label">{item.label}</span>
           </Link>
-        ))}
-      </nav>
+        );
+      })}
+    </nav>
 
       {/* Logout at bottom */}
       <div className="drawer-footer">

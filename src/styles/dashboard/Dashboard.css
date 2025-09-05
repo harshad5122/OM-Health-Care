@@ -287,19 +287,19 @@
     --drawer-width: 300px;
 }
 
-body {
+/* body {
     margin: 0;
-    font-family: 'Inter', 'Poppins', 'Roboto', sans-serif; /* Modern sans-serif fonts */
+    font-family: 'Inter', 'Poppins', 'Roboto', sans-serif; 
     background-color: var(--background-color-light);
     color: var(--text-color);
-}
+} */
 
-#dashboard-container {
+/* #dashboard-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
     transition: margin-left 0.3s ease; 
-}
+} */
 
 
 #dashboard-container.drawer-open #dashboard-content {
@@ -379,8 +379,8 @@ body {
 
 #chart-type-toggle {
     position: absolute;
-    right: 5px;
-    top: -5px;
+    right: -2px;
+    top: -11px;
     background-color: var(--background-light);
     border-radius: 8px;
     overflow: hidden;
@@ -454,6 +454,7 @@ body {
     overflow: hidden; /* Ensures chart overflows don't break layout */
     transition: transform 0.2s ease-in-out;
     border: 1px solid var(--border-color); /* Subtle border */
+    height: 400px;
 }
 
 .card:hover {
@@ -471,7 +472,7 @@ body {
 
 .card-header h2 {
     margin: 0;
-    font-size: 1.4rem;
+    font-size: 17px !important;
     color: var(--text-color);
 }
 

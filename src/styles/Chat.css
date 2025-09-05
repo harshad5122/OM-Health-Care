@@ -31,14 +31,11 @@
 
 .chat-container {
   display: flex;
-  /* height: 95vh; */
-  height: calc(100vh - 60px);
-  /* max-height: 950px;  */
-  max-height: calc(100vh - 60px);
-  width: 90vw; 
-  max-width: 1200px; 
-  /* margin: 2.5vh auto;  */
-   margin: 0 auto;
+  height: calc(100vh - 100px);
+  /* max-height: calc(100vh - 60px); */
+  /* width: 90vw; 
+  max-width: 1200px;  */
+  margin:20px;
   background: var(--received-message-bg);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -96,10 +93,9 @@
   background: var(--hover-color);
 }
 
-.user-tabs button.active {
-  color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
-  background: var(--received-message-bg);
+ .user-tabs button.active {
+  color: #fff; 
+  background: var(--primary-color); 
 }
 
 .user-list {
@@ -194,19 +190,6 @@
   color: white;
 }
 
-.chat-header .user-details h3 {
-  margin: 0;
-  font-size: 16px;
-  color: var(--dark-color);
-  font-weight: 600;
-}
-
-.chat-header .user-details p {
-  margin: 2px 0 0;
-  font-size: 12px;
-  color: var(--text-color);
-  opacity: 0.8;
-}
 
 .chat-box {
   flex: 1;
@@ -353,9 +336,9 @@
   transition: opacity 0.2s;
   padding: 2px;
   margin-left: 4px;
-  position: absolute; /* Position relative to message bubble */
+  position: absolute;
   top: 5px;
-  right: 5px; /* Adjust positioning */
+  right: 5px; 
 }
 
 /* .chat-message.sent .menu {
@@ -380,42 +363,7 @@
 .chat-message .menu:hover {
   opacity: 1;
 }
-
-/* .menu:hover {
-  opacity: 1 !important;
-} */
-
-/* .message-menu {
-  position: absolute;
-  background: var(--menu-bg);
-  border-radius: 4px;
-  box-shadow: var(--menu-shadow);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  min-width: 140px; 
-  overflow: hidden;
-  padding: 5px 0; 
-} */
-
-.message-menu {
-  position: absolute;
-  right: 10px;
-  top: 30px;
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  z-index: 10;
-  min-width: 120px;
-  padding: 5px 0;
-}
-
-/* Positioning for sent messages */
-.chat-message.sent .message-menu {
-  right: 0; 
-  left: auto;
-  top: 5px; /* Align with top of the message */
-}
+ 
 
 /* Positioning for received messages */
 .chat-message.received .message-menu {
@@ -429,7 +377,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 15px; /* More padding for buttons */
+  padding: 6px 15px; /* More padding for buttons */
   background: none;
   border: none;
   text-align: left;
@@ -443,18 +391,6 @@
   background: var(--hover-color);
 }
 
-/* .chat-text {
-  line-height: 1.4;   
-  margin-bottom: 4px; 
-  display: block;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-} */
-
-.chat-text {
-  margin: 0px 0;
-  line-height: 1.5;
-}
 
 .chat-message {
   padding: 10px 12px;

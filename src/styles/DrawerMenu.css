@@ -154,7 +154,10 @@
   background: rgba(0, 119, 204, 0.1);
   color: var(--primary-color);
 }
-
+.active-link {
+  background: rgba(0, 119, 204, 0.1);
+  color: var(--primary-color)
+}
 .icon {
   font-size: 1.2rem;
   display: flex;

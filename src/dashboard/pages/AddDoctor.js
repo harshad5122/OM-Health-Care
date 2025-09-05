@@ -19,7 +19,7 @@ function AddDoctor() {
         firstName: "",
         lastName: "",
         email: "",
-        phone: "+91 ",
+        phone: " ",
         dateOfBirth: "",
         gender: "",
         qualification: "",
@@ -345,9 +345,11 @@ function AddDoctor() {
     const errorClass = "text-xs text-red-600 mt-1 text-left";
 
     return (
-        <div className="px-4 md:px-6 lg:px-8 py-6 max-w-6xl mx-auto">
-
-            <form onSubmit={onSubmit} className="space-y-6">
+        <div style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
+            <span className='text-[1.8rem] text-[#1a6f8b] m-0 font-semibold flex justify-start pt-[20px] pb-[1rem] px-[20px] border-b border-[#eee] sticky top-0 z-10 bg-[#f5f7fa]' style={{ fontFamily: "'Arial', sans-serif" }}>
+                Add Doctor
+            </span>
+            <form onSubmit={onSubmit} className="space-y-6 px-5 py-5" style={{ flex: 1, overflowY: "auto" }}>
                 <section className={sectionClass}>
                     <h2 className="dashboard-section-title">Personal Information</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -477,27 +479,29 @@ function AddDoctor() {
                                 <input className={inputClass} type="text" value={workAddress.addressLine1} onChange={(e) => handleAddressChange("work", "addressLine1", e.target.value)} />
                                 {formErrors.workAddressLine1 && <p className={errorClass}>{formErrors.workAddressLine1}</p>}
                             </div>
-                            <div>
-                                <label className={labelClass}>City<span className="text-red-500">*</span></label>
-                                <input className={inputClass} type="text" value={workAddress.city} onChange={(e) => handleAddressChange("work", "city", e.target.value)} />
-                                {formErrors.workCity && <p className={errorClass}>{formErrors.workCity}</p>}
-                            </div>
-                            <div>
-                                <label className={labelClass}>State<span className="text-red-500">*</span></label>
-                                <select className={selectClass} value={workAddress.state} onChange={(e) => handleAddressChange("work", "state", e.target.value)}>
-                                    <option value="">Select state</option>
-                                    {stateOptions.map((s) => (
-                                        <option key={s} value={s}>{s}</option>
-                                    ))}
-                                </select>
-                                {formErrors.workState && <p className={errorClass}>{formErrors.workState}</p>}
-                            </div>
-                            <div>
-                                <label className={labelClass}>Country<span className="text-red-500">*</span></label>
-                                <select className={selectClass} value={workAddress.country} onChange={(e) => handleAddressChange("work", "country", e.target.value)}>
-                                    <option value="India">India</option>
-                                </select>
-                                {formErrors.workCountry && <p className={errorClass}>{formErrors.workCountry}</p>}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full md:col-span-2">
+                                <div>
+                                    <label className={labelClass}>Country<span className="text-red-500">*</span></label>
+                                    <select className={selectClass} value={workAddress.country} onChange={(e) => handleAddressChange("work", "country", e.target.value)}>
+                                        <option value="India">India</option>
+                                    </select>
+                                    {formErrors.workCountry && <p className={errorClass}>{formErrors.workCountry}</p>}
+                                </div>
+                                <div>
+                                    <label className={labelClass}>State<span className="text-red-500">*</span></label>
+                                    <select className={selectClass} value={workAddress.state} onChange={(e) => handleAddressChange("work", "state", e.target.value)}>
+                                        <option value="">Select state</option>
+                                        {stateOptions.map((s) => (
+                                            <option key={s} value={s}>{s}</option>
+                                        ))}
+                                    </select>
+                                    {formErrors.workState && <p className={errorClass}>{formErrors.workState}</p>}
+                                </div>
+                                <div>
+                                    <label className={labelClass}>City<span className="text-red-500">*</span></label>
+                                    <input className={inputClass} type="text" value={workAddress.city} onChange={(e) => handleAddressChange("work", "city", e.target.value)} />
+                                    {formErrors.workCity && <p className={errorClass}>{formErrors.workCity}</p>}
+                                </div>
                             </div>
                             <div>
                                 <label className={labelClass}>Pincode<span className="text-red-500">*</span></label>
@@ -508,34 +512,36 @@ function AddDoctor() {
                     </section>
                 )}
                 <section className={sectionClass}>
-                    <h2 className="dashboard-section-title">Address Information</h2>
+                    <h2 className="dashboard-section-title">Current Address Information</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="md:col-span-2">
                             <label className={labelClass}>Address<span className="text-red-500">*</span></label>
                             <input className={inputClass} type="text" value={currentAddress.addressLine1} onChange={(e) => handleAddressChange("current", "addressLine1", e.target.value)} />
                             {formErrors.currentAddressLine1 && <p className={errorClass}>{formErrors.currentAddressLine1}</p>}
                         </div>
-                        <div>
-                            <label className={labelClass}>City<span className="text-red-500">*</span></label>
-                            <input className={inputClass} type="text" value={currentAddress.city} onChange={(e) => handleAddressChange("current", "city", e.target.value)} />
-                            {formErrors.currentCity && <p className={errorClass}>{formErrors.currentCity}</p>}
-                        </div>
-                        <div>
-                            <label className={labelClass}>State<span className="text-red-500">*</span></label>
-                            <select className={selectClass} value={currentAddress.state} onChange={(e) => handleAddressChange("current", "state", e.target.value)}>
-                                <option value="">Select state</option>
-                                {stateOptions.map((s) => (
-                                    <option key={s} value={s}>{s}</option>
-                                ))}
-                            </select>
-                            {formErrors.currentState && <p className={errorClass}>{formErrors.currentState}</p>}
-                        </div>
-                        <div>
-                            <label className={labelClass}>Country<span className="text-red-500">*</span></label>
-                            <select className={selectClass} value={currentAddress.country} onChange={(e) => handleAddressChange("current", "country", e.target.value)}>
-                                <option value="India">India</option>
-                            </select>
-                            {formErrors.currentCountry && <p className={errorClass}>{formErrors.currentCountry}</p>}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full md:col-span-2">
+                            <div>
+                                <label className={labelClass}>Country<span className="text-red-500">*</span></label>
+                                <select className={selectClass} value={currentAddress.country} onChange={(e) => handleAddressChange("current", "country", e.target.value)}>
+                                    <option value="India">India</option>
+                                </select>
+                                {formErrors.currentCountry && <p className={errorClass}>{formErrors.currentCountry}</p>}
+                            </div>
+                            <div>
+                                <label className={labelClass}>State<span className="text-red-500">*</span></label>
+                                <select className={selectClass} value={currentAddress.state} onChange={(e) => handleAddressChange("current", "state", e.target.value)}>
+                                    <option value="">Select state</option>
+                                    {stateOptions.map((s) => (
+                                        <option key={s} value={s}>{s}</option>
+                                    ))}
+                                </select>
+                                {formErrors.currentState && <p className={errorClass}>{formErrors.currentState}</p>}
+                            </div>
+                            <div>
+                                <label className={labelClass}>City<span className="text-red-500">*</span></label>
+                                <input className={inputClass} type="text" value={currentAddress.city} onChange={(e) => handleAddressChange("current", "city", e.target.value)} />
+                                {formErrors.currentCity && <p className={errorClass}>{formErrors.currentCity}</p>}
+                            </div>
                         </div>
                         <div>
                             <label className={labelClass}>Pincode<span className="text-red-500">*</span></label>
@@ -642,34 +648,37 @@ function AddDoctor() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="md:col-span-2">
                             <label className={labelClass}>Address<span className="text-red-500">*</span></label>
-                            <input className={inputClass} type="text" value={permanentAddress.addressLine1} onChange={(e) => handleAddressChange("permanent", "addressLine1", e.target.value)} disabled={isPermanentSameAsCurrent} />
+                            <input className={`${inputClass} disabled:cursor-not-allowed`} type="text" value={permanentAddress.addressLine1} onChange={(e) => handleAddressChange("permanent", "addressLine1", e.target.value)} disabled={isPermanentSameAsCurrent} />
                             {formErrors.permanentAddressLine1 && <p className={errorClass}>{formErrors.permanentAddressLine1}</p>}
                         </div>
-                        <div>
-                            <label className={labelClass}>City<span className="text-red-500">*</span></label>
-                            <input className={inputClass} type="text" value={permanentAddress.city} onChange={(e) => handleAddressChange("permanent", "city", e.target.value)} disabled={isPermanentSameAsCurrent} />
-                            {formErrors.permanentCity && <p className={errorClass}>{formErrors.permanentCity}</p>}
-                        </div>
-                        <div>
-                            <label className={labelClass}>State<span className="text-red-500">*</span></label>
-                            <select className={selectClass} value={permanentAddress.state} onChange={(e) => handleAddressChange("permanent", "state", e.target.value)} disabled={isPermanentSameAsCurrent}>
-                                <option value="">Select state<span className="text-red-500">*</span></option>
-                                {stateOptions.map((s) => (
-                                    <option key={s} value={s}>{s}</option>
-                                ))}
-                            </select>
-                            {formErrors.permanentState && <p className={errorClass}>{formErrors.permanentState}</p>}
-                        </div>
-                        <div>
-                            <label className={labelClass}>Country<span className="text-red-500">*</span></label>
-                            <select className={selectClass} value={permanentAddress.country} onChange={(e) => handleAddressChange("permanent", "country", e.target.value)} disabled={isPermanentSameAsCurrent}>
-                                <option value="India">India</option>
-                            </select>
-                            {formErrors.permanentCountry && <p className={errorClass}>{formErrors.permanentCountry}</p>}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full md:col-span-2">
+                            <div>
+                                <label className={labelClass}>Country<span className="text-red-500">*</span></label>
+                                <select  className={`${selectClass} disabled:cursor-not-allowed`} value={permanentAddress.country} onChange={(e) => handleAddressChange("permanent", "country", e.target.value)} disabled={isPermanentSameAsCurrent}>
+                                    <option value="India">India</option>
+                                </select>
+                                {formErrors.permanentCountry && <p className={errorClass}>{formErrors.permanentCountry}</p>}
+                            </div>
+                           
+                            <div>
+                                <label className={labelClass}>State<span className="text-red-500">*</span></label>
+                                <select  className={`${selectClass} disabled:cursor-not-allowed`} value={permanentAddress.state} onChange={(e) => handleAddressChange("permanent", "state", e.target.value)} disabled={isPermanentSameAsCurrent}>
+                                    <option value="">Select state<span className="text-red-500">*</span></option>
+                                    {stateOptions.map((s) => (
+                                        <option key={s} value={s}>{s}</option>
+                                    ))}
+                                </select>
+                                {formErrors.permanentState && <p className={errorClass}>{formErrors.permanentState}</p>}
+                            </div>
+                            <div>
+                                <label className={labelClass}>City<span className="text-red-500">*</span></label>
+                                <input className={`${inputClass} disabled:cursor-not-allowed`} type="text" value={permanentAddress.city} onChange={(e) => handleAddressChange("permanent", "city", e.target.value)} disabled={isPermanentSameAsCurrent} />
+                                {formErrors.permanentCity && <p className={errorClass}>{formErrors.permanentCity}</p>}
+                            </div>
                         </div>
                         <div>
                             <label className={labelClass}>Pincode<span className="text-red-500">*</span></label>
-                            <input className={inputClass} type="text" inputMode="numeric" pattern="[0-9]*" maxLength={6} value={permanentAddress.pincode} onChange={(e) => handleAddressChange("permanent", "pincode", digitsOnly(e.target.value))} disabled={isPermanentSameAsCurrent} />
+                            <input className={`${inputClass} disabled:cursor-not-allowed`} type="text" inputMode="numeric" pattern="[0-9]*" maxLength={6} value={permanentAddress.pincode} onChange={(e) => handleAddressChange("permanent", "pincode", digitsOnly(e.target.value))} disabled={isPermanentSameAsCurrent} />
                             {formErrors.permanentPincode && <p className={errorClass}>{formErrors.permanentPincode}</p>}
                         </div>
                     </div>

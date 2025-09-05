@@ -118,8 +118,11 @@ function AddUser() {
     const errorClass = "text-xs text-red-600 mt-1 text-left";
 
     return (
-        <div className="px-4 md:px-6 lg:px-8 py-6 max-w-6xl d-flex items-center mx-auto">
-            <form onSubmit={onSubmit} className="space-y-6">
+        <div style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
+            <span className='text-[1.8rem] text-[#1a6f8b] m-0 font-semibold flex justify-start pt-[20px] pb-[1rem] px-[20px] border-b border-[#eee] sticky top-0 z-10 bg-[#f5f7fa]' style={{ fontFamily: "'Arial', sans-serif" }}>
+                Add User
+            </span>
+            <form onSubmit={onSubmit} className="space-y-6 px-5 py-5" style={{ flex: 1, overflowY: "auto" }}>
                 <section className={sectionClass}>
                     <h2 className="dashboard-section-title">Add User</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -193,42 +196,43 @@ function AddUser() {
                             <input className={inputClass} type="text" value={formData.address} onChange={(e) => handleChange("address", e.target.value)} />
                             {formErrors.address && <p className={errorClass}>{formErrors.address}</p>}
                         </div>
-                        <div>
-                            <label className={labelClass}>City *</label>
-                            <input className={inputClass} type="text" value={formData.city} onChange={(e) => handleChange("city", e.target.value)} />
-                            {formErrors.city && <p className={errorClass}>{formErrors.city}</p>}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full md:col-span-2">
+                            <span>
+                                <label className={labelClass}>Country *</label>
+                                <select
+                                    className={selectClass}
+                                    value={formData.country}
+                                    onChange={(e) => handleChange("country", e.target.value)}
+                                >
+                                    <option value="">Select country</option>
+                                    <option value="India">India</option>
+                                    <option value="United States">United States</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="France">France</option>
+                                    <option value="Singapore">Singapore</option>
+                                    {/* Add more countries as needed */}
+                                </select>
+                                {formErrors.country && <p className={errorClass}>{formErrors.country}</p>}
+                            </span>
+                            <span>
+                                <label className={labelClass}>State *</label>
+                                <select className={selectClass} value={formData.state} onChange={(e) => handleChange("state", e.target.value)}>
+                                    <option value="">Select state</option>
+                                    {stateOptions.map((s) => (
+                                        <option key={s} value={s}>{s}</option>
+                                    ))}
+                                </select>
+                                {formErrors.state && <p className={errorClass}>{formErrors.state}</p>}
+                            </span>
+                            <span>
+                                <label className={labelClass}>City *</label>
+                                <input className={inputClass} type="text" value={formData.city} onChange={(e) => handleChange("city", e.target.value)} />
+                                {formErrors.city && <p className={errorClass}>{formErrors.city}</p>}
+                            </span>
                         </div>
-                        <div>
-                            <label className={labelClass}>State *</label>
-                            <select className={selectClass} value={formData.state} onChange={(e) => handleChange("state", e.target.value)}>
-                                <option value="">Select state</option>
-                                {stateOptions.map((s) => (
-                                    <option key={s} value={s}>{s}</option>
-                                ))}
-                            </select>
-                            {formErrors.state && <p className={errorClass}>{formErrors.state}</p>}
-                        </div>
-                        <div>
-                            <label className={labelClass}>Country *</label>
-                            <select
-                                className={selectClass}
-                                value={formData.country}
-                                onChange={(e) => handleChange("country", e.target.value)}
-                            >
-                                <option value="">Select country</option>
-                                <option value="India">India</option>
-                                <option value="United States">United States</option>
-                                <option value="Canada">Canada</option>
-                                <option value="United Kingdom">United Kingdom</option>
-                                <option value="Australia">Australia</option>
-                                <option value="Germany">Germany</option>
-                                <option value="France">France</option>
-                                <option value="Singapore">Singapore</option>
-                                {/* Add more countries as needed */}
-                            </select>
-                            {formErrors.country && <p className={errorClass}>{formErrors.country}</p>}
-                        </div>
-
 
                     </div>
                 </section>
