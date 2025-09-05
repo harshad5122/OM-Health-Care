@@ -101,7 +101,9 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="messages" element={<Chat />} />
           <Route path="add-doctor" element={<AddDoctor />} />
+          <Route path="add-doctor/:id" element={<AddDoctor />} />
           <Route path="add-user" element={<AddUser />} />
+          <Route path="add-user/:id" element={<AddUser />} />
           <Route path="members" element={<Members />} />
         </Route>
 

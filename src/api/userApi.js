@@ -30,13 +30,9 @@ export const useUserApi = () => {
     }
   };
 
-  const getUserList = async (token) => {
+  const getUserList = async ({ skip, limit }) => {
     try {
-      const response = await axiosInstance.get(`/user/list`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+      const response = await axiosInstance.get(`/user/list/?skip=${skip}&limit=${limit}`);
       return response.data.body;
     } catch (error) {
       throw error.response?.data || { msg: "Failed to fetch user list" };
@@ -74,12 +70,34 @@ export const useUserApi = () => {
       throw error.response?.data || { msg: "Failed to update profile" };
     }
   };
+
+  const editUser = async (id, userData) => {
+    try {
+      const response = await axiosInstance.put(`/edit/user/${id}`, userData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { msg: "Failed to update user" };
+    }
+  }
+
+  const getUserById = async (id) => {
+    try {
+      const response = await axiosInstance.get(`/user/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { msg: "Failed to get user" };
+    }
+  }
+
+
   return {
     getAdminList,
     getProfile,
     getStaffList,
     updateProfile,
     getUserList,
-    createUser
+    createUser,
+    editUser,
+    getUserById
   }
 }

@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../../styles/dashboard/Profile.css";
 import { useDoctorApi } from "../../api/doctorApi";
+import { useNavigate, useParams } from "react-router-dom";
 // import { addDoctor } from "../../api/doctorApi";
 
 function AddDoctor() {
+    const { id } = useParams();
     const defaultCountry = "India";
 
     const initialAddress = {
@@ -120,7 +122,8 @@ function AddDoctor() {
         "Gynecology",
         "General Medicine",
     ];
-    const { addDoctor } = useDoctorApi();
+    const { addDoctor, getDoctorById, updateDoctor } = useDoctorApi();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (isPermanentSameAsCurrent) {
@@ -291,7 +294,15 @@ function AddDoctor() {
                     }
                 }
             };
-            const result = await addDoctor(payload);
+            let result;
+            console.log(id, ">>> Id kkk")
+            if (!id) {
+                result = await addDoctor(payload);
+            } else {
+                result = await updateDoctor(id, payload);
+                navigate(`/dashboard/admin/members`);
+            }
+
             if (result?.success) {
                 resetForm();
             }
@@ -343,6 +354,71 @@ function AddDoctor() {
     const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus-primary";
     const selectClass = inputClass;
     const errorClass = "text-xs text-red-600 mt-1 text-left";
+
+    useEffect(() => {
+        if (id) {
+            getDoctorById(id).then((data) => {
+                // setFormData(data);  // prefill all fields
+                console.log(data?.dob, ">>>data ")
+                setPersonalInfo({
+                    firstName: data?.firstname,
+                    lastName: data?.lastname,
+                    email: data?.email,
+                    phone: data?.phone,
+                    dateOfBirth: data?.dob,
+                    gender: data?.gender,
+                    qualification: data?.qualification,
+                    specialization: data?.specialization,
+                    occupation: data?.occupation,
+                    professionalStatus: data?.professionalStatus,
+                    totalExperienceYears: data?.workExperience?.totalYears,
+                    lastHospitalName: data?.workExperience?.lastHospital,
+                    positionHeld: data?.workExperience?.position
+                })
+                setCurrentAddress({
+
+                    addressLine1: data?.familyDetails?.currentAddress?.line1,
+                    city: data?.familyDetails?.currentAddress?.city,
+                    state: data?.familyDetails?.currentAddress?.state,
+                    country: data?.familyDetails?.currentAddress?.country,
+                    pincode: data?.familyDetails?.currentAddress?.pincode
+
+                })
+                setWorkAddress({
+                    addressLine1: data?.workExperience?.workAddress?.line1,
+                    city: data?.workExperience?.workAddress?.city,
+                    state: data?.workExperience?.workAddress?.state,
+                    country: data?.workExperience?.workAddress?.country,
+                    pincode: data?.workExperience?.workAddress?.pincode
+                })
+                setPermanentAddress({
+                    addressLine1: data?.familyDetails?.permanentAddress?.line1,
+                    city: data?.familyDetails?.permanentAddress?.city,
+                    state: data?.familyDetails?.permanentAddress?.state,
+                    country: data?.familyDetails?.permanentAddress?.country,
+                    pincode: data?.familyDetails?.permanentAddress?.pincode
+                })
+                setIsPermanentSameAsCurrent(data?.familyDetails?.sameAsPermanent);
+                setFamilyDetails({
+                    fatherName: data?.familyDetails?.father?.name,
+                    fatherContact: data?.familyDetails?.father?.contact,
+                    fatherOccupation: data?.familyDetails?.father?.occupation,
+                    motherName: data?.familyDetails?.mother?.name,
+                    motherContact: data?.familyDetails?.mother?.contact,
+                    motherOccupation: data?.familyDetails?.mother?.occupation
+                })
+                setEmergencyContact({
+                    contactName: data?.familyDetails?.emergencyContact?.name,
+                    relation: data?.familyDetails?.emergencyContact?.relation,
+                    contactNumber: data?.familyDetails?.emergencyContact?.contact
+                })
+            });
+
+
+
+        }
+
+    }, [id]);
 
     return (
         <div style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
@@ -400,7 +476,9 @@ function AddDoctor() {
                         </div>
                         <div>
                             <label className={labelClass}> Date of birth<span className="text-red-500">*</span></label>
-                            <input className={inputClass} type="date" value={personalInfo.dateOfBirth} onChange={(e) => handlePersonalChange("dateOfBirth", e.target.value)} />
+                            <input className={inputClass} type="date"
+                                value={personalInfo.dateOfBirth ? personalInfo.dateOfBirth.split("T")[0] : ""}
+                                onChange={(e) => handlePersonalChange("dateOfBirth", e.target.value)} />
                             {formErrors.dateOfBirth && <p className={errorClass}>{formErrors.dateOfBirth}</p>}
                         </div>
 

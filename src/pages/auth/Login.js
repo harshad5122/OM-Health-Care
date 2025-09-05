@@ -52,8 +52,7 @@ const Login = () => {
         saveAuthData(res.body.token, res.body);
         console.log("Login Token:", res.body.token, res.body);
         // navigate("/");
-        console.log(res, ">> result")
-        if (res.body.addedByAdmin) {
+        if (res.body.isPasswordChanged) {
           redirectUser("changePassword")
         } else {
           redirectUser(res.body.role);
@@ -69,7 +68,7 @@ const Login = () => {
         saveAuthData(res.body.token, res.body);
         console.log("Login Token:", res.body.token, res.body);
         // navigate("/");
-        if (res.body.addedByAdmin) {
+        if (res.body.isPasswordChanged) {
           redirectUser("changePassword")
         } else {
           redirectUser(res.body.role);

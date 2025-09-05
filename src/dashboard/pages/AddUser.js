@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/dashboard/Profile.css";
 import { useUserApi } from "../../api/userApi";
+import { useNavigate, useParams } from "react-router-dom";
 // import { addUser } from "../../api/userApi"; // <-- you'll create this API function
 
 function AddUser() {
-
+    const { id } = useParams();
     const [formData, setFormData] = useState({
         firstname: "",
         lastname: "",
@@ -22,7 +23,8 @@ function AddUser() {
 
     const [formErrors, setFormErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { createUser } = useUserApi();
+    const { createUser, getUserById, editUser } = useUserApi();
+    const navigate = useNavigate();
 
     const genderOptions = [
         { value: "male", label: "Male" },
@@ -80,9 +82,13 @@ function AddUser() {
 
         try {
             console.log(formData, ">>> form data >>>")
-
-            const result = await createUser(formData);
-
+            let result;
+            if (!id) {
+                result = await createUser(formData);
+            } else {
+                result = await editUser(id, formData);
+                navigate(`/dashboard/admin/members`);
+            }
             if (result?.success) {
                 resetForm();
             }
@@ -116,6 +122,30 @@ function AddUser() {
     const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus-primary";
     const selectClass = inputClass;
     const errorClass = "text-xs text-red-600 mt-1 text-left";
+
+    useEffect(() => {
+        if (id) {
+            getUserById(id).then((data) => {
+                // setFormData(data);  // prefill all fields
+                const result = data?.body;
+                setFormData({
+                    firstname: result?.firstname,
+                    lastname: result?.lastname,
+                    countryCode: result?.countryCode,
+                    phone: result?.phone,
+                    email: result?.email,
+                    // password: "",
+                    address: result?.address,
+                    country: result?.country,
+                    state: result?.state,
+                    city: result?.city,
+                    gender: result?.gender,
+                    dob: result?.dob,
+                })
+            });
+        }
+
+    }, [id]);
 
     return (
         <div style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
@@ -184,7 +214,8 @@ function AddUser() {
                             <input
                                 className={inputClass}
                                 type="date"
-                                value={formData.dob}
+                                // value={formData.dob}
+                                value={formData.dob ? formData.dob.split("T")[0] : ""}
                                 onChange={(e) => handleChange("dob", e.target.value)}
                             />
                             {formErrors.dob && <p className={errorClass}>{formErrors.dob}</p>}

@@ -1,4 +1,3 @@
-
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
@@ -10,6 +9,7 @@
   padding-top: 60px; /* Same as top bar height */
   transition: margin-left 0.3s ease;
   margin-left: 0;
+  overflow: auto;
 }
 
 .main-content.drawer-open {
@@ -28,7 +28,7 @@
   .main-content.drawer-open {
     margin-left: 0;
   }
-  
+
   .main-content {
     margin-left: 0;
   }
@@ -80,4 +80,20 @@
 .stat-card .label {
   color: var(--secondary-color);
   font-size: 0.9rem;
+}
+
+.custom-cell {
+  padding: 5px 8px !important; /* smaller padding */
+  font-size: 16px !important ; /* bigger font */
+  line-height: 1.4 !important; /* control height */
+  white-space: nowrap;
+  color: #495057 !important;
+}
+.custom-th {
+  padding: 6px 8px !important; /* smaller padding */
+  font-size: 16px !important ; /* bigger font */
+  line-height: 1.4 !important; /* control height */
+  white-space: nowrap;
+  color: #495057 !important;
+  font-weight: bold !important;
 }
