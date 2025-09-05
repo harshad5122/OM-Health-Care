@@ -70,7 +70,8 @@ const Navbar = () => {
           </button>
 
           <Link
-            to="/appointment"
+            // to="/appointment"
+             to="/auth/login"
             className="bg-[#1a6f8b] text-white px-5 py-1 rounded-full font-medium no-underline 
               transition-all duration-300 hover:bg-[#145369] hover:-translate-y-0.5 hover:shadow-md"
           >
@@ -121,10 +122,13 @@ const Navbar = () => {
             </button>
 
             <Link
-              to="/appointment"
+              // to="/appointment"
+              to="/auth/login"
               className="bg-[#1a6f8b] text-white px-5 py-1 rounded-full font-medium no-underline 
                 transition-all duration-300 hover:bg-[#145369]"
-              onClick={() => setMenuOpen(false)}
+              onClick={() => {
+                setMenuOpen(false);
+              }}
             >
               Book Appointment
             </Link>

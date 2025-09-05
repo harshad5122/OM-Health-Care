@@ -3,6 +3,7 @@ import "../../styles/dashboard/Profile.css";
 import { useDoctorApi } from "../../api/doctorApi";
 import { useNavigate, useParams } from "react-router-dom";
 // import { addDoctor } from "../../api/doctorApi";
+import { showAlert } from "../../components/AlertComponent";
 
 function AddDoctor() {
     const { id } = useParams();
@@ -21,7 +22,7 @@ function AddDoctor() {
         firstName: "",
         lastName: "",
         email: "",
-        phone: " ",
+        phone:" ",
         dateOfBirth: "",
         gender: "",
         qualification: "",
@@ -228,8 +229,8 @@ function AddDoctor() {
                 firstname: personalInfo.firstName,
                 lastname: personalInfo.lastName,
                 email: personalInfo.email,
-                countryCode: personalInfo.countryCode,
-                phone: personalInfo.phone,
+                countryCode: personalInfo.countryCode || "+91",
+                phone: personalInfo.phone.trim(),
                 dob: personalInfo.dateOfBirth,
                 gender: personalInfo.gender,
                 role: 3,
@@ -262,12 +263,12 @@ function AddDoctor() {
                 familyDetails: {
                     father: {
                         name: familyDetails.fatherName,
-                        contact: familyDetails.fatherContact,
+                        contact: familyDetails.fatherContact.trim(),
                         occupation: familyDetails.fatherOccupation
                     },
                     mother: {
                         name: familyDetails.motherName,
-                        contact: familyDetails.motherContact,
+                        contact: familyDetails.motherContact.trim(),
                         occupation: familyDetails.motherOccupation
                     },
                     permanentAddress: {
@@ -290,7 +291,7 @@ function AddDoctor() {
                     emergencyContact: {
                         name: emergencyContact.contactName,
                         relation: emergencyContact.relation,
-                        contact: emergencyContact.contactNumber
+                        contact: emergencyContact.contactNumber.trim()
                     }
                 }
             };
@@ -298,8 +299,10 @@ function AddDoctor() {
             console.log(id, ">>> Id kkk")
             if (!id) {
                 result = await addDoctor(payload);
+                showAlert("Doctor Add Successfully!", "success")
             } else {
                 result = await updateDoctor(id, payload);
+                showAlert("Doctor Updated Successfully!","success")
                 navigate(`/dashboard/admin/members`);
             }
 
@@ -317,7 +320,7 @@ function AddDoctor() {
             lastName: "",
             email: "",
             countryCode: "+91",
-            phone: "",
+            phone:"",
             dateOfBirth: "",
             gender: "",
             qualification: "",
@@ -423,7 +426,7 @@ function AddDoctor() {
     return (
         <div style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
             <span className='text-[1.8rem] text-[#1a6f8b] m-0 font-semibold flex justify-start pt-[20px] pb-[1rem] px-[20px] border-b border-[#eee] sticky top-0 z-10 bg-[#f5f7fa]' style={{ fontFamily: "'Arial', sans-serif" }}>
-                Add Doctor
+                {id ? "Edit Doctor":"Add Doctor"}
             </span>
             <form onSubmit={onSubmit} className="space-y-6 px-5 py-5" style={{ flex: 1, overflowY: "auto" }}>
                 <section className={sectionClass}>

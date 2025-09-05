@@ -1066,3 +1066,6 @@ p {
   padding: 8px 20px !important;
   color: #555;
 }
+.member-pagination .Mui-selected{
+  background-color: #1a6f8b !important;
+}
