@@ -18,6 +18,7 @@ import { Edit, Delete } from "@mui/icons-material";
 import { useDoctorApi } from "../../api/doctorApi";
 import { useUserApi } from "../../api/userApi";
 import { useNavigate } from "react-router-dom";
+import SearchIcon from '@mui/icons-material/Search';
 
 // 🔹 Flatten object helper
 const flattenObject = (obj, parentKey = "", res) => {
@@ -52,6 +53,7 @@ function Members() {
     const { getUserList } = useUserApi();
     const navigate = useNavigate();
     const rowsPerPage = 10; // show 10 per page
+    const [skip, setSkip] = useState(0)
 
     // paginate data
     // const paginatedRows = rows.slice((page - 1) * rowsPerPage, page * rowsPerPage);
@@ -60,7 +62,7 @@ function Members() {
     const fetchStaff = async (skip) => {
         try {
             setLoading(true);
-            const data = await getDoctor({ skip, limit: rowsPerPage }); // API response
+            const data = await getDoctor({ skip, limit: rowsPerPage, search }); // API response
             setStaffData(data?.rows);
             setTotalCounts(data?.total_count)
 
@@ -76,7 +78,7 @@ function Members() {
     const fetchUser = async (skip) => {
         try {
             setLoading(true);
-            const data = await getUserList({ skip, limit: rowsPerPage }); // API response
+            const data = await getUserList({ skip, limit: rowsPerPage, search }); // API response
             setUserData(data?.rows);
             setTotalCounts(data?.total_count)
         } catch (err) {
@@ -119,7 +121,16 @@ function Members() {
             fetchUser(skip);
         }
     };
-
+    const handleSearch = () => {
+        // setPage(value);
+        const skip = (page - 1) * rowsPerPage
+        if (activeTab === "staff") {
+            fetchStaff(skip);
+        }
+        if (activeTab === "user") {
+            fetchUser(skip);
+        }
+    }
     const handleEdit = (row, type) => {
         // Navigate to the add-doctor page with query param or route param
         if (activeTab === "staff") {
@@ -185,14 +196,24 @@ function Members() {
 
                 {/* Search + Dropdown */}
                 <div className="flex space-x-2 items-center">
-                    <TextField
-                        variant="outlined"
-                        size="small"
-                        placeholder="Search..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+                    <div className="flex items-center min-w-[250px] rounded-md border border-gray-300 overflow-hidden">
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                            placeholder="Search..."
+                            className="flex-grow px-3 py-2  outline-none"
+                        />
 
+                        {/* Search button */}
+                        <button
+                            onClick={handleSearch}
+                            className="bg-[#1a6f8b] hover:bg-[#155d73] text-white px-3 py-2"
+                        >
+                            <SearchIcon />
+                        </button>
+                    </div>
                     <Select
                         size="small"
                         value={filter}

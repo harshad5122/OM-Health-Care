@@ -9,8 +9,8 @@ export const useDoctorApi = () => {
         return res.data;
     };
 
-    const getDoctor = async ({ skip, limit }) => {
-        const res = await axiosInstance.get(`/get/doctor/?skip=${skip}&limit=${limit}`);
+    const getDoctor = async ({ skip, limit, search }) => {
+        const res = await axiosInstance.get(`/get/doctor/?skip=${skip}&limit=${limit}&search=${search}`);
         return res.data.body;
     };
     const getDoctorById = async (id) => {
