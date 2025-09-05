@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/Auth.css';
 import registerIllustration from '../../assets/auth/login-illustration.png';
 import { useAuthApi } from '../../api/authApi';
+import { showAlert } from '../../components/AlertComponent';
 
 
 const Register = () => {
@@ -24,6 +25,7 @@ const Register = () => {
     city: "",
     gender: "",
     role: 1,
+    dob:"",
   });
 
   const [loading, setLoading] = useState(false);
@@ -41,7 +43,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password && formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      showAlert('Passwords do not match!', "error")
       return;
     }
 
@@ -51,11 +53,12 @@ const Register = () => {
       delete payload.confirmPassword; // backend doesn’t need this
 
       const res = await signupUser(payload); //  call API
-      alert(res.msg || "User registered successfully!");
+      showAlert(res.msg || "User registered successfully!", "success");
+
       navigate("/auth/login");
       // navigate('/');
     } catch (err) {
-      alert(err.msg || "Signup failed!");
+      showAlert(err.msg || "Signup failed!", "error")
     } finally {
       setLoading(false);
     }
@@ -87,7 +90,7 @@ const Register = () => {
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="form-row">
-              <div className="form-group">
+              <div className="form-register-group">
                 <label htmlFor="firstname">First Name*</label>
                 <input
                   type="text"
@@ -99,8 +102,7 @@ const Register = () => {
                   required
                 />
               </div>
-              {/* <div> </div> */}
-              <div className="form-group">
+              <div className="form-register-group">
                 <label htmlFor="lastname">Last Name*</label>
                 <input
                   type="text"
@@ -112,12 +114,11 @@ const Register = () => {
                   required
                 />
               </div>
-              {/* <div> </div> */}
             </div>
 
 
 
-            <div className="form-group">
+            <div className="form-register-group">
               <label htmlFor="mobile">Mobile Number</label>
               <div className="phone-input">
                 <select id="country-code"
@@ -127,7 +128,6 @@ const Register = () => {
                   className="country-code">
                   <option value="+91">+91 (IN)</option>
                   <option value="+1">+1 (US)</option>
-                  {/* Add more country codes as needed */}
                 </select>
                 <input
                   type="tel"
@@ -142,7 +142,7 @@ const Register = () => {
             </div>
 
             <div className="form-row single-col">
-              <div className="form-group">
+              <div className="form-register-group">
                 <label htmlFor="email">Email</label>
                 <input
                   type="email"
@@ -156,7 +156,7 @@ const Register = () => {
             </div>
 
             <div className="form-row">
-              <div className="form-group">
+              <div className="form-register-group">
                 <label htmlFor="password">Password</label>
                 <input
                   type="password"
@@ -167,8 +167,7 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-              {/* <div> </div> */}
-              <div className="form-group">
+              <div className="form-register-group">
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 <input
                   type="password"
@@ -180,11 +179,10 @@ const Register = () => {
                   disabled={!formData.password}
                 />
               </div>
-              {/* <div> </div> */}
             </div>
 
             <div className="form-row single-col">
-              <div className="form-group">
+              <div className="form-register-group">
                 <label htmlFor="address">Address</label>
                 <input
                   type="text"
@@ -198,18 +196,8 @@ const Register = () => {
             </div>
 
             <div className="form-row three-col">
-              <div className="form-group">
+              <div className="form-register-group">
                 <label htmlFor="country">Country</label>
-                {/* <select
-                  id="country"
-                  name="country"
-                  value={formData.country}
-                  onChange={handleChange}
-                >
-                  <option value="India">India</option>
-                  <option value="USA">USA</option>
-                  <option value="UK">UK</option>
-                </select> */}
                 <input
                   type="text"
                   id="country"
@@ -219,7 +207,7 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-              <div className="form-group">
+              <div className="form-register-group">
                 <label htmlFor="state">State</label>
                 <input
                   type="text"
@@ -230,8 +218,7 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-              {/* <div> </div> */}
-              <div className="form-group">
+              <div className="form-register-group">
                 <label htmlFor="city">City</label>
                 <input
                   type="text"
@@ -242,10 +229,19 @@ const Register = () => {
                   onChange={handleChange}
                 />
               </div>
-              {/* <div> </div> */}
             </div>
-
-            <div className="form-group">
+            <div className="form-register-group">
+              <label htmlFor="dob">Date of Birth</label>
+              <input
+                type="date"
+                id="dob"
+                name="dob"
+                placeholder="Your Birthdate"
+                value={formData.dob}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-register-group">
               <label htmlFor="gender">Gender</label>
               <select
                 id="gender"
@@ -261,7 +257,6 @@ const Register = () => {
             </div>
 
             <button type="submit" className="auth-button" disabled={loading}>
-              {/* Register Account */}
               {loading ? "Registering..." : "Register Account"}
             </button>
           </form>

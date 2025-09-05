@@ -93,7 +93,7 @@ function AddUser() {
                 resetForm();
             }
         } catch (err) {
-            console.error("Error adding user:", err);
+            console.log("Error adding user:", err);
         } finally {
             setIsSubmitting(false);
         }

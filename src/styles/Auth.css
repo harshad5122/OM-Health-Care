@@ -97,9 +97,9 @@
   border-radius: 12px;
   /* box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);  */
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem 2rem; /* Increased padding */
+  padding: 15px;
   width: 100%;
-  max-width: 460px;
+  max-width: 500px;
   transform: translateY(0); /* Resetting animation from previous version */
   animation: fadeInScale 0.6s ease-out 0.2s forwards; /* Delayed fade-in and slight scale */
   opacity: 0;
@@ -165,24 +165,24 @@
 
 .form-row {
   display: flex;
-  gap: 3rem; /* Increased gap */
-  margin-right: 35px;
+  gap: 10px; /* Increased gap */
+
 }
 
 
-.form-row.three-col .form-group {
+.form-row.three-col .form-register-group {
     /* flex: 1 1 30%;  */
     flex: 1;
      /* min-width: 120px;  */
 }
 
-.form-group {
+.form-register-group {
   margin-bottom: 1rem; 
   flex: 1;
   position: relative; 
 }
 
-.form-group label {
+.form-register-group label {
   display: block;
   margin-bottom: 0.4rem; 
   color: var(--text-color);
@@ -191,8 +191,8 @@
   text-align: left;
 }
 
-.form-group input,
-.form-group select {
+.form-register-group input,
+.form-register-group select {
   width: 100%;
   padding: 0.7rem 1rem; /* More padding for a richer feel */
   border: 1px solid #c9d8e5; /* Softer border color */
@@ -208,13 +208,13 @@
   justify-content: space-between;
 }
 
-.form-row.single-col .form-group {
+.form-row.single-col .form-register-group {
   flex: 1;
   width: 80%; /* Fill full width */
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.form-register-group input:focus,
+.form-register-group select:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(26, 111, 139, 0.15); 
@@ -425,10 +425,14 @@
     flex-direction: column;
     gap: 0; /* Remove gap when stacked */
   }
-  .form-row.three-col .form-group {
+  .form-row.three-col .form-register-group {
     flex: none; /* Reset flex */
     width: 100%; /* Full width when stacked */
   }
+  .form-row.single-col .form-register-group {
+  flex: 1;
+  width: 100%; /* Fill full width */
+}
   .auth-method-toggle {
     flex-direction: column;
   }

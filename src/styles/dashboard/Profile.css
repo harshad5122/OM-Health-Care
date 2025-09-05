@@ -132,6 +132,7 @@
   font-weight: 600; 
   color: var(--text-color);
   font-size: 0.9rem; 
+  text-align: left;
 }
 
 .form-group input,

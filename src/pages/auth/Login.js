@@ -5,6 +5,7 @@ import loginIllustration from '../../assets/auth/login-illustration.png';
 // import { signinUser } from "../../api/authApi";
 import { useAuth } from "../../context/AuthContext";
 import { useAuthApi } from '../../api/authApi';
+import { showAlert } from '../../components/AlertComponent';
 
 const UserTypes = Object.freeze({
   USER: 1,
@@ -48,7 +49,7 @@ const Login = () => {
           phone,
           otp,
         });
-        alert(res.msg); // "Logged in successfully"
+        showAlert(res.msg || "Logged in successfully!", "success");
         saveAuthData(res.body.token, res.body);
         console.log("Login Token:", res.body.token, res.body);
         // navigate("/");
@@ -64,7 +65,7 @@ const Login = () => {
           email,
           password,
         });
-        alert(res.msg); // "Logged in successfully"
+        showAlert(res.msg || "Logged in successfully!", "success");
         saveAuthData(res.body.token, res.body);
         console.log("Login Token:", res.body.token, res.body);
         // navigate("/");
@@ -75,7 +76,7 @@ const Login = () => {
         }
       }
     } catch (err) {
-      alert(err.msg || "Login failed");
+      showAlert(err.msg || "Login failed", "error")
     }
   };
 

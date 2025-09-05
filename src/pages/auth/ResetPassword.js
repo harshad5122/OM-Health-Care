@@ -3,6 +3,7 @@ import { useNavigate,useLocation } from "react-router-dom";
 import "../../styles/Auth.css";
 import loginIllustration from "../../assets/auth/login-illustration.png";
 import { useAuthApi } from "../../api/authApi";
+import { showAlert } from "../../components/AlertComponent";
 
 const ChangePassword = () => {
     const navigate = useNavigate();
@@ -20,17 +21,17 @@ const ChangePassword = () => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            alert("Passwords do not match!");
+            showAlert('Passwords do not match!', "error")
             return;
         }
 
         try {
             setIsSubmitting(true);
             const res = await changePassword({ newPassword: password });
-            alert(res.msg || "Password changed successfully");
+            showAlert(res.msg || "Password changed successfully", "success");
             navigate("/auth/login");
         } catch (err) {
-            alert(err.msg || "Failed to change password");
+            showAlert(err.msg || "Failed to change password", "error")
         } finally {
             setIsSubmitting(false);
         }

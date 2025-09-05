@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, useLocation } from 'react-router-dom';
 import "./App.css";
+import { AlertComponent } from "./components/AlertComponent";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -40,6 +41,7 @@ function App() {
 
   return (
     <div className="App">
+      <AlertComponent/>
       <Routes>
         {/* Routes with Navbar and Footer */}
         <Route element={<MainLayout />}>
@@ -62,32 +64,7 @@ function App() {
         </Route>
         <Route path="/chat" element={<Chat />} />
 
-        {/* Dashboard routes (protected) */}
-        {/* <Route
-          path="/dashboard/admin/*"
-          element={
-            <ProtectedRoute allowedRoles={[2]}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/staff/*"
-          element={
-            <ProtectedRoute allowedRoles={[3]}>
-              <StaffDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/user/*"
-          element={
-            <ProtectedRoute allowedRoles={[1]}>
-              <UserDashboard />
-            </ProtectedRoute>
-          }
-        /> */}
-        {/* Admin Dashboard */}
+        
         <Route
           path="/dashboard/admin"
           element={

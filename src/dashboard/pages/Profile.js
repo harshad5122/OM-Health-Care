@@ -1,29 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link  } from 'react-router-dom';
 import '../../styles/dashboard/Profile.css';
 // import { getProfile, updateProfile } from "../../api/userApi";
 import { useAuth } from "../../context/AuthContext";
 import { useUserApi } from '../../api/userApi';
-
+import {showAlert} from '../../components/AlertComponent';
 
 
 const Profile = () => {
 
   const { token } = useAuth();
-
-  // Static data - replace with API calls later
-  // const [profileData, setProfileData] = useState({
-  //   firstname: "John",
-  //   lastname: "Doe",
-  //   email: "john.doe@example.com",
-  //   phone: "+91-9876543210",
-  //   gender: "male",
-  //   birthDate: "1990-01-01",
-  //   address: "123 Health Street, Near Om Clinic",
-  //   city: "Mumbai",
-  //   state: "Maharashtra",
-  //   country: "India"
-  // });
 
   const [profileData, setProfileData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -41,8 +27,8 @@ const Profile = () => {
         setProfileData(data);
         setTempData(data);
       } catch (error) {
-        console.error("Error fetching profile:", error);
-        alert(error.msg || "Failed to load profile");
+        console.log("Error fetching profile:", error);
+        showAlert(error.msg, "error")
       } finally {
         setLoading(false);
       }
@@ -70,10 +56,10 @@ const Profile = () => {
       const updated = await updateProfile(token, tempData);
       setProfileData(updated);
       setIsEditing(false);
-      alert("Profile updated successfully!");
+     showAlert("Profile updated successfully!", "success")
     } catch (error) {
-      console.error("Error updating profile:", error);
-      alert(error.msg || "Failed to update profile");
+      console.log("Error updating profile:", error);
+      showAlert(error.msg, "error")
     }
   };
 
@@ -237,7 +223,11 @@ const Profile = () => {
           </div>
         </div>
         <div className="profile-actions-bottom">
-          <Link to="/dashboard/admin/home" className="btn btn-tertiary">
+          <Link 
+          // to="/dashboard/admin/home" 
+           to={profileData.role === 1 ? "/dashboard/user/home" : "/dashboard/admin/home"}
+          className="btn btn-tertiary"
+          >
             Back to Dashboard
           </Link>
           <Link className="btn btn-primary" to="/auth/change-password?from=profile">
