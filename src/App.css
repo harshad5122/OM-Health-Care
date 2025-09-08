@@ -1069,3 +1069,11 @@ p {
 .member-pagination .Mui-selected{
   background-color: #1a6f8b !important;
 }
+.filter-daterange .MuiPickersInputBase-root{
+  padding: 0 7px !important;
+}
+.filter-daterange .MuiPickersSectionList-root{
+  padding: 9.22px 0 !important;
+  width: 120px !important;
+  font-size: 15px !important;
+}

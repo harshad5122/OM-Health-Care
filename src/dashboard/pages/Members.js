@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-    TextField,
     Table,
     TableBody,
     TableCell,
@@ -9,8 +8,6 @@ import {
     TableRow,
     Paper,
     Pagination,
-    Select,
-    MenuItem,
     IconButton,
     CircularProgress,
     Stack
@@ -19,25 +16,8 @@ import { Edit, Delete } from "@mui/icons-material";
 import { useDoctorApi } from "../../api/doctorApi";
 import { useUserApi } from "../../api/userApi";
 import { useNavigate } from "react-router-dom";
-import SearchIcon from '@mui/icons-material/Search';
-
-// 🔹 Flatten object helper
-const flattenObject = (obj, parentKey = "", res) => {
-    if (!obj || typeof obj !== "object") return res; // guard
-
-    for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            const newKey = parentKey ? `${parentKey}.${key}` : key;
-
-            if (typeof obj[key] === "object" && obj[key] !== null && !Array.isArray(obj[key])) {
-                flattenObject(obj[key], newKey, res); // recursive
-            } else {
-                res[newKey] = obj[key];
-            }
-        }
-    }
-    return res;
-};
+import Filter from "../../components/Filter";
+import dayjs from "dayjs";
 
 
 function Members() {
@@ -54,15 +34,15 @@ function Members() {
     const { getUserList } = useUserApi();
     const navigate = useNavigate();
     const rowsPerPage = 100; // show 10 per page
+    const [fromDate, setFromDate] = useState(dayjs().startOf("month"));
+    const [toDate, setToDate] = useState(dayjs().endOf("month"));
     
-    // paginate data
-    // const paginatedRows = rows.slice((page - 1) * rowsPerPage, page * rowsPerPage);
-
-    // 🔹 Fetch staff data
-    const fetchStaff = async (skip) => {
+   
+    const fetchStaff = async (skip,from = fromDate, to = toDate) => {
         try {
             setLoading(true);
-            const data = await getDoctor({ skip, limit: rowsPerPage, search }); // API response
+            const data = await getDoctor({ skip, limit: rowsPerPage, search, from_date: from ? dayjs(from).format("YYYY-MM-DD") : "",
+            to_date: to ? dayjs(to).format("YYYY-MM-DD") : "",}); 
             setStaffData(data?.rows);
             setTotalCounts(data?.total_count)
 
@@ -75,10 +55,11 @@ function Members() {
         }
     };
 
-    const fetchUser = async (skip) => {
+    const fetchUser = async (skip,from = fromDate, to = toDate) => {
         try {
             setLoading(true);
-            const data = await getUserList({ skip, limit: rowsPerPage, search }); // API response
+            const data = await getUserList({ skip, limit: rowsPerPage, search , from_date: from ? dayjs(from).format("YYYY-MM-DD") : "",
+            to_date: to ? dayjs(to).format("YYYY-MM-DD") : "",});
             setUserData(data?.rows);
             setTotalCounts(data?.total_count)
         } catch (err) {
@@ -88,28 +69,7 @@ function Members() {
         }
     }
 
-    // 🔹 Dummy user data (can be replaced by API)
-    // useEffect(() => {
-    //     const rawUsers = [
-    //         { id: 1, name: "Alice Johnson", email: "alice@example.com" },
-    //         { id: 2, name: "Bob Williams", email: "bob@example.com" },
-    //     ];
-    //     const flattened = rawUsers?.map((u) => flattenObject(u));
-    //     setUserData(flattened);
-    // }, []);
-
-    // 🔹 Decide which dataset to use
     const rows = activeTab === "staff" ? staffData : userData;
-
-    // 🔹 Recompute columns whenever rows change
-
-
-    // 🔹 Search filter
-    // const filteredRows = rows?.filter((row) =>
-    //     Object.values(row)?.some((val) =>
-    //         String(val)?.toLowerCase()?.includes(search?.toLowerCase())
-    //     )
-    // );
 
     const handleChangePage = (event, value) => {
         setPage(value);
@@ -163,6 +123,36 @@ function Members() {
         });
         setColumns(Array.from(allKeys));
     }, [rows]);
+    const handleSearchButton = () => {
+        setPage(1);
+        const skip = 0; 
+
+        if (activeTab === "staff") {
+            fetchStaff(skip);
+        }
+
+        if (activeTab === "user") {
+            fetchUser(skip);
+        }
+    };
+    const handleClearButton = () => {
+        const start = dayjs().startOf("month");
+        const end = dayjs().endOf("month");
+
+        setFilter("thisMonth");
+        setFromDate(start);
+        setToDate(end);
+        setPage(1);
+
+        const skip = 0;
+        if (activeTab === "staff") {
+            fetchStaff(skip, start, end);
+        }
+        if (activeTab === "user") {
+            fetchUser(skip, start, end);
+        }
+    };
+
 
     return (
         <div className="px-6 pt-6 pb-3">
@@ -193,40 +183,20 @@ function Members() {
                     </button>
                 </div>
 
-
-              
-                <div className="flex space-x-2 items-center">
-                    <div className="flex items-center min-w-[250px] rounded-md border border-gray-300 overflow-hidden">
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                            placeholder="Search..."
-                            className="flex-grow px-3 py-2  outline-none"
-                        />
-
-                        {/* Search button */}
-                        <button
-                            onClick={handleSearch}
-                            className="bg-[#1a6f8b] hover:bg-[#155d73] text-white px-3 py-2"
-                        >
-                            <SearchIcon />
-                        </button>
-                    </div>
-                    <Select
-                        size="small"
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
-                    >
-                        <MenuItem value="thisMonth">This Month</MenuItem>
-                        <MenuItem value="lastMonth">Last Month</MenuItem>
-                        <MenuItem value="thisWeek">This Week</MenuItem>
-                    </Select>
-                </div>
+                <Filter
+                    search={search}
+                    setSearch={setSearch}
+                    filter={filter}
+                    setFilter={setFilter}
+                    handleSearch={handleSearch}
+                    fromDate={fromDate}
+                    setFromDate={setFromDate}
+                    toDate={toDate}
+                    setToDate={setToDate}
+                    handleSearchButton={handleSearchButton}
+                    handleClearButton={handleClearButton}
+                />
             </div>
-
-          
             <div className="overflow-x-auto h-[75vh]">
                 {loading ? (
                 <div className="flex justify-center items-center h-full">

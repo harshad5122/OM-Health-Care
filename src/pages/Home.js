@@ -112,7 +112,7 @@ const Home = () => {
 						recovery.
 					</p>
 					<Link
-						to="/appointment"
+						to="/auth/login"
 						className="hero-button slide-up inline-block  text-white px-10 py-4 rounded-[30px] text-[1.2rem] font-semibold shadow-md"
 						style={{
 							animationDelay: '0.6s',
