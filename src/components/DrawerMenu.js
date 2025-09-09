@@ -8,6 +8,7 @@ import {
   FaUserMd,
   FaUserPlus,
   FaUsers,
+FaCalendarAlt,
 
 } from "react-icons/fa";
 import "../styles/DrawerMenu.css";
@@ -33,6 +34,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       { path: "home", label: "Dashboard", icon: <FaCubes /> },
       { path: "profile", label: "Profile", icon: <FaUser /> },
       { path: "messages", label: "Messages", icon: <FaEnvelope /> },
+      { path: "appointment", label: "Book Appointment", icon: <FaCalendarAlt /> },
     ],
     2: [
       { path: "home", label: "Dashboard", icon: <FaCubes /> },
@@ -41,7 +43,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       { path: "add-doctor", label: "Add Doctor", icon: <FaUserMd /> },
       { path: "add-user", label: "Add User", icon: <FaUserPlus /> },
       { path: "members", label: "Members", icon: <FaUsers /> },
-      { path: "appointment", label: "Book Appointment", icon: <FaUsers /> },
+      { path: "appointment", label: "Book Appointment", icon: <FaCalendarAlt /> },
     ],
     3: [
       { path: "home", label: "Dashboard", icon: <FaCubes /> },

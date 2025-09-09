@@ -114,6 +114,7 @@ function App() {
           <Route path="home" element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
           <Route path="messages" element={<Chat />} />
+          <Route path="appointment" element={<AddAppointment/>}/>
         </Route>
       </Routes>
       {/* <FloatingChatButton /> */}
