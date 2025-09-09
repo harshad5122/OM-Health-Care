@@ -33,6 +33,7 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent }) {
             onSelectSlot={onSelectSlot}
             onSelectEvent={onSelectEvent}
             views={{ month: true, week: true, day: true }}
+            view={currentView}
             onView={handleViewChange}
             defaultView={Views.MONTH}   // ✅ required for view switching
             date={currentDate}          // ✅ controlled date state
