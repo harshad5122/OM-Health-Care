@@ -37,12 +37,12 @@ const Chat = () => {
 
     const fetchLists = async () => {
       try {
-        const adminList = await getAdminList(token);
+        const adminList = await getAdminList();
         setAdmins(adminList);
 
         if (user.role === 2) { // Admin
-          const staffList = await getStaffList(token);
-          const userList = await getUserList(token);
+          const staffList = await getStaffList();
+          const userList = await getUserList({ skip: null, limit: null, search: "" });
           setStaff(staffList);
           setUsers(userList);
         }
@@ -257,7 +257,7 @@ const Chat = () => {
   }, [activeMessageMenu]);
 
   const [menuPosition, setMenuPosition] = React.useState("below");
-  const toggleMessageMenu = (messageId,e) => {
+  const toggleMessageMenu = (messageId, e) => {
     setActiveMessageMenu(activeMessageMenu === messageId ? null : messageId);
     const messageEl = msgRefs.current[messageId];
     const chatBoxEl = chatBoxRef.current;
@@ -267,7 +267,7 @@ const Chat = () => {
       const chatRect = chatBoxEl.getBoundingClientRect();
 
       const spaceAbove = msgRect.top - chatRect.top;
-      const menuHeight = 130; 
+      const menuHeight = 130;
       if (spaceAbove > menuHeight) {
         setMenuPosition("above");
       } else {
@@ -318,7 +318,7 @@ const Chat = () => {
       </div>
     ));
   };
-const msgRefs = useRef({});
+  const msgRefs = useRef({});
   return (
     // <div className="chat-container">
     <div id="chat-app-container" className="chat-container">
@@ -369,7 +369,7 @@ const msgRefs = useRef({});
             </div>
 
             <div className="chat-box" ref={chatBoxRef}>
-              
+
               {(!messages || messages.length === 0) && (
                 <div className="no-messages flex items-center justify-center h-full">
                   <p className="text-gray-400 text-[14px]">
@@ -471,13 +471,13 @@ const msgRefs = useRef({});
                     <div className="message-meta">
                       {/* <span className="time">{formatTime(msg.created_at)}</span> */}
                       {msg.sender_id === user?._id && (
-                        <button className="menu" 
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            toggleMessageMenu(msg._id,e); 
+                        <button className="menu"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleMessageMenu(msg._id, e);
                           }}
                         >
-                          <ChevronDown size={16}/>
+                          <ChevronDown size={16} />
                         </button>
                       )}
                       <span className="time" >{formatTime(msg.created_at)}</span>
@@ -485,20 +485,20 @@ const msgRefs = useRef({});
 
                     {activeMessageMenu === msg._id && (
                       <div className={`message-menu absolute right-[10px] bg-white rounded shadow-md z-10 min-w-[120px] py-[5px]`}
-                      style={
-                        menuPosition === "below"
-                          ? {
+                        style={
+                          menuPosition === "below"
+                            ? {
                               top: msgRefs.current[msg._id]?.offsetHeight
                                 ? msgRefs.current[msg._id].offsetHeight + 8
                                 : 30,
                             }
-                          : {
+                            : {
                               bottom: msgRefs.current[msg._id]?.offsetHeight
                                 ? msgRefs.current[msg._id].offsetHeight + 38
                                 : 30,
                             }
-                      }
-                      ref={messageMenuRef}
+                        }
+                        ref={messageMenuRef}
                       >
                         {msg.message_type === "text" && (
                           <button onClick={() => startEditingMessage(msg)}>
@@ -549,7 +549,7 @@ const msgRefs = useRef({});
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                 ref={inputRef}
+                ref={inputRef}
               />
 
               {editingMessage ? (

@@ -30,9 +30,9 @@ export const useUserApi = () => {
     }
   };
 
-  const getUserList = async ({ skip, limit, search ,from_date,to_date}) => {
+  const getUserList = async (payload) => {
     try {
-      const response = await axiosInstance.get(`/user/list/?skip=${skip}&limit=${limit}&search=${search}&from_date=${from_date}&to_date=${to_date}`);
+      const response = await axiosInstance.get(`/user/list/?skip=${payload?.skip}&limit=${payload?.limit}&search=${payload?.search}&from_date=${payload?.from_date}&to_date=${payload?.to_date}`);
       return response.data.body;
     } catch (error) {
       throw error.response?.data || { msg: "Failed to fetch user list" };
