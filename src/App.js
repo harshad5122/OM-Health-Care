@@ -27,6 +27,7 @@ import AddDoctor from "./dashboard/pages/AddDoctor";
 import AddUser from "./dashboard/pages/AddUser";
 import Members from "./dashboard/pages/Members";
 import ChangePassword from "./pages/auth/ResetPassword";
+import AddAppointment from "./dashboard/pages/AddAppointment";
 // import Messages from "./dashboard/pages/Messages";
 
 
@@ -82,6 +83,7 @@ function App() {
           <Route path="add-user" element={<AddUser />} />
           <Route path="add-user/:id" element={<AddUser />} />
           <Route path="members" element={<Members />} />
+          <Route path="appointment" element={<AddAppointment/>}/>
         </Route>
 
         {/* Staff Dashboard */}

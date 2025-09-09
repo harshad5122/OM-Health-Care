@@ -41,6 +41,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       { path: "add-doctor", label: "Add Doctor", icon: <FaUserMd /> },
       { path: "add-user", label: "Add User", icon: <FaUserPlus /> },
       { path: "members", label: "Members", icon: <FaUsers /> },
+      { path: "appointment", label: "Book Appointment", icon: <FaUsers /> },
     ],
     3: [
       { path: "home", label: "Dashboard", icon: <FaCubes /> },
@@ -68,18 +69,26 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
   };
 
   return (
-    <aside className={`drawer ${isOpen ? "open" : ""}`}>
-      {/* Header */}
-      <div className="drawer-header">
-        {/* <h2 className="sidebar-title">Om Health Care</h2> */}
+    <div 
+    // className={`drawer ${isOpen ? "open" : "closed"}`}
+    className={`fixed top-0 left-0 h-screen bg-light-color shadow-md flex flex-col justify-between transition-all duration-300 z-[1000] ${isOpen ? "w-72" : "w-16"}`}
+    >
+      
+      {isOpen ? <div className="drawer-header">
         <Link to="/" className="sidebar-title">
           Om Health Care
         </Link>
         <button className="close-btn" onClick={toggleDrawer}>
           &times;
         </button>
-      </div>
-      <nav className="drawer-nav">
+      </div>: 
+      <div className="flex items-center justify-center mt-[10px]">
+        <button className="menu-btn" onClick={toggleDrawer}>
+          ☰
+        </button>
+      </div>}
+      
+      <nav className={`${isOpen ? "drawer-nav":"drawerclose-nav"}`}>
       {menuItems[userRole]?.map((item) => {
         // Check if current path matches the menu item
         const isActive = location.pathname === `${basePaths[userRole]}/${item.path}`;
@@ -91,7 +100,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
             className={`sidebar-link ${isActive ? "active-link" : ""}`}
           >
             <span className="icon">{item.icon}</span>
-            <span className="label">{item.label}</span>
+           {isOpen && <span className="label">{item.label}</span>}
           </Link>
         );
       })}
@@ -99,11 +108,11 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
 
       {/* Logout at bottom */}
       <div className="drawer-footer">
-        <button className="logout-btn" onClick={() => setModalOpen(true)}>
+        <button className={`logout-btn ${isOpen ? "":"justify-center"}`} onClick={() => setModalOpen(true)}>
           <span className="icon">
             <FaSignOutAlt />
           </span>
-          <span className="label">Logout</span>
+         {isOpen && <span className="label">Logout</span>}
         </button>
       </div>
       <ConfirmModal
@@ -113,7 +122,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
         onConfirm={handleLogout}
         onCancel={() => setModalOpen(false)}
       />
-    </aside>
+    </div>
   );
 };
 

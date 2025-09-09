@@ -12,10 +12,10 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
   return (
     <header className="top-bar">
       <div className="left-section">
-        <button className="menu-btn" onClick={toggleDrawer}>
+        {/* <button className="menu-btn" onClick={toggleDrawer}>
           ☰
         </button>
-        <h1 className="title">{title}</h1>
+        <h1 className="title">{title}</h1> */}
       </div>
      
        <div className="right-section">

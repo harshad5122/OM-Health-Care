@@ -138,7 +138,7 @@ function Members() {
     const handleClearButton = () => {
         const start = dayjs().startOf("month");
         const end = dayjs().endOf("month");
-
+        setSearch("")
         setFilter("thisMonth");
         setFromDate(start);
         setToDate(end);
@@ -168,7 +168,7 @@ function Members() {
                             } rounded-l-md border`}
                         onClick={() => setActiveTab("staff")}
                     >
-                        Staff
+                        Doctor
                     </button>
 
                     <button

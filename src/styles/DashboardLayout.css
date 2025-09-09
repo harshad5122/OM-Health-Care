@@ -13,9 +13,11 @@
 }
 
 .main-content.drawer-open {
-  margin-left: 300px;
+  margin-left: 300px !important;
 }
-
+.main-content.drawer-close {
+  margin-left: 70px !important;
+}
 .content-wrapper {
   padding: 2rem;
   min-height: calc(100vh - 60px);
