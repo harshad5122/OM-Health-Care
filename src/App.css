@@ -1077,3 +1077,11 @@ p {
   width: 120px !important;
   font-size: 15px !important;
 }
+.appo-timepicker .MuiPickersInputBase-root{
+  padding: 0 7px !important;
+  font-size: 14px !important;
+}
+.appo-timepicker .MuiPickersSectionList-root{
+  width: 140px !important;
+  padding: 9.5px 0 !important;
+}

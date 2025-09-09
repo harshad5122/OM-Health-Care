@@ -6,7 +6,7 @@ function ReusableModal({ isOpen, onClose, title, children }) {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-            <div className="bg-white rounded-2xl shadow-lg w-[90%] max-w-4xl p-6 relative">
+            <div className="bg-white rounded-2xl shadow-lg  p-6 relative">
                 {/* Header */}
                 <div className="flex justify-between items-center border-b pb-2 mb-4">
                     <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
