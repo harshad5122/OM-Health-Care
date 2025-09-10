@@ -19,12 +19,24 @@ export const NotificationProvider = ({ children }) => {
     useEffect(() => {
         if (user != null) {
 
-            getNotifications().then((res) => {
-                setNotifications(Array.isArray(res?.data?.data) ? res?.data?.data : []);
-            });
-            console.log(user?._id, ">>>")
-            const socket = initSocket(user._id);
-            setSocket(socket)
+            // getNotifications().then((res) => {
+            //     setNotifications(Array.isArray(res?.data?.data) ? res?.data?.data : []);
+            // });
+            
+            // console.log(user?._id, ">>>")
+            // const socket = initSocket(user._id);
+            // setSocket(socket)
+            (async () => {
+                try {
+                    const res = await getNotifications();
+                    console.log(res, ">>> res");  
+                    setNotifications(Array.isArray(res?.body) ? res?.body : []);
+                    const socket = initSocket(user._id);
+                    setSocket(socket)
+                } catch (err) {
+                    console.error("Error fetching notifications", err);
+                }
+            })();
         }
     }, [user]);
 
@@ -34,7 +46,7 @@ export const NotificationProvider = ({ children }) => {
         if (socket != null) {
             socket.on("appointmentRequest", (data) => {
                 console.log(data, ">LLLLUU")
-                alert(data.message); // or show toast/modal
+                // alert(data.message); 
                 setNotifications([...notifications, data])
                 // optionally refresh calendar
             });
