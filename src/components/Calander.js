@@ -14,7 +14,6 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent }) {
 
     const handleNavigate = (newDate, view) => {
         if (view === "month") {
-            console.log(">>LOO")
             setCurrentDate(newDate);
         }
     };
@@ -39,6 +38,52 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent }) {
             date={currentDate}          // ✅ controlled date state
             onNavigate={handleNavigate} // ✅ handles next/prev/today
             popup
+            eventPropGetter={(event) => {
+                let backgroundColor = "";
+                let borderColor = "";
+                let textColor = "white";
+
+                switch (event.type) {
+                    case "leave":
+                        backgroundColor = "#9E9E9E"; // gray
+                        borderColor = "#757575";
+                        break;
+                    case "booked":
+                        switch (event.status) {
+                            case "PENDING":
+                                backgroundColor = "#FF9800"; // orange
+                                borderColor = "#F57C00";
+                                break;
+                            case "CONFIRMED":
+                                backgroundColor = "#4CAF50"; // green
+                                borderColor = "#388E3C";
+                                break;
+                            case "COMPLETED":
+                                backgroundColor = "#2196F3"; // blue
+                                borderColor = "#1976D2";
+                                break;
+                            case "CANCELLED":
+                                backgroundColor = "#F44336"; // red
+                                borderColor = "#D32F2F";
+                                break;
+                            default:
+                                backgroundColor = "#607D8B"; // fallback grey-blue
+                        }
+                        break;
+                    default:
+                        backgroundColor = "#607D8B"; // fallback
+                }
+
+                return {
+                    style: {
+                        backgroundColor,
+                        borderColor,
+                        color: textColor,
+                        borderRadius: "6px",
+                        padding: "2px 6px",
+                    },
+                };
+            }}
         />
     );
 }

@@ -27,6 +27,9 @@ function AddAppointment({ isDrawerOpen }) {
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [appointment, setAppointment] = useState(null);
     const [patients, setPatients] = useState([]);
+    const [calendarEvents, setCalendarEvents] = useState([]);
+    const [allBookings, setAllBookings] = useState([]);
+
     const rowsPerPage = 5;
     const { getDoctor } = useDoctorApi();
     const { getPatients } = useAppointmentApi();
@@ -55,13 +58,7 @@ function AddAppointment({ isDrawerOpen }) {
         const skip = (value - 1) * rowsPerPage
         fetchStaff(skip);
     };
-    const dummyEvents = [
-        {
-            title: "Booked Appointment",
-            start: new Date(2025, 8, 9, 10, 0),
-            end: new Date(2025, 8, 9, 11, 0),
-        },
-    ];
+
     const fetchPatients = async () => {
         try {
             const data = await getPatients();
@@ -70,7 +67,6 @@ function AddAppointment({ isDrawerOpen }) {
             console.log("Error fetching staff:", err);
 
         }
-
     };
     const submitForm = async () => {
         try {
@@ -87,6 +83,7 @@ function AddAppointment({ isDrawerOpen }) {
             };
 
             const result = await createAppointment(payload);
+            await handleGetAppointments(selectedDoctor)
 
             showAlert("Appointment created successfully!", "success");
             console.log("API Response:", result);
@@ -99,14 +96,31 @@ function AddAppointment({ isDrawerOpen }) {
     const handleGetAppointments = async (staff) => {
         try {
             const result = await getAppointments(staff?._id);
-            console.log(result, ">> result ")
+            setAllBookings(result);
+            const mappedEvents = result.flatMap((day) => {
+                return day.events.map((event) => {
+                    const [startHour, startMinute] = event.start.split(":").map(Number);
+                    const [endHour, endMinute] = event.end.split(":").map(Number);
+
+                    const baseDate = dayjs(day.date);
+
+                    return {
+                        title: event.title,
+                        start: baseDate.hour(startHour).minute(startMinute).toDate(),
+                        end: baseDate.hour(endHour).minute(endMinute).toDate(),
+                        type: event.type,
+                        status: event.status
+                    };
+                });
+            });
+
+            setCalendarEvents(mappedEvents)
             setSelectedDoctor(staff);
             setIsModalOpen(true);
 
-
         } catch (error) {
-            console.error("Error creating appointment:", error);
-            showAlert("Failed to create appointment!", "error");
+            console.error("Error getting appointments:", error);
+            showAlert("Failed to get appointments!", "error");
         }
     }
     useEffect(() => {
@@ -132,7 +146,8 @@ function AddAppointment({ isDrawerOpen }) {
                 <div className="flex gap-4">
                     <div className="w-[700px]">
                         <CustomCalendar
-                            events={dummyEvents}
+                            // events={dummyEvents}
+                            events={calendarEvents}
                             onSelectSlot={(slot) => {
                                 console.log("Selected empty slot:", slot);
                                 const isoDate = dayjs(slot.start).format("YYYY-MM-DD"); // store in state
