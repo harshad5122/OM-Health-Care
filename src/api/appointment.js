@@ -10,14 +10,22 @@ export const useAppointmentApi = () => {
     };
     const getPatients = async () => {
         try {
-        const response = await axiosInstance.get(`/get-patients`);
-        return response.data.body; 
+            const response = await axiosInstance.get(`/get-patients`);
+            return response.data.body;
         } catch (error) {
-        throw error.response?.data || { msg: "Failed to fetch profile" };
+            throw error.response?.data || { msg: "Failed to fetch patients" };
         }
     };
 
+    const getAppointments = async (id) => {
+        try {
+            const response = await axiosInstance.get(`/get-appointment-by-doctor/${id}`);
+            return response.data.body;
+        } catch (error) {
+            throw error.response?.data || { msg: "Failed to fetch notification" };
+        }
+    }
 
 
-    return { createAppointment ,getPatients};
+    return { createAppointment, getPatients, getAppointments };
 };

@@ -296,7 +296,6 @@ function AddDoctor() {
                 }
             };
             let result;
-            console.log(id, ">>> Id kkk")
             if (!id) {
                 result = await addDoctor(payload);
                 showAlert("Doctor Add Successfully!", "success")
@@ -424,7 +423,7 @@ function AddDoctor() {
     }, [id]);
 
     return (
-        <div style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
+        <div style={{ height: "calc(100vh - 60px)", display: "flex", flexDirection: "column" }}>
             <span className='text-[1.8rem] text-[#1a6f8b] m-0 font-semibold flex justify-start pt-[20px] pb-[1rem] px-[20px] border-b border-[#eee] sticky top-0 z-10 bg-[#f5f7fa]' style={{ fontFamily: "'Arial', sans-serif" }}>
                 {id ? "Edit Doctor":"Add Doctor"}
             </span>
@@ -735,15 +734,15 @@ function AddDoctor() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full md:col-span-2">
                             <div>
                                 <label className={labelClass}>Country<span className="text-red-500">*</span></label>
-                                <select  className={`${selectClass} disabled:cursor-not-allowed`} value={permanentAddress.country} onChange={(e) => handleAddressChange("permanent", "country", e.target.value)} disabled={isPermanentSameAsCurrent}>
+                                <select className={`${selectClass} disabled:cursor-not-allowed`} value={permanentAddress.country} onChange={(e) => handleAddressChange("permanent", "country", e.target.value)} disabled={isPermanentSameAsCurrent}>
                                     <option value="India">India</option>
                                 </select>
                                 {formErrors.permanentCountry && <p className={errorClass}>{formErrors.permanentCountry}</p>}
                             </div>
-                           
+
                             <div>
                                 <label className={labelClass}>State<span className="text-red-500">*</span></label>
-                                <select  className={`${selectClass} disabled:cursor-not-allowed`} value={permanentAddress.state} onChange={(e) => handleAddressChange("permanent", "state", e.target.value)} disabled={isPermanentSameAsCurrent}>
+                                <select className={`${selectClass} disabled:cursor-not-allowed`} value={permanentAddress.state} onChange={(e) => handleAddressChange("permanent", "state", e.target.value)} disabled={isPermanentSameAsCurrent}>
                                     <option value="">Select state<span className="text-red-500">*</span></option>
                                     {stateOptions.map((s) => (
                                         <option key={s} value={s}>{s}</option>

@@ -13,7 +13,6 @@ export const NotificationProvider = ({ children }) => {
 
     const { getNotifications } = useNotificationApi();
     const { user } = useAuth();
-    console.log(user, ">>> user")
 
 
     useEffect(() => {
@@ -22,14 +21,13 @@ export const NotificationProvider = ({ children }) => {
             // getNotifications().then((res) => {
             //     setNotifications(Array.isArray(res?.data?.data) ? res?.data?.data : []);
             // });
-            
+
             // console.log(user?._id, ">>>")
             // const socket = initSocket(user._id);
             // setSocket(socket)
             (async () => {
                 try {
                     const res = await getNotifications();
-                    console.log(res, ">>> res");  
                     setNotifications(Array.isArray(res?.body) ? res?.body : []);
                     const socket = initSocket(user._id);
                     setSocket(socket)
@@ -42,11 +40,15 @@ export const NotificationProvider = ({ children }) => {
 
     useEffect(() => {
         // socket.emit("joinDoctorRoom", doctorId);
-        console.log(socket, ">>")
         if (socket != null) {
             socket.on("appointmentRequest", (data) => {
-                console.log(data, ">LLLLUU")
-                // alert(data.message); 
+
+                setNotifications([...notifications, data])
+                // optionally refresh calendar
+            });
+
+            socket.on("appointmentStatusUpdated", (data) => {
+
                 setNotifications([...notifications, data])
                 // optionally refresh calendar
             });
