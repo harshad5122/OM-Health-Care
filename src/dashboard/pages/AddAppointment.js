@@ -144,6 +144,7 @@ function AddAppointment({ isDrawerOpen }) {
                 title={`Book Appointment - Dr. ${selectedDoctor?.firstname || ""}`}
             >
                 <div className="flex gap-4">
+                    {console.log(allBookings,"allbookingss")}
                     <div className="w-[700px]">
                         <CustomCalendar
                             // events={dummyEvents}
@@ -173,7 +174,7 @@ function AddAppointment({ isDrawerOpen }) {
                                     <CloseIcon className="text-[#1a6f8b]" />
                                 </span>
                             </div>
-                            <form className="space-y-4 pt-2"
+                            <form className="space-y-3 pt-2"
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     submitForm();
@@ -191,6 +192,57 @@ function AddAppointment({ isDrawerOpen }) {
                                         readOnly
                                     />
                                 </div>
+                                 {(() => {
+                                    const matchingSlot = allBookings.find(
+                                    (slot) => slot.date === appointment?.date
+                                    );
+
+                                    if (!matchingSlot) return null;
+
+                                    return (
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 text-left">
+                                                    Available Slots
+                                                </label>
+                                                <div className="mt-1 max-h-[44px] overflow-y-auto border border-gray-300 rounded p-2">
+                                                    {matchingSlot.slots.available.length > 0 ? (
+                                                        matchingSlot.slots.available.map((slot, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            className="px-1 py-0.5 w-fit rounded bg-blue-100 text-blue-800 border border-blue-400 text-sm cursor-pointer hover:bg-blue-200"
+                                                           
+                                                        >
+                                                            {slot.start} - {slot.end}
+                                                        </div>
+                                                        ))
+                                                    ) : (
+                                                        <p className="text-sm text-gray-500">No available slots</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 text-left">
+                                                    Booked Slots
+                                                </label>
+                                                <div className="mt-1 max-h-[44px] overflow-y-auto border border-gray-300 rounded p-2 gap-1 flex">
+                                                    {matchingSlot.slots.booked.length > 0 ? (
+                                                        matchingSlot.slots.booked.map((slot, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            className="px-1 py-0.5 w-fit rounded bg-green-100 text-green-800 border border-green-400 text-sm cursor-pointer hover:bg-green-200"
+                                                        >
+                                                            {slot.start} - {slot.end}
+                                                        </div>
+                                                        ))
+                                                    ) : (
+                                                        <p className="text-sm text-gray-500">No booked slots</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 appo-timepicker">
