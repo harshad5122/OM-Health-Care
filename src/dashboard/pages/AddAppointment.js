@@ -97,6 +97,7 @@ function AddAppointment({ isDrawerOpen }) {
         try {
             const result = await getAppointments(staff?._id);
             setAllBookings(result);
+
             const mappedEvents = result.flatMap((day) => {
                 return day.events.map((event) => {
                     const [startHour, startMinute] = event.start.split(":").map(Number);
@@ -105,11 +106,13 @@ function AddAppointment({ isDrawerOpen }) {
                     const baseDate = dayjs(day.date);
 
                     return {
+                        ...event,
                         title: event.title,
                         start: baseDate.hour(startHour).minute(startMinute).toDate(),
                         end: baseDate.hour(endHour).minute(endMinute).toDate(),
                         type: event.type,
-                        status: event.status
+                        status: event.status,
+
                     };
                 });
             });
@@ -144,13 +147,11 @@ function AddAppointment({ isDrawerOpen }) {
                 title={`Book Appointment - Dr. ${selectedDoctor?.firstname || ""}`}
             >
                 <div className="flex gap-4">
-                    {console.log(allBookings,"allbookingss")}
                     <div className="w-[700px]">
                         <CustomCalendar
                             // events={dummyEvents}
                             events={calendarEvents}
                             onSelectSlot={(slot) => {
-                                console.log("Selected empty slot:", slot);
                                 const isoDate = dayjs(slot.start).format("YYYY-MM-DD"); // store in state
                                 setAppointment({
                                     date: isoDate,
@@ -192,9 +193,9 @@ function AddAppointment({ isDrawerOpen }) {
                                         readOnly
                                     />
                                 </div>
-                                 {(() => {
+                                {(() => {
                                     const matchingSlot = allBookings.find(
-                                    (slot) => slot.date === appointment?.date
+                                        (slot) => slot.date === appointment?.date
                                     );
 
                                     if (!matchingSlot) return null;
@@ -202,19 +203,19 @@ function AddAppointment({ isDrawerOpen }) {
                                     return (
                                         <div className="space-y-3">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 text-left">
+                                                <label className="block text-sm font-medium text-gray-700 text-left ">
                                                     Available Slots
                                                 </label>
-                                                <div className="mt-1 max-h-[44px] overflow-y-auto border border-gray-300 rounded p-2">
+                                                <div className="mt-1 max-h-[44px] overflow-y-auto border border-gray-300 rounded p-2 flex gap-1">
                                                     {matchingSlot.slots.available.length > 0 ? (
                                                         matchingSlot.slots.available.map((slot, idx) => (
-                                                        <div
-                                                            key={idx}
-                                                            className="px-1 py-0.5 w-fit rounded bg-blue-100 text-blue-800 border border-blue-400 text-sm cursor-pointer hover:bg-blue-200"
-                                                           
-                                                        >
-                                                            {slot.start} - {slot.end}
-                                                        </div>
+                                                            <div
+                                                                key={idx}
+                                                                className="px-1 py-0.5 w-fit rounded bg-blue-100 text-blue-800 border border-blue-400 text-xs cursor-pointer hover:bg-blue-200"
+
+                                                            >
+                                                                {slot.start} - {slot.end}
+                                                            </div>
                                                         ))
                                                     ) : (
                                                         <p className="text-sm text-gray-500">No available slots</p>
@@ -228,12 +229,12 @@ function AddAppointment({ isDrawerOpen }) {
                                                 <div className="mt-1 max-h-[44px] overflow-y-auto border border-gray-300 rounded p-2 gap-1 flex">
                                                     {matchingSlot.slots.booked.length > 0 ? (
                                                         matchingSlot.slots.booked.map((slot, idx) => (
-                                                        <div
-                                                            key={idx}
-                                                            className="px-1 py-0.5 w-fit rounded bg-green-100 text-green-800 border border-green-400 text-sm cursor-pointer hover:bg-green-200"
-                                                        >
-                                                            {slot.start} - {slot.end}
-                                                        </div>
+                                                            <div
+                                                                key={idx}
+                                                                className="px-1 py-0.5 w-fit rounded bg-green-100 text-green-800 border border-green-400 text-xs cursor-pointer hover:bg-green-200"
+                                                            >
+                                                                {slot.start} - {slot.end}
+                                                            </div>
                                                         ))
                                                     ) : (
                                                         <p className="text-sm text-gray-500">No booked slots</p>
