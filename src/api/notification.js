@@ -14,6 +14,10 @@ export const useNotificationApi = () => {
         return res.data.body;
     }
 
+    const getNotificationById = async (id) => {
+        const res = await axiosInstance.get(`/mark-seen/${id}`);
+        return res.data.body;
+    }
 
-    return { getNotifications,updateNotificationStatus };
+    return { getNotifications,updateNotificationStatus ,getNotificationById};
 };
