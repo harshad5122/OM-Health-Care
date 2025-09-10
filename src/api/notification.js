@@ -9,7 +9,11 @@ export const useNotificationApi = () => {
         return res.data;
     };
 
+    const updateNotificationStatus = async (payload) => {
+        const res = await axiosInstance.put(`/update-status`, payload);
+        return res.data.body;
+    }
 
 
-    return { getNotifications };
+    return { getNotifications,updateNotificationStatus };
 };
