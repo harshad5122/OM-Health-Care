@@ -89,6 +89,15 @@ export const useUserApi = () => {
     }
   }
 
+  const deleteUser = async (id) => {
+    try {
+      const response = await axiosInstance.delete(`/delete/user/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { msg: "Failed to delete user" };
+    }
+  };
+
 
   return {
     getAdminList,
@@ -98,6 +107,7 @@ export const useUserApi = () => {
     getUserList,
     createUser,
     editUser,
-    getUserById
+    getUserById,
+    deleteUser
   }
 }

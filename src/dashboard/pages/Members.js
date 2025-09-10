@@ -18,7 +18,8 @@ import { useUserApi } from "../../api/userApi";
 import { useNavigate } from "react-router-dom";
 import Filter from "../../components/Filter";
 import dayjs from "dayjs";
-
+import { showAlert } from "../../components/AlertComponent";
+import ReusableModal from "../../components/ReusableModal"
 
 function Members() {
     const [activeTab, setActiveTab] = useState("staff");
@@ -32,10 +33,14 @@ function Members() {
     const [totalCounts, setTotalCounts] = useState(0);
     const { getDoctor } = useDoctorApi();
     const { getUserList } = useUserApi();
+    const {deleteDoctor} = useDoctorApi();
+    const {deleteUser}= useUserApi();
     const navigate = useNavigate();
     const rowsPerPage = 100; // show 10 per page
     const [fromDate, setFromDate] = useState(dayjs().startOf("month"));
     const [toDate, setToDate] = useState(dayjs().endOf("month"));
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
     
    
     const fetchStaff = async (skip,from = fromDate, to = toDate) => {
@@ -99,6 +104,31 @@ function Members() {
             navigate(`/dashboard/admin/add-user/${row._id}`);
         }
     };
+    const confirmDelete = async () => {
+        if (!selectedRow) return;
+
+        try {
+            if (activeTab === "staff") {
+                await deleteDoctor(selectedRow._id);
+                showAlert("Doctor deleted successfully", "success");
+                setStaffData((prev) => prev.filter((row) => row._id !== selectedRow._id));
+                setTotalCounts(totalCounts-1)
+            } else {
+                await deleteUser(selectedRow._id);
+                showAlert("User deleted successfully", "success");
+                setUserData((prev) => prev.filter((row) => row._id !== selectedRow._id));
+                setTotalCounts(totalCounts-1)
+            }
+        } catch (error) {
+            showAlert("Something went wrong", "error");
+            console.log("Delete failed:", error.msg || error);
+        } finally {
+            setIsDeleteModalOpen(false);
+            setSelectedRow(null);
+        }
+    };
+
+
 
     // 🔹 Fetch staff when switching to staff tab
     useEffect(() => {
@@ -156,7 +186,36 @@ function Members() {
 
     return (
         <div className="px-6 pt-6 pb-3">
-           
+            {isDeleteModalOpen && (
+                <ReusableModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    title={`Delete ${activeTab === "staff" ? "Doctor" : "User"}?`}
+                >
+                    <div className="px-2 pt-1 flex flex-col">
+                    <span>
+                        Are you sure you want to delete this{" "}
+                        {activeTab === "staff" ? "doctor" : "user"}?
+                    </span>
+
+                    <div className="flex gap-2 justify-end mt-3">
+                        <button
+                            className="bg-[#1a6f8b] text-white px-4 py-1 rounded hover:bg-[#15596e] transition"
+                            onClick={confirmDelete}
+                        >
+                            Yes
+                        </button>
+                        <button
+                            className="bg-[#1a6f8b] text-white px-4 py-1 rounded hover:bg-[#15596e] transition"
+                            onClick={() => setIsDeleteModalOpen(false)}
+                        >
+                            No
+                        </button>
+                    </div>
+                    </div>
+                </ReusableModal>
+            )}
+
             <div className="flex justify-between items-center mb-4 space-x-4">
               
                 <div className="inline-flex  rounded-lg overflow-hidden">
@@ -230,7 +289,12 @@ function Members() {
                                             <IconButton color="primary" size="small" onClick={() => handleEdit(row, activeTab)}>
                                                 <Edit fontSize="small" />
                                             </IconButton>
-                                            <IconButton color="error" size="small" onClick={() => handleEdit(row, activeTab)}>
+                                            <IconButton color="error" size="small" 
+                                                onClick={() => {
+                                                    setSelectedRow(row);
+                                                    setIsDeleteModalOpen(true);
+                                                }}
+                                            >
                                                 <Delete fontSize="small" />
                                             </IconButton>
                                         </TableCell>
@@ -241,7 +305,13 @@ function Members() {
                     </TableContainer>)}
             </div>
 
-            <div className="flex justify-end mt-1">
+            <div className="flex justify-end items-center mt-1">
+               
+               <span className="text-sm text-[#1a6f8b] font-semibold">
+                    {activeTab === "staff"
+                    ? `Total Doctors: ${totalCounts}`
+                    : `Total Users: ${totalCounts}`}
+                </span>
                 <Pagination
                     count={Math.ceil(totalCounts / rowsPerPage)}
                     page={page}

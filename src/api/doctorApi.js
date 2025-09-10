@@ -23,5 +23,14 @@ export const useDoctorApi = () => {
         return res.data.body;
     }
 
-    return { addDoctor, getDoctor, getDoctorById, updateDoctor };
+    const deleteDoctor = async (id) => {
+        try {
+        const response = await axiosInstance.delete(`/delete/doctor/${id}`);
+        return response.data;
+        } catch (error) {
+        throw error.response?.data || { msg: "Failed to delete user" };
+        }
+   };
+
+    return { addDoctor, getDoctor, getDoctorById, updateDoctor,deleteDoctor };
 };
