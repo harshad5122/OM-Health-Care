@@ -7,20 +7,24 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 const localizer = momentLocalizer(moment);
 
 
-function CustomCalendar({ events = [], onSelectSlot, onSelectEvent }) {
+function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevigate }) {
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [currentView, setCurrentView] = useState(Views.MONTH);
+    // const [date, setDate] = React.useState(new Date());
+
 
     const handleNavigate = (newDate, view) => {
         if (view === "month") {
             setCurrentDate(newDate);
+            onNevigate(null, newDate)
         }
     };
     const handleViewChange = (newView) => {
         setCurrentView(newView);
         console.log("Switched to view:", newView);
     };
+    { console.log(new Date(date), ">> date ") }
     return (
         <Calendar
             localizer={localizer}
@@ -34,8 +38,9 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent }) {
             views={{ month: true, week: true, day: true }}
             view={currentView}
             onView={handleViewChange}
-            defaultView={Views.MONTH}   // ✅ required for view switching
-            date={currentDate}          // ✅ controlled date state
+            defaultView={Views.MONTH}
+            date={currentDate}
+            // date={new Date(date)}         // ✅ controlled date state
             onNavigate={handleNavigate} // ✅ handles next/prev/today
             popup
             eventPropGetter={(event) => {
@@ -83,6 +88,20 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent }) {
                         padding: "2px 6px",
                     },
                 };
+            }}
+
+            dayPropGetter={(date) => {
+                const isPast = date < new Date().setHours(0, 0, 0, 0);
+                if (isPast) {
+                    return {
+                        style: {
+                            backgroundColor: "#f5f5f5",
+                            color: "#9e9e9e",
+                            pointerEvents: "none",
+                        },
+                    };
+                }
+                return {};
             }}
         />
     );

@@ -35,8 +35,10 @@ function AddAppointment({ isDrawerOpen }) {
     const rowsPerPage = 6;
     const { getDoctor } = useDoctorApi();
     const { getPatients } = useAppointmentApi();
-    const { createAppointment, getAppointments } = useAppointmentApi();
-    const isFormValid =  appointment?.date && appointment?.time_slot?.start && appointment?.time_slot?.end &&appointment?.visit_type &&appointment?.patient_name;
+
+    const isFormValid = appointment?.date && appointment?.time_slot?.start && appointment?.time_slot?.end && appointment?.visit_type && appointment?.patient_name;
+    const { createAppointment, getAppointments, updateAppointment } = useAppointmentApi();
+    const today = new Date();
 
 
     const fetchStaff = async (skip) => {
@@ -72,8 +74,104 @@ function AddAppointment({ isDrawerOpen }) {
 
         }
     };
+
+    const validateAppointment = () => {
+        if (!appointment?.date || !appointment?.time_slot?.start || !appointment?.time_slot?.end) {
+            showAlert("Please select a valid date and time slot!", "warning");
+            return false;
+        }
+
+        const matchingSlot = allBookings.find((slot) => slot.date === appointment.date);
+
+        console.log(allBookings, ">> all bookeing");
+        console.log(matchingSlot, ">> matching slots >>")
+
+        console.log(appointment, " appointment shhh")
+
+        if (!matchingSlot ||
+            ((!matchingSlot.slots?.available?.length || matchingSlot.slots.available.length === 0) &&
+                (!matchingSlot.slots?.booked?.length || matchingSlot.slots.booked.length === 0))) {
+            return true; // no restrictions
+        }
+
+        const { start, end } = appointment.time_slot;
+
+        // Convert to minutes for easier comparison
+        const toMinutes = (time) => {
+            const [h, m] = time.split(":").map(Number);
+            return h * 60 + m;
+        };
+        const apptStart = toMinutes(start);
+        const apptEnd = toMinutes(end);
+
+        console.log(matchingSlot)
+        // 1. Check overlap with already booked slots
+        const isOverlapping = matchingSlot.slots.booked.some((b) => {
+            if (appointment?._id && b.id?.toString() === appointment._id.toString()) {
+                return false;
+            }
+            const bookedStart = toMinutes(b.start);
+            const bookedEnd = toMinutes(b.end);
+            return !(apptEnd <= bookedStart || apptStart >= bookedEnd); // overlap check
+        });
+
+        if (isOverlapping) {
+            showAlert(
+                `The selected time overlaps with an existing appointment for Dr. ${selectedDoctor?.firstname || ""} on ${dayjs(appointment.date).format("D MMMM, YYYY")}.`,
+                "error"
+            );
+            return false;
+        }
+
+        // 2. Check if inside available slots
+        // const isInsideAvailable = matchingSlot.slots.available.some((a) => {
+        //     const availableStart = toMinutes(a.start);
+        //     const availableEnd = toMinutes(a.end);
+
+        //     console.log(availableStart, ">av start")
+        //     console.log(availableEnd, ">av end")
+        //     console.log(apptStart, apptEnd, ">LOO appointmnet ")
+        //     return apptStart >= availableStart && apptEnd <= availableEnd;
+        // });
+        let effectiveAvail = [...(matchingSlot.slots.available || [])];
+
+        if (appointment?._id) {
+            const oldBooked = matchingSlot.slots.booked.find(
+                (b) => b.id?.toString() === appointment._id.toString()
+            );
+            if (oldBooked) {
+                // add the old slot back into available so the user can reuse it or change within
+                effectiveAvail.push({ start: oldBooked.start, end: oldBooked.end });
+            }
+        }
+
+        // 3. Check if new time slot falls into any of the effective available slots
+        const isInsideEffectiveAvailable = effectiveAvail.some((a) => {
+            const availableStart = toMinutes(a.start);
+            const availableEnd = toMinutes(a.end);
+
+            console.log(availableStart, "> av effective start");
+            console.log(availableEnd, "> av effective end");
+            console.log(apptStart, apptEnd, "> new appointment times");
+
+            return apptStart >= availableStart && apptEnd <= availableEnd;
+        });
+
+        console.log(isInsideEffectiveAvailable, "ppp")
+        if (!isInsideEffectiveAvailable) {
+            showAlert(
+                `Dr. ${selectedDoctor?.firstname || ""} is not available for ${start}–${end} on ${dayjs(appointment.date).format("D MMMM, YYYY")}`,
+                "error"
+            );
+            return false;
+        }
+
+        return true; // ✅ validation passed
+    };
+
     const submitForm = async () => {
         try {
+            if (!validateAppointment()) return; // ⛔ stop if invalid
             const payload = {
                 patient_id: appointment.patient_id,
                 patient_name: appointment.patient_name,
@@ -85,8 +183,14 @@ function AddAppointment({ isDrawerOpen }) {
                 },
                 visit_type: appointment.visit_type || "CLINIC",
             };
+            let result;
+            if (appointment?._id) {
+                result = await updateAppointment({ reference_id: appointment?._id, ...payload })
+                console.log("edit appt")
+            } else {
+                result = await createAppointment(payload);
+            }
 
-            const result = await createAppointment(payload);
             await handleGetAppointments(selectedDoctor)
 
             showAlert("Appointment created successfully!", "success");
@@ -97,10 +201,17 @@ function AddAppointment({ isDrawerOpen }) {
             showAlert("Failed to create appointment!", "error");
         }
     };
-    const handleGetAppointments = async (staff) => {
+    const handleGetAppointments = async (staffPayload, newDate) => {
         try {
-            const result = await getAppointments(staff?._id);
+            const staff = staffPayload !== null ? staffPayload : selectedDoctor
+            console.log(newDate, ">>> new data")
+
+            const targetDate = newDate ? dayjs(newDate) : dayjs(); // use newDate or current date
+            const from_date = targetDate.startOf("month").format("YYYY-MM-DD");
+            const to_date = targetDate.endOf("month").format("YYYY-MM-DD");
+            const result = await getAppointments(staff?._id, from_date, to_date);
             setAllBookings(result);
+
 
             const mappedEvents = result.flatMap((day) => {
                 return day.events.map((event) => {
@@ -116,7 +227,7 @@ function AddAppointment({ isDrawerOpen }) {
                         end: baseDate.hour(endHour).minute(endMinute).toDate(),
                         type: event.type,
                         status: event.status,
-
+                        date: baseDate
                     };
                 });
             });
@@ -129,6 +240,22 @@ function AddAppointment({ isDrawerOpen }) {
             console.error("Error getting appointments:", error);
             showAlert("Failed to get appointments!", "error");
         }
+    }
+    const handleOnSelectEvent = (event) => {
+        console.log(event, ">> ll")
+
+        const isoDate = dayjs(event.date).format("YYYY-MM-DD"); // store in state
+
+        setAppointment({
+            _id: event?.id,
+            date: isoDate,
+            time_slot: {
+                start: dayjs(event?.start).format("HH:mm"),
+                end: dayjs(event?.end).format("HH:mm")
+            },
+            visit_type: event?.visit_type,
+            patient_id: event?.patient_id
+        });
     }
     useEffect(() => {
         fetchStaff(0);
@@ -148,7 +275,7 @@ function AddAppointment({ isDrawerOpen }) {
                     setIsModalOpen(false)
                     setAppointment(null)
                 }}
-                title={`Book Appointment - Dr. ${selectedDoctor?.firstname || ""}`}
+                title={`${appointment?._id ? `Book Appointment - Dr. ${selectedDoctor?.firstname || ""}` : 'Edit Appointment'} `}
             >
                 <div className="flex gap-4">
                     <div className="w-[700px]">
@@ -156,6 +283,9 @@ function AddAppointment({ isDrawerOpen }) {
                             // events={dummyEvents}
                             events={calendarEvents}
                             onSelectSlot={(slot) => {
+                                if (slot.start < today.setHours(0, 0, 0, 0)) {
+                                    return; // 🚫 prevent selecting past dates
+                                }
                                 const isoDate = dayjs(slot.start).format("YYYY-MM-DD"); // store in state
                                 setAppointment({
                                     date: isoDate,
@@ -167,15 +297,14 @@ function AddAppointment({ isDrawerOpen }) {
                                     }),
                                 });
                             }}
-                            onSelectEvent={(event) => {
-                                console.log("Clicked booked event:", event);
-                            }}
+                            onSelectEvent={handleOnSelectEvent}
+                            onNevigate={handleGetAppointments}
                         />
                     </div>
                     {appointment && (
                         <div className="w-[300px] bg-white rounded shadow-sm border border-[#eee] px-4 py-2">
                             <div className="flex justify-between">
-                                <p className="text-[18px] font-semibold text-[#1a6f8b]">Book Appointment</p>
+                                <p className="text-[18px] font-semibold text-[#1a6f8b]">{`${appointment?._id ? 'Edit Appointment' : 'Book Appointment'}`}</p>
                                 <span
                                     onClick={() => setAppointment(null)}
                                     className="cursor-pointer"
@@ -292,94 +421,94 @@ function AddAppointment({ isDrawerOpen }) {
                                     </div>
 
                                 </LocalizationProvider>
-                                {user?.role === 2 &&( 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 text-left">Select Patient</label>
-                                    <select
-                                        className="mt-1 block w-full rounded-md text-[14px] border border-gray-300 p-2"
-                                        value={appointment?.patient_id || ""} // keep controlled
-                                        onChange={(e) => {
-                                            const selectedId = e.target.value;
-                                            const selectedPatient = patients.find((p) => p._id === selectedId);
+                                {user?.role === 2 && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 text-left">Select Patient</label>
+                                        <select
+                                            className="mt-1 block w-full rounded-md text-[14px] border border-gray-300 p-2"
+                                            value={appointment?.patient_id || ""} // keep controlled
+                                            onChange={(e) => {
+                                                const selectedId = e.target.value;
+                                                const selectedPatient = patients.find((p) => p._id === selectedId);
 
-                                            if (selectedPatient) {
-                                                setAppointment((prev) => ({
-                                                    ...prev,
-                                                    patient_id: selectedPatient._id,
-                                                    patient_name: `${selectedPatient.firstname} ${selectedPatient.lastname}`,
-                                                }));
-                                            }
-                                        }}
-                                    >
-                                        <option value="">Select Patient</option>
-                                        {patients.map((patient) => (
-                                            <option key={patient._id} value={patient._id}>
-                                                {patient.firstname} {patient.lastname}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>)}
+                                                if (selectedPatient) {
+                                                    setAppointment((prev) => ({
+                                                        ...prev,
+                                                        patient_id: selectedPatient._id,
+                                                        patient_name: `${selectedPatient.firstname} ${selectedPatient.lastname}`,
+                                                    }));
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Select Patient</option>
+                                            {patients.map((patient) => (
+                                                <option key={patient._id} value={patient._id}>
+                                                    {patient.firstname} {patient.lastname}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>)}
                                 {user?.role === 1 && (
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 text-left">
-                                        Select Patient
+                                            Select Patient
                                         </label>
                                         <div className="flex gap-4 items-center">
-                                        <label className="flex items-center gap-1 text-[13px] cursor-pointer">
-                                            <input
-                                            type="radio"
-                                            name="patientOption"
-                                            value="self"
-                                            checked={appointment?.patient_name === `${user.firstname} ${user.lastname}`}
-                                            onChange={() => {
-                                                setAppointment((prev) => ({
-                                                ...prev,
-                                                patient_id: user._id,
-                                                patient_name: `${user.firstname} ${user.lastname}`,
-                                                }));
-                                            }}
-                                            className="cursor-pointer"
-                                            />
-                                            {user.firstname} {user.lastname}
-                                        </label>
-                                        <label className="flex items-center gap-1 text-[13px] cursor-pointer">
-                                            <input
-                                            type="radio"
-                                            name="patientOption"
-                                            value="other"
-                                            checked={
-                                                appointment?.patient_name !== `${user.firstname} ${user.lastname}`
-                                            }
-                                            onChange={() => {
-                                                setAppointment((prev) => ({
-                                                ...prev,
-                                                patient_id: user._id, 
-                                                patient_name: "", 
-                                                }));
-                                            }}
-                                            className="cursor-pointer"
-                                            />
-                                            Other
-                                        </label>
+                                            <label className="flex items-center gap-1 text-[13px] cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="patientOption"
+                                                    value="self"
+                                                    checked={appointment?.patient_name === `${user.firstname} ${user.lastname}`}
+                                                    onChange={() => {
+                                                        setAppointment((prev) => ({
+                                                            ...prev,
+                                                            patient_id: user._id,
+                                                            patient_name: `${user.firstname} ${user.lastname}`,
+                                                        }));
+                                                    }}
+                                                    className="cursor-pointer"
+                                                />
+                                                {user.firstname} {user.lastname}
+                                            </label>
+                                            <label className="flex items-center gap-1 text-[13px] cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="patientOption"
+                                                    value="other"
+                                                    checked={
+                                                        appointment?.patient_name !== `${user.firstname} ${user.lastname}`
+                                                    }
+                                                    onChange={() => {
+                                                        setAppointment((prev) => ({
+                                                            ...prev,
+                                                            patient_id: user._id,
+                                                            patient_name: "",
+                                                        }));
+                                                    }}
+                                                    className="cursor-pointer"
+                                                />
+                                                Other
+                                            </label>
                                         </div>
                                         <input
-                                        type="text"
-                                        className="mt-2 block w-full rounded text-[14px] border border-gray-300 p-2"
-                                        value={appointment?.patient_name || ""}
-                                        onChange={(e) => {
-                                            setAppointment((prev) => ({
-                                            ...prev,
-                                            patient_id: user._id, 
-                                            patient_name: e.target.value,
-                                            }));
-                                        }}
-                                        disabled={appointment?.patient_name === `${user.firstname} ${user.lastname}`}
-                                        placeholder={
-                                            appointment?.patient_name !== `${user.firstname} ${user.lastname}`
-                                            ? "Type patient name"
-                                            : ""
-                                        }
-                                        required={appointment?.patient_name !== `${user.firstname} ${user.lastname}`}
+                                            type="text"
+                                            className="mt-2 block w-full rounded text-[14px] border border-gray-300 p-2"
+                                            value={appointment?.patient_name || ""}
+                                            onChange={(e) => {
+                                                setAppointment((prev) => ({
+                                                    ...prev,
+                                                    patient_id: user._id,
+                                                    patient_name: e.target.value,
+                                                }));
+                                            }}
+                                            disabled={appointment?.patient_name === `${user.firstname} ${user.lastname}`}
+                                            placeholder={
+                                                appointment?.patient_name !== `${user.firstname} ${user.lastname}`
+                                                    ? "Type patient name"
+                                                    : ""
+                                            }
+                                            required={appointment?.patient_name !== `${user.firstname} ${user.lastname}`}
                                         />
                                     </div>
                                 )}
@@ -410,11 +539,10 @@ function AddAppointment({ isDrawerOpen }) {
                                     </button>
                                     <button
                                         type="submit"
-                                        className={`px-4 py-1 rounded-md transition text-white bg-[#1a6f8b] ${
-                                            isFormValid
-                                            ? "hover:bg-[#15596e] cursor-pointer"
-                                            : "cursor-not-allowed opacity-50"
-                                        }`}
+                                        className={`px-4 py-1 rounded-md transition text-white bg-[#1a6f8b] ${isFormValid
+                                                ? "hover:bg-[#15596e] cursor-pointer"
+                                                : "cursor-not-allowed opacity-50"
+                                            }`}
                                         disabled={!isFormValid}
                                     >
                                         Save
