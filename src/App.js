@@ -28,6 +28,7 @@ import AddUser from "./dashboard/pages/AddUser";
 import Members from "./dashboard/pages/Members";
 import ChangePassword from "./pages/auth/ResetPassword";
 import AddAppointment from "./dashboard/pages/AddAppointment";
+import Leave from "./dashboard/pages/Leave";
 // import Messages from "./dashboard/pages/Messages";
 
 
@@ -99,6 +100,7 @@ function App() {
           <Route path="home" element={<Dashboard />} />
           <Route path="profile" element={<Profile />} />
           <Route path="messages" element={<Chat />} />
+          <Route path="leave" element={<Leave />} />
         </Route>
 
         {/* User Dashboard */}

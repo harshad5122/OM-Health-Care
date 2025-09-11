@@ -16,6 +16,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 import { showAlert } from "../../components/AlertComponent";
+import { useAuth } from "../../context/AuthContext";
 
 function AddAppointment({ isDrawerOpen }) {
     const [staffData, setStaffData] = useState([]);
@@ -29,11 +30,14 @@ function AddAppointment({ isDrawerOpen }) {
     const [patients, setPatients] = useState([]);
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [allBookings, setAllBookings] = useState([]);
+    const { user } = useAuth();
 
-    const rowsPerPage = 5;
+    const rowsPerPage = 6;
     const { getDoctor } = useDoctorApi();
     const { getPatients } = useAppointmentApi();
     const { createAppointment, getAppointments } = useAppointmentApi();
+    const isFormValid =  appointment?.date && appointment?.time_slot?.start && appointment?.time_slot?.end &&appointment?.visit_type &&appointment?.patient_name;
+
 
     const fetchStaff = async (skip) => {
         try {
@@ -156,7 +160,11 @@ function AddAppointment({ isDrawerOpen }) {
                                 setAppointment({
                                     date: isoDate,
                                     time_slot: {},
-                                    visit_type: ""
+                                    visit_type: "",
+                                    ...(user?.role === 1 && {
+                                        patient_id: user._id,
+                                        patient_name: `${user.firstname} ${user.lastname}`,
+                                    }),
                                 });
                             }}
                             onSelectEvent={(event) => {
@@ -284,6 +292,7 @@ function AddAppointment({ isDrawerOpen }) {
                                     </div>
 
                                 </LocalizationProvider>
+                                {user?.role === 2 &&( 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 text-left">Select Patient</label>
                                     <select
@@ -309,7 +318,72 @@ function AddAppointment({ isDrawerOpen }) {
                                             </option>
                                         ))}
                                     </select>
-                                </div>
+                                </div>)}
+                                {user?.role === 1 && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 text-left">
+                                        Select Patient
+                                        </label>
+                                        <div className="flex gap-4 items-center">
+                                        <label className="flex items-center gap-1 text-[13px] cursor-pointer">
+                                            <input
+                                            type="radio"
+                                            name="patientOption"
+                                            value="self"
+                                            checked={appointment?.patient_name === `${user.firstname} ${user.lastname}`}
+                                            onChange={() => {
+                                                setAppointment((prev) => ({
+                                                ...prev,
+                                                patient_id: user._id,
+                                                patient_name: `${user.firstname} ${user.lastname}`,
+                                                }));
+                                            }}
+                                            className="cursor-pointer"
+                                            />
+                                            {user.firstname} {user.lastname}
+                                        </label>
+                                        <label className="flex items-center gap-1 text-[13px] cursor-pointer">
+                                            <input
+                                            type="radio"
+                                            name="patientOption"
+                                            value="other"
+                                            checked={
+                                                appointment?.patient_name !== `${user.firstname} ${user.lastname}`
+                                            }
+                                            onChange={() => {
+                                                setAppointment((prev) => ({
+                                                ...prev,
+                                                patient_id: user._id, 
+                                                patient_name: "", 
+                                                }));
+                                            }}
+                                            className="cursor-pointer"
+                                            />
+                                            Other
+                                        </label>
+                                        </div>
+                                        <input
+                                        type="text"
+                                        className="mt-2 block w-full rounded text-[14px] border border-gray-300 p-2"
+                                        value={appointment?.patient_name || ""}
+                                        onChange={(e) => {
+                                            setAppointment((prev) => ({
+                                            ...prev,
+                                            patient_id: user._id, 
+                                            patient_name: e.target.value,
+                                            }));
+                                        }}
+                                        disabled={appointment?.patient_name === `${user.firstname} ${user.lastname}`}
+                                        placeholder={
+                                            appointment?.patient_name !== `${user.firstname} ${user.lastname}`
+                                            ? "Type patient name"
+                                            : ""
+                                        }
+                                        required={appointment?.patient_name !== `${user.firstname} ${user.lastname}`}
+                                        />
+                                    </div>
+                                )}
+
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 text-left">Visit Type</label>
                                     <select className="mt-1 block w-full rounded-md text-[14px] border border-gray-300 p-2"
@@ -336,7 +410,12 @@ function AddAppointment({ isDrawerOpen }) {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="bg-[#1a6f8b] text-white px-4 py-1 rounded-md hover:bg-[#15596e] transition"
+                                        className={`px-4 py-1 rounded-md transition text-white bg-[#1a6f8b] ${
+                                            isFormValid
+                                            ? "hover:bg-[#15596e] cursor-pointer"
+                                            : "cursor-not-allowed opacity-50"
+                                        }`}
+                                        disabled={!isFormValid}
                                     >
                                         Save
                                     </button>

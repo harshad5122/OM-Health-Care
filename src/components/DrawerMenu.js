@@ -16,6 +16,7 @@ import "../styles/DrawerMenu.css";
 import ConfirmModal from "../components/ConfirmModal";
 import { useAuthApi } from "../api/authApi";
 import { showAlert } from "./AlertComponent";
+import { RiUserShared2Fill } from "react-icons/ri";
 
 const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       { path: "home", label: "Dashboard", icon: <FaCubes /> },
       { path: "profile", label: "Profile", icon: <FaUser /> },
       { path: "messages", label: "Messages", icon: <FaEnvelope /> },
+      {path:"leave",label:"Leave Management",icon: <RiUserShared2Fill className="text-[22px]"/> }
     ],
   };
 
