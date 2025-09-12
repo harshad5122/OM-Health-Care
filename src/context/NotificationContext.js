@@ -79,12 +79,14 @@ export const NotificationProvider = ({ children }) => {
         socket.on("appointmentRequest", handleAppointmentRequest);
         socket.on("appointmentStatusUpdated", handleAppointmentStatusUpdated);
         socket.on("leaveRequest", handleLeaveRequest);
+        socket.on("leaveStatusUpdated", handleLeaveRequest);
       
         // cleanup on unmount or socket change
         return () => {
           socket.off("appointmentRequest", handleAppointmentRequest);
           socket.off("appointmentStatusUpdated", handleAppointmentStatusUpdated);
           socket.off("leaveRequest", handleLeaveRequest);
+          socket.off("leaveStatusUpdated", handleLeaveRequest);
         };
       }, [socket]);
       
