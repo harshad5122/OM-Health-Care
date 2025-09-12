@@ -1085,3 +1085,11 @@ p {
   width: 140px !important;
   padding: 9.5px 0 !important;
 }
+.leave-calendar .MuiPickersInputBase-root{
+  padding: 0 8px !important;
+  font-size: 13px !important;
+  background-color: white !important;
+}
+.leave-calendar .MuiSvgIcon-root{
+  font-size: 18px !important;
+}

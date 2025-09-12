@@ -4,15 +4,125 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { Edit, Delete } from "@mui/icons-material";
+import { useAuth } from "../../context/AuthContext";
+import { showAlert } from "../../components/AlertComponent";
+import { useLeaveApi } from "../../api/leaveApi";
+import ReusableModal from "../../components/ReusableModal"
 
-function Leave(isDrawerOpen){
-   const [isTimeEnabled, setIsTimeEnabled] = React.useState(false);
-   const columns = ["Start Date", "End Date", "Reason"];
+function Leave(isDrawerOpen) {
+    const { createLeave, getLeaveById } = useLeaveApi();
+    const { user } = useAuth();
+    const [leaveData, setLeaveData] = React.useState({
+        startDate: null,
+        endDate: null,
+        startTime: null,
+        endTime: null,
+        reason: "",
+        isTimeEnabled: false,
+    });
+    const [leaveByIdData, setLeaveByIdData] = React.useState(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false)
+    const columns = ["Start Date", "End Date", "Reason", "Status"];
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        return new Date(dateStr).toLocaleDateString("en-GB");
+    };
 
-    return(
+    const handleChange = (key, value) => {
+        setLeaveData((prev) => ({ ...prev, [key]: value }));
+    };
+
+    const fetchLeaveById = async () => {
+        if (!user?._id) return;
+        try {
+            const result = await getLeaveById(user._id);
+            setLeaveByIdData(result);
+        } catch (error) {
+            console.log("Error fetching leave by ID:", error);
+        }
+    };
+
+
+    const handleApplyLeave = async () => {
+        const payload = {
+            staff_id: user?._id || "",
+            staff_name: `${user?.firstname || ""} ${user?.lastname || ""}`.trim(),
+            start_date: leaveData.startDate
+                ? dayjs(leaveData.startDate).format("YYYY-MM-DD")
+                : "",
+            end_date: leaveData.endDate
+                ? dayjs(leaveData.endDate).format("YYYY-MM-DD")
+                : "",
+            start_time:
+                leaveData.isTimeEnabled && leaveData.startTime
+                    ? dayjs(leaveData.startTime).format("HH:mm")
+                    : null,
+            end_time:
+                leaveData.isTimeEnabled && leaveData.endTime
+                    ? dayjs(leaveData.endTime).format("HH:mm")
+                    : null,
+            full_day: !leaveData.isTimeEnabled,
+            reason: leaveData.reason,
+        };
+
+        try {
+            await createLeave(payload);
+
+            setLeaveData({
+                startDate: null,
+                endDate: null,
+                startTime: null,
+                endTime: null,
+                reason: "",
+                isTimeEnabled: false,
+            });
+            fetchLeaveById();
+            showAlert("Leave Created Successfully", "success")
+        } catch (err) {
+            console.log("Failed to apply leave:", err);
+            showAlert("Something went wrong", "error")
+        }
+    };
+
+    React.useEffect(() => {
+        fetchLeaveById();
+    }, [user?._id]);
+
+    return (
         <div id="dashboard-container" className={isDrawerOpen ? 'drawer-open' : 'drawer-closed'}
             style={{ height: "calc(100vh - 60px)", display: "flex", flexDirection: "column" }}
         >
+            {isDeleteModalOpen &&
+                <ReusableModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => {
+                        setIsDeleteModalOpen(false)
+                    }}
+                    title={"Cancle Leave ?"}
+                >
+                    <div className='px-2 pt-1 flex flex-col'>
+                        <span>
+                            Are you sure you want to cancel this leave?
+                        </span>
+
+                        <div className='flex gap-2 justify-end mt-3'>
+                            <button
+                                className={`px-4 py-1 rounded text-white transition bg-[#1a6f8b] hover:bg-[#15596e]`}
+                            >
+                                Yes
+                            </button>
+                            <button className="bg-[#1a6f8b] text-white px-4 py-1 rounded hover:bg-[#15596e] transition"
+                                onClick={() => {
+                                    setIsDeleteModalOpen(false)
+                                }}
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </ReusableModal>
+            }
             <span className='text-[1.8rem] text-[#1a6f8b] m-0 font-semibold flex justify-start pt-[20px] pb-[1rem] px-[20px] border-b border-[#eee] sticky top-0 z-10 bg-[#f5f7fa]' style={{ fontFamily: "'Arial', sans-serif" }}>
                 Leave Management
             </span>
@@ -24,31 +134,39 @@ function Leave(isDrawerOpen){
                             <div className="flex gap-4 items-center">
                                 <span className="flex flex-col">
                                     <label className="text-sm text-gray-600 mb-1 text-left font-semibold">
-                                        {isTimeEnabled ? "Start Date & Time" : "Start Date"}
+                                        {leaveData.isTimeEnabled ? "Start Date & Time" : "Start Date"}
                                     </label>
                                     <div className="flex gap-2 leave-calendar">
                                         <DatePicker
+                                            value={leaveData.startDate}
+                                            onChange={(val) => handleChange("startDate", val)}
                                             slotProps={{ textField: { size: "small" } }}
                                         />
-                                        {isTimeEnabled && (
-                                        <TimePicker  
-                                            slotProps={{ textField: { size: "small" } }}
-                                        />
+                                        {leaveData.isTimeEnabled && (
+                                            <TimePicker
+                                                value={leaveData.startTime}
+                                                onChange={(val) => handleChange("startTime", val)}
+                                                slotProps={{ textField: { size: "small" } }}
+                                            />
                                         )}
                                     </div>
                                 </span>
                                 <span className="flex flex-col leave-calendar">
                                     <label className="text-sm text-gray-600 mb-1 text-left font-semibold">
-                                        {isTimeEnabled ? "End Date & Time" : "End Date"}
+                                        {leaveData.isTimeEnabled ? "End Date & Time" : "End Date"}
                                     </label>
                                     <div className="flex gap-2">
                                         <DatePicker
+                                            value={leaveData.endDate}
+                                            onChange={(val) => handleChange("endDate", val)}
                                             slotProps={{ textField: { size: "small" } }}
                                         />
-                                        {isTimeEnabled && (
-                                        <TimePicker
-                                            slotProps={{ textField: { size: "small" } }}
-                                        />
+                                        {leaveData.isTimeEnabled && (
+                                            <TimePicker
+                                                value={leaveData.endTime}
+                                                onChange={(val) => handleChange("endTime", val)}
+                                                slotProps={{ textField: { size: "small" } }}
+                                            />
                                         )}
                                     </div>
                                 </span>
@@ -58,66 +176,138 @@ function Leave(isDrawerOpen){
                             <input
                                 type="checkbox"
                                 id="includeTime"
-                                checked={isTimeEnabled}
-                                onChange={(e) => setIsTimeEnabled(e.target.checked)}
+                                checked={leaveData.isTimeEnabled}
+                                onChange={(e) =>
+                                    setLeaveData((prev) => ({
+                                        ...prev,
+                                        isTimeEnabled: e.target.checked,
+                                        startTime: e.target.checked ? prev.startTime : null,
+                                        endTime: e.target.checked ? prev.endTime : null,
+                                    }))
+                                }
                                 className="cursor-pointer"
                             />
-                            <label htmlFor="includeTime" className="text-sm text-gray-700 font-semibold cursor-pointer">
+                            <label
+                                htmlFor="includeTime"
+                                className="text-sm text-gray-700 font-semibold cursor-pointer"
+                            >
                                 Hours of Availability
                             </label>
                         </span>
                     </span>
                     <span className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-700 text-left">Reason for Leave</span>
+                        <span className="text-sm font-medium text-gray-700 text-left">
+                            Reason for Leave
+                        </span>
                         <textarea
                             className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none text-[14px]"
                             rows="4"
                             placeholder="Enter your reason..."
+                            value={leaveData.reason}
+                            onChange={(e) => handleChange("reason", e.target.value)}
                         />
                     </span>
-                    <span className="flex gap-2 justify-end  my-2">
-                        <button className="bg-[#1a6f8b] text-white px-4 py-1.5 rounded hover:bg-[#15596e] transition">
+                    <span className="flex gap-2 justify-end my-2">
+                        <button
+                            onClick={handleApplyLeave}
+                            className="bg-[#1a6f8b] text-white px-4 py-1.5 rounded hover:bg-[#15596e] transition"
+                        >
                             Apply Leave
                         </button>
-                        <button className="bg-[#1a6f8b] text-white px-4 py-1.5 rounded hover:bg-[#15596e] transition">
-                            Cancle
+                        <button
+                            onClick={() =>
+                                setLeaveData({
+                                    startDate: null,
+                                    endDate: null,
+                                    startTime: null,
+                                    endTime: null,
+                                    reason: "",
+                                    isTimeEnabled: false,
+                                })
+                            }
+                            className="bg-[#1a6f8b] text-white px-4 py-1.5 rounded hover:bg-[#15596e] transition"
+                        >
+                            Cancel
                         </button>
                     </span>
 
                 </span>
-                
-                
             </div>
-           <div className="px-4 flex-1 py-2 overflow-hidden">
-                <div className="border border-[#f0f0f0] rounded bg-[#fcfcfc] w-full h-full flex flex-col">
-                    <p className='text-left text-[15px] font-semibold text-[#1a6f8b] border-b border-[#f0f0f0] pb-1 px-4 py-2'>
+            <div className="px-4 flex-1 py-2 overflow-hidden">
+                <div className="border border-[#f0f0f0] rounded bg-[#fcfcfc] w-full h-full flex flex-col px-4 py-2">
+                    <p className='text-left text-[15px] font-semibold text-[#1a6f8b] border-b border-[#f0f0f0] pb-1'>
                         Leave Records
                     </p>
-                    <div className="flex-1 overflow-y-auto px-4 py-1">
+                    <div className="flex-1 overflow-y-auto">
                         <table className="min-w-full border-collapse">
                             <thead className="sticky top-0 bg-[#f5f7fa] z-10">
-                                <tr>
+                                <tr className="border border-gray-200b">
                                     {columns.map((col, index) => (
                                         <th
                                             key={index}
-                                            className="border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 text-left"
+                                            className="px-4 py-2 text-sm font-semibold text-gray-700 text-left"
                                         >
                                             {col}
                                         </th>
                                     ))}
-                                    <th className="border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 text-left">Action</th>
+                                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 text-left">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td className="border border-gray-200 px-4 py-2 text-sm">2025-09-12</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-sm">2025-09-14</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-sm">Family Function</td>
-                                    <td className="border border-gray-200 px-4 py-2 text-sm flex gap-2">
-                                        <button className="bg-blue-500 text-white px-2 py-1 rounded text-xs">Edit</button>
-                                        <button className="bg-red-500 text-white px-2 py-1 rounded text-xs">Delete</button>
-                                    </td>
-                                </tr>
+                                {leaveByIdData?.length > 0 ? (
+                                    leaveByIdData.map((leave, index) => (
+                                        <tr key={leave._id} className="border border-gray-200 text-left">
+                                            <td className="px-4 py-2 text-sm">
+                                                {formatDate(leave.start_date)}{" "}
+                                                {leave.start_time && leave.end_time && (
+                                                    <span>
+                                                        ({leave.start_time} - {leave.end_time})
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-2 text-sm">
+                                                {formatDate(leave.end_date)}{" "}
+                                                {leave.start_time && leave.end_time && (
+                                                    <span>
+                                                        ({leave.start_time} - {leave.end_time})
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-2 text-sm" title={leave.reason}>
+                                                {leave.reason}
+                                            </td>
+                                            <td className="px-4 py-2 text-sm">
+                                                <span
+                                                    className={`px-2 py-1 rounded text-xs font-medium ${leave.status === "PENDING"
+                                                        ? "bg-green-100 text-green-700"
+                                                        : "bg-gray-100 text-gray-700"
+                                                        }`}
+                                                >
+                                                    {leave.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-2 flex gap-3">
+                                                <Edit className="text-blue-500" sx={{ fontSize: "18px" }} />
+                                                <Delete
+                                                    className="text-red-500 cursor-pointer"
+                                                    sx={{ fontSize: "18px" }}
+                                                    onClick={() => {
+                                                        setIsDeleteModalOpen(true);
+                                                    }}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td
+                                            colSpan={columns.length + 1}
+                                            className="text-center text-gray-500 text-sm py-4"
+                                        >
+                                            No leave records available
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>

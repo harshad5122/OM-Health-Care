@@ -296,6 +296,7 @@ console.log(effectiveAvail,">>> effective availble")
                     setAppointment(null)
                 }}
                 title={`${appointment?._id ? `Book Appointment - Dr. ${selectedDoctor?.firstname || ""}` : 'Edit Appointment'} `}
+                modalClassName="mt-10"
             >
                 <div className="flex gap-4">
                     <div className="w-[700px]">

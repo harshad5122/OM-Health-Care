@@ -13,14 +13,14 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
     2: "/dashboard/admin",
     3: "/dashboard/staff",
   };
-  const { notifications,setNotifications  } = useNotification();
-  const {updateNotificationStatus} = useNotificationApi();
-  const {getNotificationById}= useNotificationApi();
+  const { notifications, setNotifications } = useNotification();
+  const { updateNotificationStatus } = useNotificationApi();
+  const { getNotificationById } = useNotificationApi();
   const [open, setOpen] = React.useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen]= React.useState(false)
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = React.useState(false)
   const [selectedNotif, setSelectedNotif] = React.useState(null);
-  const [isDeclineModalOpen, setIsDeclineModalOpen]= React.useState(false)
-  const [declineReason,setDeclineReason]=React.useState("")
+  const [isDeclineModalOpen, setIsDeclineModalOpen] = React.useState(false)
+  const [declineReason, setDeclineReason] = React.useState("")
 
   const handleConfirm = async () => {
 
@@ -29,7 +29,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
     const payload = {
       reference_id: selectedNotif.reference_id,
       sender_id: selectedNotif.sender_id,
-      status: "CONFIRMED", 
+      status: "CONFIRMED",
       message: null,
       notification_id: selectedNotif._id,
     };
@@ -37,13 +37,13 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
     try {
       await updateNotificationStatus(payload);
       setNotifications((prev) =>
-       prev.filter((notif) => notif._id !== selectedNotif._id)
+        prev.filter((notif) => notif._id !== selectedNotif._id)
       );
       setIsConfirmModalOpen(false);
-      showAlert("Appointment Confirmed successfully!","success")
+      showAlert("Appointment Confirmed successfully!", "success")
     } catch (err) {
       console.log("Error updating notification:", err);
-      showAlert("something went wrong","error")
+      showAlert("something went wrong", "error")
     }
   };
 
@@ -54,7 +54,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
       reference_id: selectedNotif.reference_id,
       sender_id: selectedNotif.sender_id,
       status: "CANCELLED",
-      message: declineReason, 
+      message: declineReason,
       notification_id: selectedNotif._id,
     };
 
@@ -75,27 +75,42 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
   };
   return (
     <header className="top-bar">
-      {isConfirmModalOpen && 
+      {isConfirmModalOpen &&
         <ReusableModal
           isOpen={isConfirmModalOpen}
           onClose={() => {
             setIsConfirmModalOpen(false)
           }}
-          title={`Confirm Appointment ?`}
+          title={
+            selectedNotif?.type === "LEAVE_REQUEST"
+              ? "Confirm Leave ?"
+              : "Confirm Appointment ?"
+          }
         >
           <div className='px-2 pt-1 flex flex-col'>
-            <span>Are you sure you want to accept this appointment?</span>
+            <span>
+              {selectedNotif?.type === "LEAVE_REQUEST"
+                ? "Are you sure you want to approve this leave request?"
+                : "Are you sure you want to accept this appointment?"}
+            </span>
             <div className='flex gap-2 justify-end mt-3'>
-              <button 
+              <button
                 className="bg-[#1a6f8b] text-white px-4 py-1 rounded hover:bg-[#15596e] transition"
-                onClick={handleConfirm}
+                // onClick={handleConfirm}
+                onClick={() => {
+                  if (selectedNotif?.type === "APPOINTMENT_REQUEST") {
+                    handleConfirm();
+                  } else if (selectedNotif?.type === "LEAVE_REQUEST") {
+                    console.log("Leave Approved");
+                  }
+                }}
               >
                 Yes
               </button>
               <button className="bg-[#1a6f8b] text-white px-4 py-1 rounded hover:bg-[#15596e] transition"
-               onClick={()=>{
-                setIsConfirmModalOpen(false)
-               }}
+                onClick={() => {
+                  setIsConfirmModalOpen(false)
+                }}
               >
                 No
               </button>
@@ -104,17 +119,25 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
         </ReusableModal>
       }
       {
-        isDeclineModalOpen && 
+        isDeclineModalOpen &&
         <ReusableModal
           isOpen={isDeclineModalOpen}
           onClose={() => {
             setIsDeclineModalOpen(false)
             setDeclineReason("");
           }}
-          title={`Cancle Appointment ?`}
+          title={
+            selectedNotif?.type === "LEAVE_REQUEST"
+              ? "Cancle Leave ?"
+              : "Cancel Appointment ?"
+          }
         >
           <div className='px-2 pt-1 flex flex-col'>
-            <span>Are you sure you want to cancle this appointment?</span>
+            <span>
+              {selectedNotif?.type === "LEAVE_REQUEST"
+                ? "Are you sure you want to reject this leave request?"
+                : "Are you sure you want to cancel this appointment?"}
+            </span>
             <input
               type="text"
               placeholder="Enter reason for cancellation"
@@ -123,22 +146,28 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
               className="mt-3 border border-gray-300 rounded p-2 text-sm"
             />
             <div className='flex gap-2 justify-end mt-3'>
-              <button 
-                className={`px-4 py-1 rounded text-white transition ${
-                  declineReason.trim()
-                    ? "bg-[#1a6f8b] hover:bg-[#15596e]"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
-                disabled={!declineReason.trim()} 
-                onClick={handleCancelNotification}
+              <button
+                className={`px-4 py-1 rounded text-white transition ${declineReason.trim()
+                  ? "bg-[#1a6f8b] hover:bg-[#15596e]"
+                  : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                disabled={!declineReason.trim()}
+                // onClick={handleCancelNotification}
+                onClick={() => {
+                  if (selectedNotif?.type === "APPOINTMENT_REQUEST") {
+                    handleCancelNotification();
+                  } else if (selectedNotif?.type === "LEAVE_REQUEST") {
+                    console.log("Leave Rejected:", declineReason);
+                  }
+                }}
               >
                 Yes
               </button>
               <button className="bg-[#1a6f8b] text-white px-4 py-1 rounded hover:bg-[#15596e] transition"
-              onClick={()=>{
-                setIsDeclineModalOpen(false)
-                setDeclineReason("");
-              }}
+                onClick={() => {
+                  setIsDeclineModalOpen(false)
+                  setDeclineReason("");
+                }}
               >
                 No
               </button>
@@ -152,7 +181,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
         </button>
         <h1 className="title">{title}</h1> */}
       </div>
-     
+
       <div className="right-section">
         <div className="relative">
           <button
@@ -175,12 +204,11 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
                   <div
                     key={notif._id}
                     // className="border-b border-gray-200 py-1 last:border-none"
-                    className={`border-b border-gray-200 py-1 last:border-none ${
-                      notif.type !== "APPOINTMENT_REQUEST" ? "cursor-pointer" : "cursor-default"
-                    }`}
+                    className={`border-b border-gray-200 py-1 last:border-none ${(notif.type !== "APPOINTMENT_REQUEST" && notif?.type !== "LEAVE_REQUEST") ? "cursor-pointer" : "cursor-default"
+                      }`}
                     onClick={() => {
-                      if (notif.type !== "APPOINTMENT_REQUEST") {
-                        console.log("click on notification",notif._id)
+                      if (notif.type !== "APPOINTMENT_REQUEST" && notif?.type !== "LEAVE_REQUEST") {
+                        console.log("click on notification", notif._id)
                         getNotificationById(notif._id);
                         setNotifications((prev) => prev.filter((n) => n._id !== notif._id));
                         setOpen(false);
@@ -191,33 +219,35 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
                       {notif.type === "APPOINTMENT_REQUEST"
                         ? "Appointment Request"
                         : notif.type === "APPOINTMENT_CONFIRMED"
-                        ? "Appointment Confirmed"
-                        : notif.type === "APPOINTMENT_CANCELLED"
-                        ? "Appointment Cancelled"
-                        : "Notification"}
+                          ? "Appointment Confirmed"
+                          : notif.type === "APPOINTMENT_CANCELLED"
+                            ? "Appointment Cancelled"
+                            : notif.type === "LEAVE_REQUEST"
+                              ? "Leave Request"
+                              : "Notification"}
                     </p>
                     <p className="text-sm text-gray-700 text-left">{notif.message}</p>
-                    {notif?.type === "APPOINTMENT_REQUEST" && 
-                    <div className="flex gap-2 mt-4 justify-end">
-                      <button className="bg-[#1a6f8b] text-white text-xs px-2 py-1.5 rounded"
-                       onClick={()=>{
-                        setSelectedNotif(notif);
-                        setIsConfirmModalOpen(true)
-                        setOpen(false)
-                       }}
-                      >
-                        Accept
-                      </button>
-                      <button className="bg-red-500 text-white text-xs px-2 py-1.5 rounded"
-                       onClick={()=>{
-                        setSelectedNotif(notif);
-                        setIsDeclineModalOpen(true)
-                        setOpen(false)
-                       }}
-                      >
-                        Decline
-                      </button>
-                    </div>}
+                    {(notif?.type === "APPOINTMENT_REQUEST" || notif?.type === "LEAVE_REQUEST") &&
+                      <div className="flex gap-2 mt-4 justify-end">
+                        <button className="bg-[#1a6f8b] text-white text-xs px-2 py-1.5 rounded"
+                          onClick={() => {
+                            setSelectedNotif(notif);
+                            setIsConfirmModalOpen(true)
+                            setOpen(false)
+                          }}
+                        >
+                          Accept
+                        </button>
+                        <button className="bg-red-500 text-white text-xs px-2 py-1.5 rounded"
+                          onClick={() => {
+                            setSelectedNotif(notif);
+                            setIsDeclineModalOpen(true)
+                            setOpen(false)
+                          }}
+                        >
+                          Decline
+                        </button>
+                      </div>}
                   </div>
                 ))
               )}
@@ -225,8 +255,8 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
           )}
         </div>
         {user && (
-          <Link 
-            to={`${basePaths[userRole]}/profile`} 
+          <Link
+            to={`${basePaths[userRole]}/profile`}
             className="user-profile-link"
           >
             <span className="user-name">
