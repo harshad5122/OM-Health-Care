@@ -36,7 +36,7 @@ function AddAppointment({ isDrawerOpen }) {
     const { getDoctor } = useDoctorApi();
     const { getPatients } = useAppointmentApi();
 
-    const isFormValid = appointment?.date && appointment?.time_slot?.start && appointment?.time_slot?.end && appointment?.visit_type && appointment?.patient_name;
+    const isFormValid = appointment?.date && appointment?.time_slot?.start && appointment?.time_slot?.end && appointment?.visit_type && (appointment?.patient_id );
     const { createAppointment, getAppointments, updateAppointment } = useAppointmentApi();
     const today = new Date();
 
@@ -74,7 +74,30 @@ function AddAppointment({ isDrawerOpen }) {
 
         }
     };
-
+    const toMinutes = (time) => {
+        const [h, m] = time.split(":").map(Number);
+        return h * 60 + m;
+    };
+    function mergeSlots(slots) {
+        slots.sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
+      
+        const merged = [];
+        let current = slots[0];
+      
+        for (let i = 1; i < slots.length; i++) {
+          const next = slots[i];
+          if (toMinutes(next.start) <= toMinutes(current.end)) {
+            // overlapping or continuous → merge
+            current.end = next.end > current.end ? next.end : current.end;
+          } else {
+            merged.push(current);
+            current = next;
+          }
+        }
+        merged.push(current);
+        return merged;
+      }
+      
     const validateAppointment = () => {
         if (!appointment?.date || !appointment?.time_slot?.start || !appointment?.time_slot?.end) {
             showAlert("Please select a valid date and time slot!", "warning");
@@ -82,11 +105,6 @@ function AddAppointment({ isDrawerOpen }) {
         }
 
         const matchingSlot = allBookings.find((slot) => slot.date === appointment.date);
-
-        console.log(allBookings, ">> all bookeing");
-        console.log(matchingSlot, ">> matching slots >>")
-
-        console.log(appointment, " appointment shhh")
 
         if (!matchingSlot ||
             ((!matchingSlot.slots?.available?.length || matchingSlot.slots.available.length === 0) &&
@@ -97,10 +115,7 @@ function AddAppointment({ isDrawerOpen }) {
         const { start, end } = appointment.time_slot;
 
         // Convert to minutes for easier comparison
-        const toMinutes = (time) => {
-            const [h, m] = time.split(":").map(Number);
-            return h * 60 + m;
-        };
+     
         const apptStart = toMinutes(start);
         const apptEnd = toMinutes(end);
 
@@ -135,18 +150,23 @@ function AddAppointment({ isDrawerOpen }) {
         // });
         let effectiveAvail = [...(matchingSlot.slots.available || [])];
 
+        
+
         if (appointment?._id) {
             const oldBooked = matchingSlot.slots.booked.find(
                 (b) => b.id?.toString() === appointment._id.toString()
             );
+
+            console.log(oldBooked,">> old one ")
             if (oldBooked) {
                 // add the old slot back into available so the user can reuse it or change within
                 effectiveAvail.push({ start: oldBooked.start, end: oldBooked.end });
             }
         }
-
+console.log(effectiveAvail,">>> effective availble")
         // 3. Check if new time slot falls into any of the effective available slots
-        const isInsideEffectiveAvailable = effectiveAvail.some((a) => {
+        const mergedAvail = mergeSlots(effectiveAvail);
+        const isInsideEffectiveAvailable = mergedAvail.some((a) => {
             const availableStart = toMinutes(a.start);
             const availableEnd = toMinutes(a.end);
 
