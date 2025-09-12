@@ -38,24 +38,56 @@ export const NotificationProvider = ({ children }) => {
         }
     }, [user]);
 
+    // useEffect(() => {
+    //     // socket.emit("joinDoctorRoom", doctorId);
+    //     if (socket != null) {
+    //         socket.on("appointmentRequest", (data) => {
+
+    //             setNotifications([...notifications, data])
+    //             // optionally refresh calendar
+    //         });
+
+    //         socket.on("appointmentStatusUpdated", (data) => {
+
+    //             setNotifications([...notifications, data])
+    //             // optionally refresh calendar
+    //         });
+    //         socket.on("leaveRequest", (data) => {
+
+    //             setNotifications([...notifications, data])
+    //             // optionally refresh calendar
+    //         });
+    //         return () => socket.off("appointmentRequest");
+    //     }
+    // }, [socket]);
+
     useEffect(() => {
-        // socket.emit("joinDoctorRoom", doctorId);
-        if (socket != null) {
-            socket.on("appointmentRequest", (data) => {
-
-                setNotifications([...notifications, data])
-                // optionally refresh calendar
-            });
-
-            socket.on("appointmentStatusUpdated", (data) => {
-
-                setNotifications([...notifications, data])
-                // optionally refresh calendar
-            });
-
-            return () => socket.off("appointmentRequest");
-        }
-    }, [socket]);
+        if (!socket) return;
+      
+        const handleAppointmentRequest = (data) => {
+          setNotifications((prev) => [...prev, data]);
+        };
+      
+        const handleAppointmentStatusUpdated = (data) => {
+          setNotifications((prev) => [...prev, data]);
+        };
+      
+        const handleLeaveRequest = (data) => {
+          setNotifications((prev) => [...prev, data]);
+        };
+      
+        socket.on("appointmentRequest", handleAppointmentRequest);
+        socket.on("appointmentStatusUpdated", handleAppointmentStatusUpdated);
+        socket.on("leaveRequest", handleLeaveRequest);
+      
+        // cleanup on unmount or socket change
+        return () => {
+          socket.off("appointmentRequest", handleAppointmentRequest);
+          socket.off("appointmentStatusUpdated", handleAppointmentStatusUpdated);
+          socket.off("leaveRequest", handleLeaveRequest);
+        };
+      }, [socket]);
+      
 
     return (
         <Notification.Provider value={{ notifications, setNotifications }}>
