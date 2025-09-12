@@ -6,6 +6,7 @@ import { useNotification } from '../context/NotificationContext';
 import { useNotificationApi } from '../api/notification';
 import ReusableModal from './ReusableModal';
 import { showAlert } from './AlertComponent';
+import { useLeaveApi } from '../api/leaveApi';
 
 const TopBar = ({ toggleDrawer, title, user, userRole }) => {
   const basePaths = {
@@ -16,6 +17,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
   const { notifications, setNotifications } = useNotification();
   const { updateNotificationStatus } = useNotificationApi();
   const { getNotificationById } = useNotificationApi();
+  const { updateLeave } = useLeaveApi();
   const [open, setOpen] = React.useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = React.useState(false)
   const [selectedNotif, setSelectedNotif] = React.useState(null);
@@ -73,6 +75,59 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
       showAlert("Something went wrong", "error");
     }
   };
+
+
+  const handleLeaveApprove = async () => {
+    if (!selectedNotif) return;
+
+    const payload = {
+      reference_id: selectedNotif.reference_id,
+      sender_id: selectedNotif.sender_id,
+      status: "CONFIRMED",
+      message: null,
+      notification_id: selectedNotif._id,
+    };
+
+    try {
+      await updateLeave(payload);
+      setNotifications((prev) =>
+        prev.filter((notif) => notif._id !== selectedNotif._id)
+      );
+      setIsConfirmModalOpen(false);
+      showAlert("Leave approved successfully!", "success");
+    } catch (err) {
+      console.error("Error approving leave:", err);
+      showAlert("Something went wrong", "error");
+    }
+  };
+
+
+  const handleLeaveReject = async () => {
+    if (!selectedNotif) return;
+
+    const payload = {
+      reference_id: selectedNotif.reference_id,
+      sender_id: selectedNotif.sender_id,
+      status: "CANCELLED",
+      message: declineReason,
+      notification_id: selectedNotif._id,
+    };
+
+    try {
+      await updateLeave(payload);
+      setNotifications((prev) =>
+        prev.filter((notif) => notif._id !== selectedNotif._id)
+      );
+      setIsDeclineModalOpen(false);
+      setDeclineReason("");
+      showAlert("Leave rejected successfully!", "success");
+    } catch (err) {
+      console.error("Error rejecting leave:", err);
+      showAlert("Something went wrong", "error");
+    }
+  };
+
+
   return (
     <header className="top-bar">
       {isConfirmModalOpen &&
@@ -101,7 +156,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
                   if (selectedNotif?.type === "APPOINTMENT_REQUEST") {
                     handleConfirm();
                   } else if (selectedNotif?.type === "LEAVE_REQUEST") {
-                    console.log("Leave Approved");
+                    handleLeaveApprove();
                   }
                 }}
               >
@@ -157,7 +212,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
                   if (selectedNotif?.type === "APPOINTMENT_REQUEST") {
                     handleCancelNotification();
                   } else if (selectedNotif?.type === "LEAVE_REQUEST") {
-                    console.log("Leave Rejected:", declineReason);
+                    handleLeaveReject();
                   }
                 }}
               >
