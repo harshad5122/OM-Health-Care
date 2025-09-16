@@ -222,14 +222,23 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        <div className="profile-actions-bottom">
-          <Link 
+        <div className={`profile-actions-bottom w-full flex ${profileData.role === 2 ? "justify-between":"justify-end"} mt-[2rem] pt-[1.5rem] border-t border-[#eee]`}>
+          {/* <Link 
           // to="/dashboard/admin/home" 
            to={profileData.role === 1 ? "/dashboard/user/home" : "/dashboard/admin/home"}
           className="btn btn-tertiary"
           >
             Back to Dashboard
-          </Link>
+          </Link> */}
+          {profileData.role === 2 && (
+            <Link 
+              to="/dashboard/admin/home"
+              className="btn btn-tertiary"
+            >
+              Back to Dashboard
+            </Link>
+          )}
+
           <Link className="btn btn-primary" to="/auth/change-password?from=profile">
             Change Password
           </Link>

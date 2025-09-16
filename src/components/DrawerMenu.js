@@ -33,7 +33,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
 
   const menuItems = {
     1: [
-      { path: "home", label: "Dashboard", icon: <FaCubes /> },
+      // { path: "home", label: "Dashboard", icon: <FaCubes /> },
       { path: "profile", label: "Profile", icon: <FaUser /> },
       { path: "messages", label: "Messages", icon: <FaEnvelope /> },
       { path: "appointment", label: "Book Appointment", icon: <FaCalendarAlt /> },
@@ -48,7 +48,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       { path: "appointment", label: "Book Appointment", icon: <FaCalendarAlt /> },
     ],
     3: [
-      { path: "home", label: "Dashboard", icon: <FaCubes /> },
+      // { path: "home", label: "Dashboard", icon: <FaCubes /> },
       { path: "profile", label: "Profile", icon: <FaUser /> },
       { path: "messages", label: "Messages", icon: <FaEnvelope /> },
       {path:"leave",label:"Leave Management",icon: <RiUserShared2Fill className="text-[22px]"/> },

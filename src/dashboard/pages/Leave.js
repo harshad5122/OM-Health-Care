@@ -9,6 +9,9 @@ import { useAuth } from "../../context/AuthContext";
 import { showAlert } from "../../components/AlertComponent";
 import { useLeaveApi } from "../../api/leaveApi";
 import ReusableModal from "../../components/ReusableModal"
+import {
+    CircularProgress
+} from "@mui/material";
 
 function Leave(isDrawerOpen) {
     const { createLeave, getLeaveById } = useLeaveApi();
@@ -22,7 +25,10 @@ function Leave(isDrawerOpen) {
         isTimeEnabled: false,
     });
     const [leaveByIdData, setLeaveByIdData] = React.useState(null);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
+    const [isEditMode, setIsEditMode] = React.useState(false);
+    const [editId, setEditId] = React.useState(null);
     const columns = ["Start Date", "End Date", "Reason", "Status"];
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
@@ -34,19 +40,23 @@ function Leave(isDrawerOpen) {
     };
 
     const fetchLeaveById = async () => {
-        if (!user?._id) return;
+        if (!user?.staff_id) return;
+        setLoading(true); 
         try {
-            const result = await getLeaveById(user._id);
+            const result = await getLeaveById(user.staff_id);
             setLeaveByIdData(result);
         } catch (error) {
             console.log("Error fetching leave by ID:", error);
+        }
+        finally {
+            setLoading(false); 
         }
     };
 
 
     const handleApplyLeave = async () => {
         const payload = {
-            staff_id: user?._id || "",
+            staff_id: user?.staff_id || "",
             staff_name: `${user?.firstname || ""} ${user?.lastname || ""}`.trim(),
             start_date: leaveData.startDate
                 ? dayjs(leaveData.startDate).format("YYYY-MM-DD")
@@ -84,6 +94,10 @@ function Leave(isDrawerOpen) {
             showAlert("Something went wrong", "error")
         }
     };
+    const handleUpdateLeave = async () => {
+        console.log("UPDATELEAVE")
+    };
+
 
     React.useEffect(() => {
         fetchLeaveById();
@@ -209,13 +223,14 @@ function Leave(isDrawerOpen) {
                     </span>
                     <span className="flex gap-2 justify-end my-2">
                         <button
-                            onClick={handleApplyLeave}
+                            // onClick={handleApplyLeave}
+                            onClick={isEditMode ? handleUpdateLeave : handleApplyLeave}
                             className="bg-[#1a6f8b] text-white px-4 py-1.5 rounded hover:bg-[#15596e] transition"
                         >
-                            Apply Leave
+                            {isEditMode ? "Update Leave" : "Apply Leave"}
                         </button>
                         <button
-                            onClick={() =>
+                            onClick={() =>{
                                 setLeaveData({
                                     startDate: null,
                                     endDate: null,
@@ -224,7 +239,9 @@ function Leave(isDrawerOpen) {
                                     reason: "",
                                     isTimeEnabled: false,
                                 })
-                            }
+                                setIsEditMode(false); 
+                                setEditId(null);
+                            }}
                             className="bg-[#1a6f8b] text-white px-4 py-1.5 rounded hover:bg-[#15596e] transition"
                         >
                             Cancel
@@ -239,6 +256,11 @@ function Leave(isDrawerOpen) {
                         Leave Records
                     </p>
                     <div className="flex-1 overflow-y-auto">
+                    {loading ? (
+                        <div className="flex justify-center items-center h-full w-full">
+                            <CircularProgress size={30} />
+                        </div>
+                    ) : (
                         <table className="min-w-full border-collapse">
                             <thead className="sticky top-0 bg-[#f5f7fa] z-10">
                                 <tr className="border border-gray-200b">
@@ -292,7 +314,21 @@ function Leave(isDrawerOpen) {
                                                 </span>
                                             </td>
                                             <td className="px-4 py-2 flex gap-3">
-                                                <Edit className="text-blue-500" sx={{ fontSize: "18px" }} />
+                                                <Edit className="text-blue-500 cursor-pointer" sx={{ fontSize: "18px" }} 
+                                                    onClick={() => {
+                                                        setIsEditMode(true);
+                                                        setEditId(leave._id);
+
+                                                        setLeaveData({
+                                                        startDate: dayjs(leave.start_date),
+                                                        endDate: dayjs(leave.end_date),
+                                                        startTime: leave.start_time ? dayjs(leave.start_time, "HH:mm") : null,
+                                                        endTime: leave.end_time ? dayjs(leave.end_time, "HH:mm") : null, 
+                                                        reason: leave.reason,
+                                                        isTimeEnabled: !!(leave.start_time && leave.end_time),
+                                                        });
+                                                    }}
+                                                />
                                                 <Delete
                                                     className="text-red-500 cursor-pointer"
                                                     sx={{ fontSize: "18px" }}
@@ -315,6 +351,7 @@ function Leave(isDrawerOpen) {
                                 )}
                             </tbody>
                         </table>
+                    )}
                     </div>
                 </div>
             </div>

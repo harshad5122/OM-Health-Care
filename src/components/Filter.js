@@ -11,7 +11,9 @@ function Filter({ search, setSearch, handleSearch, filter, setFilter,fromDate,
   toDate,
   setToDate,
 handleSearchButton ,
-handleClearButton}) {
+handleClearButton,
+showSearch = true,
+}) {
 
 
    const handleFilterChange = (value) => {
@@ -32,6 +34,7 @@ handleClearButton}) {
    
   return (
     <div className="flex space-x-2 items-center">
+      {showSearch && (
       <div className="flex items-center min-w-[250px] rounded-md border border-gray-300 overflow-hidden">
         <input
           type="text"
@@ -47,7 +50,7 @@ handleClearButton}) {
         >
           <SearchIcon />
         </button>
-      </div>
+      </div>)}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <div className="flex gap-2 items-center filter-daterange">
           <DatePicker
@@ -66,6 +69,7 @@ handleClearButton}) {
         value={filter}
         // onChange={(e) => setFilter(e.target.value)}
         onChange={(e) => handleFilterChange(e.target.value)}
+        className="filter-daterange"
       >
         <MenuItem value="thisMonth">This Month</MenuItem>
         <MenuItem value="lastMonth">Last Month</MenuItem>

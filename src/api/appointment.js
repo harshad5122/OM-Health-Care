@@ -25,6 +25,14 @@ export const useAppointmentApi = () => {
             throw error.response?.data || { msg: "Failed to fetch appointments" };
         }
     }
+    const getAppointmentList = async (id,from_date, to_date,status) => {
+        try {
+            const response = await axiosInstance.get(`/get-appointment-list/${id}?from=${from_date}&to=${to_date}&status=${status}`);
+            return response.data.body;
+        } catch (error) {
+            throw error.response?.data || { msg: "Failed to fetch appointments" };
+        }
+    }
 
     const updateAppointment = async (payload) => {
         try {
@@ -36,5 +44,5 @@ export const useAppointmentApi = () => {
     }
 
 
-    return { createAppointment, getPatients, getAppointments, updateAppointment };
+    return { createAppointment, getPatients, getAppointments, updateAppointment ,getAppointmentList};
 };

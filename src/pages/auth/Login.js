@@ -93,7 +93,7 @@ const Login = () => {
         break;
       case UserTypes.USER:
       default:
-        navigate("/dashboard/user/home");
+        navigate("/dashboard/user");
         break;
     }
   };

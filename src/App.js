@@ -30,6 +30,7 @@ import ChangePassword from "./pages/auth/ResetPassword";
 import AddAppointment from "./dashboard/pages/AddAppointment";
 import Leave from "./dashboard/pages/Leave";
 import DoctorAppointmnets from "./dashboard/pages/DoctorAppointments";
+import { Navigate } from "react-router-dom";
 // import Messages from "./dashboard/pages/Messages";
 
 
@@ -97,9 +98,10 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard title="Staff Home" />} />
-          <Route path="home" element={<Dashboard />} />
-          <Route path="profile" element={<Profile />} />
+          {/* <Route index element={<Dashboard title="Staff Home" />} /> */}
+          {/* <Route path="home" element={<Dashboard />} /> */}
+          <Route index element={<Navigate to="profile" replace />} />
+          <Route path="profile"  element={<Profile />} />
           <Route path="messages" element={<Chat />} />
           <Route path="leave" element={<Leave />} />
           <Route path="appointments" element={<DoctorAppointmnets />} />
@@ -114,8 +116,9 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard title="User Home" />} />
-          <Route path="home" element={<Dashboard />} />
+          {/* <Route index element={<Dashboard title="User Home" />} />
+          <Route path="home" element={<Dashboard />} /> */}
+          <Route index element={<Navigate to="profile" replace />} />
           <Route path="profile" element={<Profile />} />
           <Route path="messages" element={<Chat />} />
           <Route path="appointment" element={<AddAppointment/>}/>

@@ -43,10 +43,10 @@ function Members() {
     const [selectedRow, setSelectedRow] = useState(null);
     
    
-    const fetchStaff = async (skip,from = fromDate, to = toDate) => {
+    const fetchStaff = async (skip,from = fromDate, to = toDate,searchValue = search) => {
         try {
             setLoading(true);
-            const data = await getDoctor({ skip, limit: rowsPerPage, search, from_date: from ? dayjs(from).format("YYYY-MM-DD") : "",
+            const data = await getDoctor({ skip, limit: rowsPerPage, search: searchValue, from_date: from ? dayjs(from).format("YYYY-MM-DD") : "",
             to_date: to ? dayjs(to).format("YYYY-MM-DD") : "",}); 
             setStaffData(data?.rows);
             setTotalCounts(data?.total_count)
@@ -60,10 +60,10 @@ function Members() {
         }
     };
 
-    const fetchUser = async (skip,from = fromDate, to = toDate) => {
+    const fetchUser = async (skip,from = fromDate, to = toDate,searchValue = search) => {
         try {
             setLoading(true);
-            const data = await getUserList({ skip, limit: rowsPerPage, search , from_date: from ? dayjs(from).format("YYYY-MM-DD") : "",
+            const data = await getUserList({ skip, limit: rowsPerPage, search: searchValue, from_date: from ? dayjs(from).format("YYYY-MM-DD") : "",
             to_date: to ? dayjs(to).format("YYYY-MM-DD") : "",});
             setUserData(data?.rows);
             setTotalCounts(data?.total_count)
@@ -176,10 +176,10 @@ function Members() {
 
         const skip = 0;
         if (activeTab === "staff") {
-            fetchStaff(skip, start, end);
+            fetchStaff(skip, start, end,"");
         }
         if (activeTab === "user") {
-            fetchUser(skip, start, end);
+            fetchUser(skip, start, end,"");
         }
     };
 
@@ -264,7 +264,7 @@ function Members() {
                     </Stack>
                 </div>
                 ) : (
-                    <TableContainer component={Paper} sx={{ maxHeight: '74vh' }}>
+                    <TableContainer component={Paper} sx={{ maxHeight: '74vh',overflowX: "auto"  }}>
 
                         <Table size="small" stickyHeader className="border-l border-r border-[#e0e0e0]">
                             <TableHead>
@@ -273,7 +273,14 @@ function Members() {
                                     {columns?.map((col) => (
                                         <TableCell key={col} className="custom-th ">{col}</TableCell>
                                     ))}
-                                    <TableCell className="custom-th ">Action</TableCell>
+                                    <TableCell className="custom-th " 
+                                    sx={{
+                                        position: "sticky",
+                                        right: 0,
+                                        zIndex: 2,
+                                        background: "#fff", 
+                                    }}
+                                    >Action</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -285,7 +292,14 @@ function Members() {
                                                 {row[col] !== undefined ? String(row[col]) : "-"}
                                             </TableCell>
                                         ))}
-                                        <TableCell className="custom-cell">
+                                        <TableCell className="custom-cell"
+                                        sx={{
+                                            position: "sticky",
+                                            right: 0,
+                                            zIndex: 1,
+                                            background: "#fff",
+                                        }}
+                                        >
                                             <IconButton color="primary" size="small" onClick={() => handleEdit(row, activeTab)}>
                                                 <Edit fontSize="small" />
                                             </IconButton>

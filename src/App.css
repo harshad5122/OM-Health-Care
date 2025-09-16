@@ -1071,6 +1071,10 @@ p {
 }
 .filter-daterange .MuiPickersInputBase-root{
   padding: 0 7px !important;
+  background-color: white !important;
+}
+.filter-daterange .MuiSelect-select{
+    background-color: white !important;
 }
 .filter-daterange .MuiPickersSectionList-root{
   padding: 9.22px 0 !important;
