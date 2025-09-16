@@ -36,7 +36,7 @@ function AddAppointment({ isDrawerOpen }) {
     const { getDoctor } = useDoctorApi();
     const { getPatients } = useAppointmentApi();
 
-    const isFormValid = appointment?.date && appointment?.time_slot?.start && appointment?.time_slot?.end && appointment?.visit_type && (appointment?.patient_id );
+    const isFormValid = appointment?.date && appointment?.time_slot?.start && appointment?.time_slot?.end && appointment?.visit_type && (appointment?.patient_id);
     const { createAppointment, getAppointments, updateAppointment } = useAppointmentApi();
     const today = new Date();
 
@@ -80,24 +80,24 @@ function AddAppointment({ isDrawerOpen }) {
     };
     function mergeSlots(slots) {
         slots.sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
-      
+
         const merged = [];
         let current = slots[0];
-      
+
         for (let i = 1; i < slots.length; i++) {
-          const next = slots[i];
-          if (toMinutes(next.start) <= toMinutes(current.end)) {
-            // overlapping or continuous → merge
-            current.end = next.end > current.end ? next.end : current.end;
-          } else {
-            merged.push(current);
-            current = next;
-          }
+            const next = slots[i];
+            if (toMinutes(next.start) <= toMinutes(current.end)) {
+                // overlapping or continuous → merge
+                current.end = next.end > current.end ? next.end : current.end;
+            } else {
+                merged.push(current);
+                current = next;
+            }
         }
         merged.push(current);
         return merged;
-      }
-      
+    }
+
     const validateAppointment = () => {
         if (!appointment?.date || !appointment?.time_slot?.start || !appointment?.time_slot?.end) {
             showAlert("Please select a valid date and time slot!", "warning");
@@ -106,18 +106,50 @@ function AddAppointment({ isDrawerOpen }) {
 
         const matchingSlot = allBookings.find((slot) => slot.date === appointment.date);
 
+        console.log(allBookings, ">> all bookings")
+
+        // After getting matchingSlot and before booked slot check
+        const leaveEvents = (matchingSlot?.events || []).filter(e => e.type === "leave");
+        const { start, end } = appointment.time_slot;
+
+        // Convert to minutes for easier comparison
+
+        const apptStart = toMinutes(start);
+        const apptEnd = toMinutes(end);
+
+
+        if (leaveEvents.length > 0) {
+            for (let leave of leaveEvents) {
+                if (leave.full_day) {
+                    // full-day leave → doctor unavailable
+                    showAlert(
+                        `Dr. ${selectedDoctor?.firstname || ""} is on leave for the whole day (${dayjs(appointment.date).format("D MMMM, YYYY")}).`,
+                        "error"
+                    );
+                    return false;
+                } else {
+                    // partial leave → check overlap
+                    const leaveStart = toMinutes(leave.start);
+                    const leaveEnd = toMinutes(leave.end);
+
+                    if (!(apptEnd <= leaveStart || apptStart >= leaveEnd)) {
+                        showAlert(
+                            `Dr. ${selectedDoctor?.firstname || ""} is on leave from ${leave.start}–${leave.end} on ${dayjs(appointment.date).format("D MMMM, YYYY")}.`,
+                            "error"
+                        );
+                        return false;
+                    }
+                }
+            }
+        }
+
+
         if (!matchingSlot ||
             ((!matchingSlot.slots?.available?.length || matchingSlot.slots.available.length === 0) &&
                 (!matchingSlot.slots?.booked?.length || matchingSlot.slots.booked.length === 0))) {
             return true; // no restrictions
         }
 
-        const { start, end } = appointment.time_slot;
-
-        // Convert to minutes for easier comparison
-     
-        const apptStart = toMinutes(start);
-        const apptEnd = toMinutes(end);
 
         console.log(matchingSlot)
         // 1. Check overlap with already booked slots
@@ -150,20 +182,20 @@ function AddAppointment({ isDrawerOpen }) {
         // });
         let effectiveAvail = [...(matchingSlot.slots.available || [])];
 
-        
+
 
         if (appointment?._id) {
             const oldBooked = matchingSlot.slots.booked.find(
                 (b) => b.id?.toString() === appointment._id.toString()
             );
 
-            console.log(oldBooked,">> old one ")
+            console.log(oldBooked, ">> old one ")
             if (oldBooked) {
                 // add the old slot back into available so the user can reuse it or change within
                 effectiveAvail.push({ start: oldBooked.start, end: oldBooked.end });
             }
         }
-console.log(effectiveAvail,">>> effective availble")
+        console.log(effectiveAvail, ">>> effective availble")
         // 3. Check if new time slot falls into any of the effective available slots
         const mergedAvail = mergeSlots(effectiveAvail);
         const isInsideEffectiveAvailable = mergedAvail.some((a) => {
@@ -235,8 +267,8 @@ console.log(effectiveAvail,">>> effective availble")
 
             const mappedEvents = result.flatMap((day) => {
                 return day.events.map((event) => {
-                    const [startHour, startMinute] = event.start.split(":").map(Number);
-                    const [endHour, endMinute] = event.end.split(":").map(Number);
+                    const [startHour, startMinute] = event?.start?.split(":").map(Number);
+                    const [endHour, endMinute] = event?.end?.split(":").map(Number);
 
                     const baseDate = dayjs(day.date);
 
@@ -561,8 +593,8 @@ console.log(effectiveAvail,">>> effective availble")
                                     <button
                                         type="submit"
                                         className={`px-4 py-1 rounded-md transition text-white bg-[#1a6f8b] ${isFormValid
-                                                ? "hover:bg-[#15596e] cursor-pointer"
-                                                : "cursor-not-allowed opacity-50"
+                                            ? "hover:bg-[#15596e] cursor-pointer"
+                                            : "cursor-not-allowed opacity-50"
                                             }`}
                                         disabled={!isFormValid}
                                     >
