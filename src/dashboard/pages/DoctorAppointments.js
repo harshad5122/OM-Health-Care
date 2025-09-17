@@ -95,7 +95,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 			if (!selectedAppointment) return;
 			const payload = {
 				reference_id: selectedAppointment._id,
-				creator: selectedAppointment.creator,
+				creator_id: selectedAppointment.creator,
 				patient_id:selectedAppointment.patient_id,
 				status: newStatus,
 				message: null,

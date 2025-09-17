@@ -3,7 +3,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Edit, Delete } from "@mui/icons-material";
 import { useAuth } from "../../context/AuthContext";
 import { showAlert } from "../../components/AlertComponent";
@@ -19,17 +18,15 @@ function Leave(isDrawerOpen) {
     const [leaveData, setLeaveData] = React.useState({
         startDate: null,
         endDate: null,
-        startTime: null,
-        endTime: null,
         reason: "",
-        isTimeEnabled: false,
+        leave_type: "",
     });
     const [leaveByIdData, setLeaveByIdData] = React.useState(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [isEditMode, setIsEditMode] = React.useState(false);
     const [editId, setEditId] = React.useState(null);
-    const columns = ["Start Date", "End Date", "Reason", "Status"];
+    const columns = ["Start Date", "End Date", "Leave Type","Reason", "Status"];
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
         return new Date(dateStr).toLocaleDateString("en-GB");
@@ -64,15 +61,7 @@ function Leave(isDrawerOpen) {
             end_date: leaveData.endDate
                 ? dayjs(leaveData.endDate).format("YYYY-MM-DD")
                 : "",
-            start_time:
-                leaveData.isTimeEnabled && leaveData.startTime
-                    ? dayjs(leaveData.startTime).format("HH:mm")
-                    : null,
-            end_time:
-                leaveData.isTimeEnabled && leaveData.endTime
-                    ? dayjs(leaveData.endTime).format("HH:mm")
-                    : null,
-            full_day: !leaveData.isTimeEnabled,
+            leave_type: leaveData.leave_type,
             reason: leaveData.reason,
         };
 
@@ -82,10 +71,8 @@ function Leave(isDrawerOpen) {
             setLeaveData({
                 startDate: null,
                 endDate: null,
-                startTime: null,
-                endTime: null,
                 reason: "",
-                isTimeEnabled: false,
+                leave_type: "",
             });
             fetchLeaveById();
             showAlert("Leave Created Successfully", "success")
@@ -148,7 +135,7 @@ function Leave(isDrawerOpen) {
                             <div className="flex gap-4 items-center">
                                 <span className="flex flex-col">
                                     <label className="text-sm text-gray-600 mb-1 text-left font-semibold">
-                                        {leaveData.isTimeEnabled ? "Start Date & Time" : "Start Date"}
+                                       Start Date
                                     </label>
                                     <div className="flex gap-2 leave-calendar">
                                         <DatePicker
@@ -156,18 +143,11 @@ function Leave(isDrawerOpen) {
                                             onChange={(val) => handleChange("startDate", val)}
                                             slotProps={{ textField: { size: "small" } }}
                                         />
-                                        {leaveData.isTimeEnabled && (
-                                            <TimePicker
-                                                value={leaveData.startTime}
-                                                onChange={(val) => handleChange("startTime", val)}
-                                                slotProps={{ textField: { size: "small" } }}
-                                            />
-                                        )}
                                     </div>
                                 </span>
                                 <span className="flex flex-col leave-calendar">
                                     <label className="text-sm text-gray-600 mb-1 text-left font-semibold">
-                                        {leaveData.isTimeEnabled ? "End Date & Time" : "End Date"}
+                                       End Date
                                     </label>
                                     <div className="flex gap-2">
                                         <DatePicker
@@ -175,39 +155,28 @@ function Leave(isDrawerOpen) {
                                             onChange={(val) => handleChange("endDate", val)}
                                             slotProps={{ textField: { size: "small" } }}
                                         />
-                                        {leaveData.isTimeEnabled && (
-                                            <TimePicker
-                                                value={leaveData.endTime}
-                                                onChange={(val) => handleChange("endTime", val)}
-                                                slotProps={{ textField: { size: "small" } }}
-                                            />
-                                        )}
                                     </div>
                                 </span>
                             </div>
                         </LocalizationProvider>
-                        <span className="flex items-center gap-2 pt-6">
-                            <input
-                                type="checkbox"
-                                id="includeTime"
-                                checked={leaveData.isTimeEnabled}
-                                onChange={(e) =>
-                                    setLeaveData((prev) => ({
-                                        ...prev,
-                                        isTimeEnabled: e.target.checked,
-                                        startTime: e.target.checked ? prev.startTime : null,
-                                        endTime: e.target.checked ? prev.endTime : null,
-                                    }))
-                                }
-                                className="cursor-pointer"
-                            />
-                            <label
-                                htmlFor="includeTime"
-                                className="text-sm text-gray-700 font-semibold cursor-pointer"
-                            >
-                                Hours of Availability
+                        <span className="flex flex-col">
+                            <label className="text-sm text-gray-600 mb-1 text-left font-semibold">
+                                Leave Type
                             </label>
+                            <select
+                                className="border border-gray-300 rounded px-1 py-1.5 focus:outline-none text-[14px] text-gray-600 cursor-pointer"
+                                value={leaveData.leave_type}
+                                onChange={(e) => handleChange("leave_type", e.target.value)}
+                            >
+                                <option value="" disabled>
+                                    Select leave type
+                                </option>
+                                <option value="FULL_DAY">Full Day</option>
+                                <option value="FIRST_HALF">First Half</option>
+                                <option value="SECOND_HALF">Second Half</option>
+                            </select>
                         </span>
+
                     </span>
                     <span className="flex flex-col">
                         <span className="text-sm font-medium text-gray-700 text-left">
@@ -234,10 +203,8 @@ function Leave(isDrawerOpen) {
                                 setLeaveData({
                                     startDate: null,
                                     endDate: null,
-                                    startTime: null,
-                                    endTime: null,
                                     reason: "",
-                                    isTimeEnabled: false,
+                                    leave_type: "",
                                 })
                                 setIsEditMode(false); 
                                 setEditId(null);
@@ -281,19 +248,12 @@ function Leave(isDrawerOpen) {
                                         <tr key={leave._id} className="border border-gray-200 text-left">
                                             <td className="px-4 py-2 text-sm">
                                                 {formatDate(leave.start_date)}{" "}
-                                                {leave.start_time && leave.end_time && (
-                                                    <span>
-                                                        ({leave.start_time} - {leave.end_time})
-                                                    </span>
-                                                )}
                                             </td>
                                             <td className="px-4 py-2 text-sm">
                                                 {formatDate(leave.end_date)}{" "}
-                                                {leave.start_time && leave.end_time && (
-                                                    <span>
-                                                        ({leave.start_time} - {leave.end_time})
-                                                    </span>
-                                                )}
+                                            </td>
+                                            <td className="px-4 py-2 text-sm">
+                                                 {leave.leave_type}
                                             </td>
                                             <td className="px-4 py-2 text-sm max-w-[250px] truncate" title={leave.reason}>
                                                 {leave.reason}
@@ -318,14 +278,11 @@ function Leave(isDrawerOpen) {
                                                     onClick={() => {
                                                         setIsEditMode(true);
                                                         setEditId(leave._id);
-
                                                         setLeaveData({
                                                         startDate: dayjs(leave.start_date),
                                                         endDate: dayjs(leave.end_date),
-                                                        startTime: leave.start_time ? dayjs(leave.start_time, "HH:mm") : null,
-                                                        endTime: leave.end_time ? dayjs(leave.end_time, "HH:mm") : null, 
                                                         reason: leave.reason,
-                                                        isTimeEnabled: !!(leave.start_time && leave.end_time),
+                                                        leave_type: leave.leave_type,
                                                         });
                                                     }}
                                                 />
