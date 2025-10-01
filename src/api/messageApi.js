@@ -5,10 +5,13 @@ import { useAxios } from "../utils/axiosConfig";
 
 export const useMessageApi = () => {
   const axiosInstance = useAxios();
-  const getMessageList = async (adminId, token) => {
+  const getMessageList = async (payload, token) => {
     try {
+       const queryParam = payload.type === 'broadcast' 
+        ? `broadcast_id=${payload.id}` 
+        : `user_id=${payload.id}`;
       const response = await axiosInstance.get(
-        `/message/list?user_id=${adminId}`,
+        `/message/list?${queryParam}`,
         {
           headers: {
             Authorization: `${token}`,
@@ -20,13 +23,14 @@ export const useMessageApi = () => {
 
     } catch (error) {
       throw error.response?.data || { msg: "Failed to fetch messages" };
+      return [];
     }
   };
 
    const getBroadcastList = async (token) => {
     try {
       const response = await axiosInstance.get(
-        `/broadcasts`, // Assuming this is your API endpoint
+        `/broadcasts`, 
         {
           headers: {
             Authorization: `${token}`,
@@ -42,10 +46,28 @@ export const useMessageApi = () => {
     }
   };
 
+  const getBroadcastRecipients = async (broadcastId, token) => {
+    try {
+      const response = await axiosInstance.get(
+        `/broadcasts/recipients/${broadcastId}`, 
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+      return Array.isArray(response?.data?.body) ? response.data.body : [];
+    } catch (error) {
+      console.error("Failed to fetch broadcast recipients:", error);
+      return [];
+    }
+  };
+
 
   return {
     getMessageList,
-    getBroadcastList 
+    getBroadcastList,
+    getBroadcastRecipients 
   };
 }
 

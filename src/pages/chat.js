@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chat.css";
 import { getSocket, initSocket } from "../utils/socket";
 import { useAuth } from "../context/AuthContext";
@@ -16,7 +16,8 @@ import {
   MessageSquare,
   CheckCheck,
   ArrowLeft,
-  Megaphone
+  Megaphone,
+  Info 
 } from "lucide-react";
 import { useUserApi } from "../api/userApi";
 import { useMessageApi } from "../api/messageApi";
@@ -102,8 +103,8 @@ const Chat = () => {
   const [editingMessage, setEditingMessage] = useState(null);
   const [activeMessageMenu, setActiveMessageMenu] = useState(null);
   const [activeTab, setActiveTab] = useState("admins");
-  const [selectedChat, setSelectedChat] = useState(null); // Can be a user or a broadcast
-  const [selectedUser, setSelectedUser] = useState(null);
+   const [selectedChat, setSelectedChat] = useState(null); // Can be a user or a broadcast
+  // const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showBroadcastMenu, setShowBroadcastMenu] = useState(false);
   const [chatUsers, setChatUsers] = useState([]);
@@ -111,13 +112,17 @@ const Chat = () => {
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
 
    // --- NEW state for Broadcast functionality ---
-  const [sidebarView, setSidebarView] = useState("list"); // 'list' or 'new-broadcast'
+  const [sidebarView, setSidebarView] = useState("list"); 
+  const [broadcastRecipients, setBroadcastRecipients] = useState([]);
+  const [editingBroadcast, setEditingBroadcast] = useState(null); 
   const [broadcasts, setBroadcasts] = useState([]);
   const [broadcastTitle, setBroadcastTitle] = useState("");
   const [allPotentialRecipients, setAllPotentialRecipients] = useState([]);
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [availableRecipients, setAvailableRecipients] = useState([]);
   const [recipientSearch, setRecipientSearch] = useState("");
+
+  const [recipientTab, setRecipientTab] = useState('doctor'); // 'all', 'doctor', or 'patient'
 
   const fileInputRef = useRef(null);
   const chatBoxRef = useRef(null);
@@ -127,7 +132,7 @@ const Chat = () => {
   const msgRefs = useRef({});
 
   const { getChatUsers, getUserList, getStaffList } = useUserApi();
-  const { getMessageList, getBroadcastList  } = useMessageApi();
+  const { getMessageList, getBroadcastList, getBroadcastRecipients } = useMessageApi();
   const { uploadFile } = useUploadFile();
 
   // --- Main Socket Connection and Global Listeners ---
@@ -172,7 +177,7 @@ const Chat = () => {
 
   // --- Fetch Initial User List ---
   useEffect(() => {
-    if ( !token) return;
+    if ( !token || !user) return;
 
     const fetchUsers = async () => {
       try {
@@ -192,8 +197,9 @@ const Chat = () => {
         
         setChatUsers(sortedUsers || []);
 
-        if (!selectedUser && sortedUsers.length > 0) {
-          setSelectedUser(sortedUsers[0]);
+        if (!selectedChat && sortedUsers.length > 0) {
+          // setSelectedUser(sortedUsers[0]);
+           setSelectedChat({ ...sortedUsers[0], isBroadcast: false });
         }
       } catch (err) {
         console.error("Error fetching chat users:", err);
@@ -214,9 +220,29 @@ const Chat = () => {
       fetchBroadcasts();
     }
     const socket = getSocket();
-    const handleBroadcastCreated = ({ broadcast }) => {
-      setBroadcasts(prev => [broadcast, ...prev]);
+    const handleBroadcastCreated = (data) => {
+
+       if (!data || !data.broadcast) {
+            console.error("Received invalid 'broadcast_created' event from server:", data);
+            return; // Exit the function to prevent the crash.
+        }
+
+      // const newBroadcast = newBroadcastData.broadcast;
+      const newBroadcast = data.broadcast;
+
+         const formattedBroadcast = {
+            id: newBroadcast._id,
+            _id: newBroadcast._id,
+            title: newBroadcast.title,
+            createdAt: newBroadcast.createdAt,
+            recipients: newBroadcast.recipients,
+            lastMessage: "Broadcast created",
+            isBroadcast: true
+        };
+
+      setBroadcasts(prev => [formattedBroadcast, ...prev]);
       setSidebarView("list"); // Switch back to the list view
+      setSelectedChat(formattedBroadcast); // Automatically select the new broadcast
     };
     socket.on("broadcast_created", handleBroadcastCreated);
 
@@ -227,36 +253,47 @@ const Chat = () => {
 
   // --- Fetch Messages and Handle Chat-Specific Logic when a User is Selected ---
   useEffect(() => {
-    if (!user?._id || !token || !selectedUser?._id) {
+    if ( !token || !selectedChat?._id) {
       setMessages([]);
       return;
     }
 
-    const socket = getSocket();
+    // const socket = getSocket();
 
     const fetchMessages = async () => {
       try {
-        const oldMsgs = await getMessageList(selectedUser._id, token);
+         const payload = {
+            id: selectedChat._id,
+            type: selectedChat.isBroadcast ? 'broadcast' : 'user'
+        };
+        const oldMsgs = await getMessageList(payload, token);
         setMessages(oldMsgs?.reverse() || []);
         // Once messages are loaded, mark them as seen
-        markMessagesAsSeen(oldMsgs);
+        if (!selectedChat.isBroadcast) {
+            markMessagesAsSeen(oldMsgs);
+            // Reset unread count for the selected user chat
+            setChatUsers((prev) =>
+              prev.map((u) => (u._id === selectedChat._id ? { ...u, unreadCount: 0 } : u))
+            );
+        }
+        // markMessagesAsSeen(oldMsgs);
       } catch (error) {
         console.error("Error fetching messages:", error);
         setMessages([]);
       }
     };
     fetchMessages();
-
+ const socket = getSocket();
     // Reset unread count for the selected user
     setChatUsers((prev) =>
-      prev.map((u) => (u._id === selectedUser._id ? { ...u, unreadCount: 0 } : u))
+      prev.map((u) => (u._id === selectedChat._id ? { ...u, unreadCount: 0 } : u))
     );
 
     const handleIncomingMessage = (msg) => {
         // Only process if it's part of the active chat
       if (
-        (msg.sender_id === selectedUser._id && msg.receiver_id === user._id) ||
-        (msg.sender_id === user._id && msg.receiver_id === selectedUser._id)
+        (msg.sender_id === selectedChat._id && msg.receiver_id === user._id) ||
+        (msg.sender_id === user._id && msg.receiver_id === selectedChat._id)
       ) {
         setMessages((prev) => {
           // Replace temp message with actual message from server
@@ -308,7 +345,134 @@ const Chat = () => {
       socket.off("message_updated", handleMessageUpdated);
       socket.off("message_deleted", handleMessageDeleted);
     };
-  }, [selectedUser?._id, user?._id, token]);
+    }, [selectedChat, token]); 
+  // }, [selectedChat?._id, user?._id, token]);
+
+
+ 
+ // --- Add a listener for when a broadcast is updated ---
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+  
+    const handleBroadcastUpdated = (updatedData) => {
+        if (!updatedData || !updatedData.broadcast) return;
+        const updatedBroadcast = updatedData.broadcast;
+
+        // Update the list of broadcasts
+        setBroadcasts(prev => prev.map(bc => 
+            bc.id === updatedBroadcast._id 
+            ? { ...bc, title: updatedBroadcast.title, recipients: updatedBroadcast.recipients } 
+            : bc
+        ));
+
+        // If the updated broadcast is the currently selected one, update it
+        if (selectedChat && selectedChat.id === updatedBroadcast._id) {
+            setSelectedChat(prev => ({
+                ...prev,
+                title: updatedBroadcast.title,
+                recipients: updatedBroadcast.recipients
+            }));
+        }
+    };
+  
+    socket.on("broadcast_updated", handleBroadcastUpdated);
+  
+    return () => {
+      socket.off("broadcast_updated", handleBroadcastUpdated);
+    };
+  }, [selectedChat]);
+
+
+  const showBroadcastInfo = async (broadcast) => {
+    setSidebarView('broadcast-info');
+    const recipients = await getBroadcastRecipients(broadcast.id, token);
+    setBroadcastRecipients(recipients);
+  };
+
+  // ✅ --- REFACTORED: This function now handles opening the screen for both "new" and "edit" modes ---
+  const openBroadcastEditScreen = async (broadcastToEdit = null) => {
+    // Determine if we are editing or creating
+    const isEditing = broadcastToEdit !== null;
+    setSidebarView(isEditing ? 'edit-broadcast' : 'new-broadcast');
+    setEditingBroadcast(broadcastToEdit); // Store the broadcast if we are editing
+  
+    try {
+      // Fetch all potential recipients
+      const doctors = await getStaffList(token);
+      const usersResponse = await getUserList({ skip: null, limit: null, search: "" });
+      const doctorList = doctors || [];
+      const userList = usersResponse || [];
+  
+      const normalizedDoctors = doctorList.map(doc => ({_id: doc._id, name: `${doc.firstname} ${doc.lastname}`, type: 'doctor'}));
+      const normalizedUsers = userList.map(usr => ({_id: usr._id, name: `${usr.firstname} ${usr.lastname}`, type: 'patient'}));
+  
+      const allRecipientsMap = new Map();
+      [...normalizedDoctors, ...normalizedUsers].forEach(p => {
+        if (p._id && p.name && p._id !== user._id) {
+          allRecipientsMap.set(p._id, p);
+        }
+      });
+      const finalRecipients = Array.from(allRecipientsMap.values());
+      setAllPotentialRecipients(finalRecipients);
+  
+      // Pre-populate fields if we are in "edit" mode
+      if (isEditing) {
+        setBroadcastTitle(broadcastToEdit.title);
+        // Pre-select recipients
+        const currentRecipientIds = new Set(broadcastToEdit.recipients);
+        const selected = finalRecipients.filter(p => currentRecipientIds.has(p._id));
+        const available = finalRecipients.filter(p => !currentRecipientIds.has(p._id));
+        setSelectedRecipients(selected);
+        setAvailableRecipients(available);
+      } else {
+        // Reset fields for "new" mode
+        setBroadcastTitle("");
+        setSelectedRecipients([]);
+        setAvailableRecipients(finalRecipients);
+      }
+  
+    } catch (err) {
+      console.error("Failed to fetch recipients for broadcast", err);
+    }
+  };
+
+  // ✅ --- REFACTORED: This function now handles both creating and editing a broadcast ---
+  const handleSaveBroadcast = () => {
+    const isEditing = sidebarView === 'edit-broadcast';
+    
+    if (!broadcastTitle.trim() || selectedRecipients.length === 0) {
+      alert("Please provide a title and select at least one recipient.");
+      return;
+    }
+
+    const socket = getSocket();
+    const recipientIds = selectedRecipients.map(r => r._id);
+
+    if (isEditing) {
+      // Emit the "edit" event
+      socket.emit("edit_broadcast", {
+        admin_id: user._id,
+        broadcast_id: editingBroadcast.id,
+        title: broadcastTitle,
+        recipients: recipientIds,
+      });
+    } else {
+      // Emit the "create" event
+      socket.emit("create_broadcast", {
+        admin_id: user._id,
+        title: broadcastTitle,
+        recipients: recipientIds,
+      });
+    }
+
+    // Reset state and switch view
+    setBroadcastTitle("");
+    setSelectedRecipients([]);
+    setEditingBroadcast(null);
+    setSidebarView("list");
+  };
+
 
 
   // --- Mark Messages as Seen ---
@@ -336,7 +500,7 @@ const updateAndSortChatList = (message) => {
         return {
           ...u,
           // Don't increase unread count if the chat is already open with that user
-          unreadCount: u._id === selectedUser?._id ? 0 : (u.unreadCount || 0) + 1,
+          unreadCount: u._id === selectedChat?._id ? 0 : (u.unreadCount || 0) + 1,
           messagePreview: message.message || "Attachment",
           last_message: { created_at: message.created_at }
         };
@@ -415,33 +579,41 @@ const updateAndSortChatList = (message) => {
     // Fetch all doctors and users to select from
     try {
       const doctors = await getStaffList(token);
-      // const users = await getUserList({ skip: null, limit: null, search: "" });
-      // const allRecipients = [...doctors, ...users].map(u => ({...u, _id: u.user_id || u._id}));
       const usersResponse = await getUserList({ skip: null, limit: null, search: "" });
-        const users = usersResponse.body || []; // Assuming users are in the 'body' property
+        // const users = usersResponse || []; 
+         const doctorList = doctors || [];
+        const userList = usersResponse || [];
+
 
         // Normalize both lists to ensure they have `_id` and `name`
-        const normalizedDoctors = doctors.map(doc => ({
-            _id: doc.user_id, // Staff list seems to use user_id
-            name: doc.name,
+        const normalizedDoctors = doctorList.map(doc => ({
+            _id: doc._id, // Staff list seems to use user_id
+            // name: doc.name,
+            name: `${doc.firstname} ${doc.lastname}`,
+            type: 'doctor'
         }));
 
-        const normalizedUsers = users.map(usr => ({
+        const normalizedUsers = userList.map(usr => ({
             _id: usr._id, // User list uses _id
-            name: usr.name,
+            name: `${usr.firstname} ${usr.lastname}`,
+            type: 'patient'
         }));
         
         // Remove duplicates and the current admin from the list
         const allRecipientsMap = new Map();
         [...normalizedDoctors, ...normalizedUsers].forEach(p => {
-            if (p._id !== user._id) { // Don't add yourself to the recipient list
-               allRecipientsMap.set(p._id, p);
-            }
+           if (p._id && p.name && p._id !== user._id) {
+          allRecipientsMap.set(p._id, p);
+        }
+            // if (p._id !== user._id) { // Don't add yourself to the recipient list
+            //    allRecipientsMap.set(p._id, p);
+            // }
         });
 
         const finalRecipients = Array.from(allRecipientsMap.values());
         setAllPotentialRecipients(finalRecipients);
         setAvailableRecipients(finalRecipients);
+        setRecipientTab('all');
       // setAllPotentialRecipients(allRecipients);
       // setAvailableRecipients(allRecipients);
     } catch (err) {
@@ -481,44 +653,82 @@ const updateAndSortChatList = (message) => {
   };
 
 
-  const sendMessage = async () => {
-    if (!input.trim() || !selectedUser) return;
+//   const sendMessage = async () => {
+//     if (!input.trim() || !selectedChat) return;
+//     const socket = getSocket();
+//      if (!socket?.connected) return;
+
+//     const isBroadcast = selectedChat.recipients; // Check if it's a broadcast object
+
+//     if (!socket?.connected) return;
+//  if (isBroadcast) {
+//       socket.emit("broadcast_message", {
+//         sender_id: user._id,
+//         broadcast_id: selectedChat.id,
+//         message: input,
+//       });
+//     } else {
+//     if (editingMessage) {
+//       socket.emit("update_message", { messageId: editingMessage._id, message: input });
+//       setEditingMessage(null);
+//     } else {
+//       const tempId = `temp-${Date.now()}`;
+//       const msgData = {
+//         _id: tempId,
+//         sender_id: user._id,
+//         receiver_id: selectedUser._id,
+//         message: input,
+//         message_type: "text",
+//         created_at: new Date().toISOString(),
+//         message_status: "sent",
+//         ...(replyingTo && { reply_to: replyingTo._id }), // Add reply_to field
+//       };
+//       setMessages((prev) => [...prev, msgData]);
+//       socket.emit("chat_message", { ...msgData, _id: undefined }); // Don't send temp ID to backend
+//     }
+
+//   }
+//     setInput("");
+//     setReplyingTo(null); // Clear reply state after sending
+//   };
+
+
+    const sendMessage = async () => {
+    if (!input.trim() || !selectedChat) return;
     const socket = getSocket();
-
-    const isBroadcast = selectedChat.recipients; // Check if it's a broadcast object
-
     if (!socket?.connected) return;
- if (isBroadcast) {
+
+    if (selectedChat.isBroadcast) {
       socket.emit("broadcast_message", {
         sender_id: user._id,
-        broadcast_id: selectedChat.id,
+        broadcast_id: selectedChat._id,
         message: input,
       });
-    } else {
-    if (editingMessage) {
-      socket.emit("update_message", { messageId: editingMessage._id, message: input });
-      setEditingMessage(null);
-    } else {
-      const tempId = `temp-${Date.now()}`;
-      const msgData = {
-        _id: tempId,
-        sender_id: user._id,
-        receiver_id: selectedUser._id,
-        message: input,
-        message_type: "text",
-        created_at: new Date().toISOString(),
-        message_status: "sent",
-        ...(replyingTo && { reply_to: replyingTo._id }), // Add reply_to field
-      };
-      setMessages((prev) => [...prev, msgData]);
-      socket.emit("chat_message", { ...msgData, _id: undefined }); // Don't send temp ID to backend
+    } else { // It's a one-on-one chat
+      if (editingMessage) {
+        socket.emit("update_message", { messageId: editingMessage._id, message: input });
+        setEditingMessage(null);
+      } else {
+        const tempId = `temp-${Date.now()}`;
+        const msgData = {
+          _id: tempId,
+          sender_id: user._id,
+          receiver_id: selectedChat._id, // Use selectedChat._id
+          message: input,
+          message_type: "text",
+          created_at: new Date().toISOString(),
+          message_status: "sent",
+          ...(replyingTo && { reply_to: replyingTo._id }),
+        };
+        setMessages((prev) => [...prev, msgData]);
+        socket.emit("chat_message", { ...msgData, _id: undefined });
+      }
     }
-
-  }
     setInput("");
-    setReplyingTo(null); // Clear reply state after sending
+    setReplyingTo(null);
   };
-  
+
+
   // --- File Upload Logic ---
   // const handleFileUpload = async (e) => {
   //   const file = e.target.files[0];
@@ -565,32 +775,65 @@ const updateAndSortChatList = (message) => {
   //     setReplyingTo(null);
   //   }
   // };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
-    if (!file || !selectedUser) return;
+    if (!file || !selectedChat) return; // Use selectedChat
+    // Broadcasting files is not implemented in your socket, so we restrict it to 1-on-1
+    if (selectedChat.isBroadcast) {
+        alert("File uploads are not supported in broadcasts yet.");
+        return;
+    }
     try {
       const uploadedFileDetails = await uploadFile(file, token);
       const socket = getSocket();
       const msgData = {
         sender_id: user._id,
-        receiver_id: selectedUser._id,
+        receiver_id: selectedChat._id, // Use selectedChat._id
         message_type: uploadedFileDetails.fileType,
         attechment_id: [uploadedFileDetails._id],
         message: file.name,
         created_at: new Date().toISOString(),
-        ...(replyingTo && { reply_to: replyingTo._id }), // Add reply_to field
+        ...(replyingTo && { reply_to: replyingTo._id }),
       };
       socket.emit("chat_message", msgData);
     } catch (err) {
       console.error("File upload failed:", err);
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = null;
-      setReplyingTo(null); // Clear reply state after sending
+      setReplyingTo(null);
     }
   };
 
+
+  // const handleFileUpload = async (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file || !selectedUser) return;
+  //   try {
+  //     const uploadedFileDetails = await uploadFile(file, token);
+  //     const socket = getSocket();
+  //     const msgData = {
+  //       sender_id: user._id,
+  //       receiver_id: selectedUser._id,
+  //       message_type: uploadedFileDetails.fileType,
+  //       attechment_id: [uploadedFileDetails._id],
+  //       message: file.name,
+  //       created_at: new Date().toISOString(),
+  //       ...(replyingTo && { reply_to: replyingTo._id }), // Add reply_to field
+  //     };
+  //     socket.emit("chat_message", msgData);
+  //   } catch (err) {
+  //     console.error("File upload failed:", err);
+  //   } finally {
+  //     if (fileInputRef.current) fileInputRef.current.value = null;
+  //     setReplyingTo(null); // Clear reply state after sending
+  //   }
+  // };
+
    // --- Scroll to Replied Message ---
-  const scrollToMessage = (messageId) => {
+  
+  
+   const scrollToMessage = (messageId) => {
     const element = msgRefs.current[messageId];
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -655,17 +898,80 @@ const updateAndSortChatList = (message) => {
     return `${firstInitial}${lastInitial}`.toUpperCase();
   };
 
+   // --- NEW: Renders the "Broadcast Info" screen ---
+  const renderBroadcastInfoView = () => {
+    if (!selectedChat) return null;
+    return (
+      <div className="broadcast-info-container">
+        <div className="broadcast-info-header">
+          <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
+          <h3>Broadcast Info</h3>
+          {/* Show Edit button only if the current user is the creator */}
+          {user._id === selectedChat.createdBy && (
+            <button className="edit-button" onClick={() => openBroadcastEditScreen(selectedChat)}>
+              <Edit size={20} />
+            </button>
+          )}
+        </div>
+        <div className="broadcast-info-body">
+            <h4>{selectedChat.title}</h4>
+            <p className="recipient-count">{broadcastRecipients.length} Recipients</p>
+            <div className="recipients-list">
+                {broadcastRecipients.map(r => (
+                    <div key={r.id} className="recipient-item">
+                        {r.name}
+                    </div>
+                ))}
+            </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // --- MODIFIED: Renders the "Create/Edit Broadcast" screen ---
+  const renderBroadcastEditView = () => {
+    const isEditing = sidebarView === 'edit-broadcast';
+    // ... (filtering logic is the same)
+    
+    return (
+      <div className="new-broadcast-container">
+        <div className="new-broadcast-header">
+          <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
+          {/* Change title based on mode */}
+          <h3>{isEditing ? 'Edit Broadcast' : 'Create Broadcast'}</h3>
+        </div>
+        {/* ... (rest of the JSX for inputs, tabs, lists is the same) */}
+        
+        {/* Change button to call the new save function */}
+        <button className="fab-create-broadcast" onClick={handleSaveBroadcast}>
+          <Check size={24} />
+        </button>
+      </div>
+    );
+  };
+
+
     // NEW: Renders the "Create Broadcast" screen
   const renderNewBroadcastView = () => {
-    const filteredAvailable = recipientSearch
+    const filteredBySearch  = recipientSearch
       ? availableRecipients.filter(r => r.name.toLowerCase().includes(recipientSearch.toLowerCase()))
       : availableRecipients;
+
+      const filteredAvailable = filteredBySearch.filter(
+        r => r.type === recipientTab
+    //     r => {
+    //     if (recipientTab === 'all') return true;
+    //     if (recipientTab === 'doctor') return r.type === 'doctor';
+    //     if (recipientTab === 'patient') return r.type === 'patient';
+    //     return true;
+    // }
+  );
 
     return (
       <div className="new-broadcast-container">
         <div className="new-broadcast-header">
           <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
-          <h3>New Broadcast</h3>
+          <h3>Create Broadcast</h3>
         </div>
         <div className="broadcast-setup">
           <input 
@@ -695,13 +1001,30 @@ const updateAndSortChatList = (message) => {
             />
           </div>
         </div>
+        <div className="recipient-tabs">
+                {/* <button className={recipientTab === 'all' ? 'active' : ''} onClick={() => setRecipientTab('all')}>All</button> */}
+                <button className={recipientTab === 'doctor' ? 'active' : ''} onClick={() => setRecipientTab('doctor')}>Doctors</button>
+                <button className={recipientTab === 'patient' ? 'active' : ''} onClick={() => setRecipientTab('patient')}>Patients</button>
+            </div>
         <div className="available-recipients-list">
-          {filteredAvailable.map(r => (
+          {/* {filteredAvailable.map(r => (
             <div key={r._id} className="user-list-item" onClick={() => handleSelectRecipient(r)}>
-              {/* ... user avatar and info ... */}
+              
               <div className="user-info"><h4>{r.name}</h4></div>
             </div>
-          ))}
+          ))} */}
+          {filteredAvailable.length > 0 ? (
+                    filteredAvailable.map(r => (
+                        <div key={r._id} className="user-list-item" onClick={() => handleSelectRecipient(r)}>
+                            <div className="user-info">
+                                <h4>{r.name}</h4>
+                                <p className="recipient-type">{r.type}</p> 
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="no-users-message">No {recipientTab}s found.</p>
+                )}
         </div>
         <button className="fab-create-broadcast" onClick={handleCreateBroadcast}>
           <Check size={24} />
@@ -757,7 +1080,7 @@ const updateAndSortChatList = (message) => {
       <div
         key={person._id}
         className={`user-list-item ${selectedChat?._id === person._id && !selectedChat?.isBroadcast ? "active" : ""}`}
-        onClick={() => setSelectedUser({ ...person, isBroadcast: false })}
+        onClick={() => setSelectedChat({ ...person, isBroadcast: false })}
       >
         <div className="flex items-center gap-3">
           <div className="user-avatar">{getUserInitials(person)}</div>
@@ -828,7 +1151,7 @@ const updateAndSortChatList = (message) => {
       }
 
        const originalMsg = msg.reply_to ? messages.find(m => m._id === msg.reply_to) : null;
-      const originalSenderName = originalMsg ? (originalMsg.sender_id === user._id ? "You" : selectedUser.name) : "";
+      const originalSenderName = originalMsg ? (originalMsg.sender_id === user._id ? "You" : selectedChat.name) : "";
 
 
       elements.push(
@@ -897,9 +1220,11 @@ const updateAndSortChatList = (message) => {
     <div id="chat-app-container" className="chat-container">
       {/* --- Left Sidebar --- */}
       <div id="chat-sidebar" className="chat-sidebar">
-         {sidebarView === 'new-broadcast' ? (
+         {/* {sidebarView === 'new-broadcast' ? (
           renderNewBroadcastView()
-        ) : (
+        ) :  */}
+        {sidebarView === 'list' &&
+        (
           <>
         <div className="sidebar-header">
           <div className="search-bar-container">
@@ -943,29 +1268,51 @@ const updateAndSortChatList = (message) => {
           </div>
            </>
         )}
+         {(sidebarView === 'new-broadcast' || sidebarView === 'edit-broadcast') && renderBroadcastEditView()}
+        {sidebarView === 'broadcast-info' && renderBroadcastInfoView()}
       </div>
 
       {/* --- Right Chat Area --- */}
       <div id="chat-main" className="chat-main">
-        {selectedUser ? (
+        {selectedChat ? (
           <>
             <div className="chat-header">
+              {selectedChat.isBroadcast ? (
+                <div className="chat-user-info clickable" onClick={() => showBroadcastInfo(selectedChat)}>
+                  <div className="user-avatar"><Megaphone /></div>
+                  <div className="user-details">
+                    <h3>{selectedChat.title}</h3>
+                    <p>{selectedChat.recipients.length} recipients</p>
+                  </div>
+                  <Info size={18} className="info-icon" />
+                </div>
+              ) : (
               <div className="chat-user-info">
-                <div className="user-avatar">{getUserInitials(selectedUser)}</div>
+                <div className="user-avatar">
+                  {/* {getUserInitials(selectedUser)} */}
+                   {selectedChat.isBroadcast ? <Megaphone /> : getUserInitials(selectedChat)}
+                  </div>
                 <div className="user-details">
-                  <h3 className="m-0 text-[16px] font-semibold text-[#343a40]">{selectedChat?.title || selectedUser.name}</h3>
+                  <h3 className="m-0 text-[16px] font-semibold text-[#343a40]">{selectedChat?.title || selectedChat.name}</h3>
                   {/* <p className="mt-[2px] mb-0 text-[12px] text-[#495057] opacity-80 text-left">
                     {onlineUsers.get(selectedUser._id) ? "Online" : "Offline"}
                   </p> */}
-                  <p>{selectedChat?.recipients ? `${selectedChat?.recipients.length} recipients` : (onlineUsers.get(selectedChat?._id) ? "Online" : "Offline")}</p>
+                  <p>{selectedChat.isBroadcast ? `${selectedChat?.recipients.length} recipients` : (onlineUsers.get(selectedChat?._id) ? "Online" : "Offline")}</p>
                 </div>
               </div>
+               )}
             </div>
 
             <div className="chat-box" ref={chatBoxRef}>
               {messages.length === 0 ? (
                 <div className="no-messages">
-                  <p>Start a conversation with {selectedUser.name}!</p>
+                  <p>
+                    {selectedChat.isBroadcast
+                      ? `This is the beginning of the "${selectedChat.title}" broadcast.`
+                      : `Start a conversation with ${selectedChat.name}!`
+                    }
+                    {/* Start a conversation with {selectedUser.name}! */}
+                    </p>
                 </div>
               ) : (
                 renderMessagesWithDateHeaders()
@@ -976,7 +1323,7 @@ const updateAndSortChatList = (message) => {
                 {replyingTo && (
                 <div className="reply-preview-bar">
                   <div className="reply-preview-content">
-                    <p className="reply-preview-sender">Replying to {replyingTo.sender_id === user._id ? "yourself" : selectedUser.name}</p>
+                    <p className="reply-preview-sender">Replying to {replyingTo.sender_id === user._id ? "yourself" : selectedChat.name}</p>
                     <p className="reply-preview-message">{replyingTo.message_type === 'text' ? replyingTo.message : "Attachment"}</p>
                   </div>
                   <button onClick={() => setReplyingTo(null)} className="reply-preview-close"><X size={16} /></button>
@@ -1008,7 +1355,10 @@ const updateAndSortChatList = (message) => {
           </>
         ) : (
           <div className="no-chat-selected">
-            <p>Select a conversation to start chatting.</p>
+            {/* <p>Select a conversation to start chatting.</p> */}
+             <MessageSquare size={80} className="text-gray-300" />
+            <h2>Select a conversation</h2>
+            <p>Choose a user or broadcast from the list to start chatting.</p>
           </div>
         )}
       </div>
