@@ -56,11 +56,13 @@ showSearch = true,
           <DatePicker
             value={fromDate}
             onChange={(newValue) => setFromDate(newValue)}
+            format="DD/MM/YYYY"
           />
           <span className="text-gray-600">-</span>
           <DatePicker
             value={toDate}
             onChange={(newValue) => setToDate(newValue)}
+            format="DD/MM/YYYY"
           />
         </div>
       </LocalizationProvider>

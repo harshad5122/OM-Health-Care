@@ -263,7 +263,16 @@ function Members() {
                         <CircularProgress color="inherit" size="40px" />
                     </Stack>
                 </div>
-                ) : (
+                )
+                : rows && rows.length === 0 ?
+                ( 
+                    <div className="flex justify-center items-center h-full text-gray-600 text-sm">
+                    {activeTab === "staff"
+                        ? "No doctors available"
+                        : "No users available"}
+                    </div>
+                ) 
+                : (
                     <TableContainer component={Paper} sx={{ maxHeight: '74vh',overflowX: "auto"  }}>
 
                         <Table size="small" stickyHeader className="border-l border-r border-[#e0e0e0]">

@@ -5,6 +5,7 @@ import {
     CircularProgress,
     Stack,
     Pagination,
+    TextField
 } from "@mui/material";
 import { FaMapMarkerAlt, FaEnvelope } from "react-icons/fa"
 import { LuPhone } from "react-icons/lu";
@@ -30,6 +31,7 @@ function AddAppointment({ isDrawerOpen }) {
     const [patients, setPatients] = useState([]);
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [allBookings, setAllBookings] = useState([]);
+    const [eventType, setEventType] = useState(null);
     const { user } = useAuth();
 
     const rowsPerPage = 6;
@@ -106,7 +108,6 @@ function AddAppointment({ isDrawerOpen }) {
 
         const matchingSlot = allBookings.find((slot) => slot.date === appointment.date);
 
-        console.log(allBookings, ">> all bookings")
 
         // After getting matchingSlot and before booked slot check
         const leaveEvents = (matchingSlot?.events || []).filter(e => e.type === "leave");
@@ -151,7 +152,6 @@ function AddAppointment({ isDrawerOpen }) {
         }
 
 
-        console.log(matchingSlot)
         // 1. Check overlap with already booked slots
         const isOverlapping = matchingSlot.slots.booked.some((b) => {
             if (appointment?._id && b.id?.toString() === appointment._id.toString()) {
@@ -189,27 +189,23 @@ function AddAppointment({ isDrawerOpen }) {
                 (b) => b.id?.toString() === appointment._id.toString()
             );
 
-            console.log(oldBooked, ">> old one ")
+
             if (oldBooked) {
                 // add the old slot back into available so the user can reuse it or change within
                 effectiveAvail.push({ start: oldBooked.start, end: oldBooked.end });
             }
         }
-        console.log(effectiveAvail, ">>> effective availble")
+
         // 3. Check if new time slot falls into any of the effective available slots
         const mergedAvail = mergeSlots(effectiveAvail);
         const isInsideEffectiveAvailable = mergedAvail.some((a) => {
             const availableStart = toMinutes(a.start);
             const availableEnd = toMinutes(a.end);
 
-            console.log(availableStart, "> av effective start");
-            console.log(availableEnd, "> av effective end");
-            console.log(apptStart, apptEnd, "> new appointment times");
 
             return apptStart >= availableStart && apptEnd <= availableEnd;
         });
 
-        console.log(isInsideEffectiveAvailable, "ppp")
         if (!isInsideEffectiveAvailable) {
             showAlert(
                 `Dr. ${selectedDoctor?.firstname || ""} is not available for ${start}–${end} on ${dayjs(appointment.date).format("D MMMM, YYYY")}`,
@@ -238,7 +234,6 @@ function AddAppointment({ isDrawerOpen }) {
             let result;
             if (appointment?._id) {
                 result = await updateAppointment({ reference_id: appointment?._id, ...payload })
-                console.log("edit appt")
             } else {
                 result = await createAppointment(payload);
             }
@@ -246,7 +241,6 @@ function AddAppointment({ isDrawerOpen }) {
             await handleGetAppointments(selectedDoctor)
 
             showAlert("Appointment created successfully!", "success");
-            console.log("API Response:", result);
             setAppointment(null)
         } catch (error) {
             console.error("Error creating appointment:", error);
@@ -256,7 +250,6 @@ function AddAppointment({ isDrawerOpen }) {
     const handleGetAppointments = async (staffPayload, newDate) => {
         try {
             const staff = staffPayload !== null ? staffPayload : selectedDoctor
-            console.log(newDate, ">>> new data")
 
             const targetDate = newDate ? dayjs(newDate) : dayjs(); // use newDate or current date
             const from_date = targetDate.startOf("month").format("YYYY-MM-DD");
@@ -294,9 +287,8 @@ function AddAppointment({ isDrawerOpen }) {
         }
     }
     const handleOnSelectEvent = (event) => {
-        console.log(event, ">> ll")
 
-        const isoDate = dayjs(event.date).format("YYYY-MM-DD"); // store in state
+        const isoDate = dayjs(event.date).format("YYYY-MM-DD"); 
 
         setAppointment({
             _id: event?.id,
@@ -308,6 +300,7 @@ function AddAppointment({ isDrawerOpen }) {
             visit_type: event?.visit_type,
             patient_id: event?.patient_id
         });
+        setEventType(event?.type || null);
     }
     useEffect(() => {
         fetchStaff(0);
@@ -337,9 +330,10 @@ function AddAppointment({ isDrawerOpen }) {
                             events={calendarEvents}
                             onSelectSlot={(slot) => {
                                 if (slot.start < today.setHours(0, 0, 0, 0)) {
-                                    return; // 🚫 prevent selecting past dates
+                                    return; 
                                 }
-                                const isoDate = dayjs(slot.start).format("YYYY-MM-DD"); // store in state
+                                const isoDate = dayjs(slot.start).format("YYYY-MM-DD");
+
                                 setAppointment({
                                     date: isoDate,
                                     time_slot: {},
@@ -349,6 +343,7 @@ function AddAppointment({ isDrawerOpen }) {
                                         patient_name: `${user.firstname} ${user.lastname}`,
                                     }),
                                 });
+                                setEventType(null)
                             }}
                             onSelectEvent={handleOnSelectEvent}
                             onNevigate={handleGetAppointments}
@@ -369,7 +364,6 @@ function AddAppointment({ isDrawerOpen }) {
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     submitForm();
-                                    console.log("Final Appointment Payload:", appointment);
                                 }}
                             >
                                 <div className="flex flex-col">
@@ -383,7 +377,8 @@ function AddAppointment({ isDrawerOpen }) {
                                         readOnly
                                     />
                                 </div>
-                                {(() => {
+
+                                {eventType !== "leave" && (() => {
                                     const matchingSlot = allBookings.find(
                                         (slot) => slot.date === appointment?.date
                                     );
@@ -396,7 +391,7 @@ function AddAppointment({ isDrawerOpen }) {
                                                 <label className="block text-sm font-medium text-gray-700 text-left ">
                                                     Available Slots
                                                 </label>
-                                                <div className="mt-1 max-h-[44px] overflow-y-auto border border-gray-300 rounded p-2 flex gap-1">
+                                                <div className="flex-wrap max-h-[44px] overflow-y-auto border border-gray-300 rounded py-2 px-1 flex gap-1">
                                                     {matchingSlot.slots.available.length > 0 ? (
                                                         matchingSlot.slots.available.map((slot, idx) => (
                                                             <div
@@ -416,7 +411,7 @@ function AddAppointment({ isDrawerOpen }) {
                                                 <label className="block text-sm font-medium text-gray-700 text-left">
                                                     Booked Slots
                                                 </label>
-                                                <div className="mt-1 max-h-[44px] overflow-y-auto border border-gray-300 rounded p-2 gap-1 flex">
+                                                <div className="flex-wrap max-h-[44px] overflow-y-auto border border-gray-300 rounded py-2 px-1 gap-1 flex">
                                                     {matchingSlot.slots.booked.length > 0 ? (
                                                         matchingSlot.slots.booked.map((slot, idx) => (
                                                             <div
@@ -452,6 +447,26 @@ function AddAppointment({ isDrawerOpen }) {
                                                         },
                                                     }));
                                                 }}
+                                                readOnly={eventType === "leave"} 
+                                                onOpen={(e) => {
+                                                    if (eventType === "leave") e.preventDefault(); 
+                                                }}
+                                                componentsProps={{
+                                                    textField: {
+                                                        size: "small",
+                                                        InputProps: {
+                                                        readOnly: eventType === "leave",
+                                                        },
+                                                        sx: {
+                                                        "& .MuiInputBase-input": {
+                                                            color: "black", 
+                                                        },
+                                                        "& .MuiInputBase-root": {
+                                                            backgroundColor: "#fff",
+                                                        },
+                                                        },
+                                                    },
+                                                }}
                                             />
                                         </div>
                                         <div>
@@ -469,12 +484,33 @@ function AddAppointment({ isDrawerOpen }) {
                                                         },
                                                     }));
                                                 }}
+                                                 readOnly={eventType === "leave"} 
+                                                onOpen={(e) => {
+                                                    if (eventType === "leave") e.preventDefault(); 
+                                                }}
+                                                componentsProps={{
+                                                    textField: {
+                                                        size: "small",
+                                                        InputProps: {
+                                                        readOnly: eventType === "leave",
+                                                        },
+                                                        sx: {
+                                                        "& .MuiInputBase-input": {
+                                                            color: "black", 
+                                                        },
+                                                        "& .MuiInputBase-root": {
+                                                            backgroundColor: "#fff",
+                                                        },
+                                                       
+                                                        },
+                                                    },
+                                                }}
                                             />
                                         </div>
                                     </div>
 
                                 </LocalizationProvider>
-                                {user?.role === 2 && (
+                                {eventType !== "leave" && user?.role === 2 && (
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 text-left">Select Patient</label>
                                         <select
@@ -501,7 +537,7 @@ function AddAppointment({ isDrawerOpen }) {
                                             ))}
                                         </select>
                                     </div>)}
-                                {user?.role === 1 && (
+                                {eventType !== "leave" && user?.role === 1 && (
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 text-left">
                                             Select Patient
@@ -565,42 +601,69 @@ function AddAppointment({ isDrawerOpen }) {
                                         />
                                     </div>
                                 )}
+                                {eventType !== "leave" &&(
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 text-left">Visit Type</label>
+                                        <select className="mt-1 block w-full rounded-md text-[14px] border border-gray-300 p-2"
+                                            value={appointment?.visit_type || ""}
+                                            onChange={(e) =>
+                                                setAppointment((prev) => ({
+                                                    ...prev,
+                                                    visit_type: e.target.value.toUpperCase(),
+                                                }))
+                                            }
+                                        >
+                                            <option value="">Select visit type</option>
+                                            <option value="HOME">Home Visit</option>
+                                            <option value="CLINIC">Clinic Visit</option>
+                                        </select>
+                                    </div>
+                                )}
+                                 {(() => {
+                                    const dayBooking = allBookings.find(b => b.date === appointment?.date);
+                                    const leaveEvent = dayBooking?.events?.find(e => e.type === "leave");
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 text-left">Visit Type</label>
-                                    <select className="mt-1 block w-full rounded-md text-[14px] border border-gray-300 p-2"
-                                        value={appointment?.visit_type || ""}
-                                        onChange={(e) =>
-                                            setAppointment((prev) => ({
-                                                ...prev,
-                                                visit_type: e.target.value.toUpperCase(),
-                                            }))
-                                        }
-                                    >
-                                        <option value="">Select visit type</option>
-                                        <option value="HOME">Home Visit</option>
-                                        <option value="CLINIC">Clinic Visit</option>
-                                    </select>
-                                </div>
-                                <div className="flex justify-end gap-3 pt-2">
-                                    <button
-                                        type="button"
-                                        className="px-4 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
-                                        onClick={() => setAppointment(null)}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className={`px-4 py-1 rounded-md transition text-white bg-[#1a6f8b] ${isFormValid
-                                            ? "hover:bg-[#15596e] cursor-pointer"
-                                            : "cursor-not-allowed opacity-50"
-                                            }`}
-                                        disabled={!isFormValid}
-                                    >
-                                        Save
-                                    </button>
-                                </div>
+                                    if (leaveEvent) {
+                                        return (
+                                        <div className="mt-4 p-3 border border-red-300 bg-red-50 text-red-700 rounded text-sm">
+                                            {`The doctor will not be available on ${
+                                            appointment?.date
+                                                ? dayjs(appointment.date).format("D MMMM, YYYY")
+                                                : "this date"
+                                            }${
+                                            leaveEvent.start && leaveEvent.end
+                                                ? `, from ${dayjs(leaveEvent.start, "HH:mm").format("h:mm A")} to ${dayjs(
+                                                    leaveEvent.end,
+                                                    "HH:mm"
+                                                ).format("h:mm A")}`
+                                                : ""
+                                            }.`}
+                                        </div>
+                                        );
+                                    }
+                                    return null;
+                                })()}
+                                {eventType !== "leave" &&(
+                                    <div className="flex justify-end gap-3 pt-2">
+                                        <button
+                                            type="button"
+                                            className="px-4 py-1 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                                            onClick={() => setAppointment(null)}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className={`px-4 py-1 rounded-md transition text-white bg-[#1a6f8b] ${isFormValid
+                                                ? "hover:bg-[#15596e] cursor-pointer"
+                                                : "cursor-not-allowed opacity-50"
+                                                }`}
+                                            disabled={!isFormValid}
+                                        >
+                                            Save
+                                        </button>
+                                    </div>
+                                )}
                             </form>
                         </div>
                     )}

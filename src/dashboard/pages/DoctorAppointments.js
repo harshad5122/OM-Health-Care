@@ -145,6 +145,19 @@ function DoctorAppointmnets(isDrawerOpen) {
 					title={'Update appointment status ?'}
 				>
 					<div className="space-y-4 flex flex-col">
+						<span>
+							<label className="block font-semibold text-[13px] text-left text-gray-700">
+								Appointment Date
+							</label>
+							<input
+								type="text"
+								value={new Date(
+									selectedAppointment.date,
+								).toLocaleDateString("en-GB")}
+								readOnly
+								className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-700 text-[14px]"
+							/>
+						</span>
 						<div className="flex gap-4 mt-1">
 							<span>
 								<label className="block font-semibold text-[13px] text-left text-gray-700">
@@ -390,7 +403,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 												<td className="px-4 py-2 text-sm">
 													{new Date(
 														appointment.date,
-													).toLocaleDateString()}
+													).toLocaleDateString("en-GB")}
 												</td>
 												<td className="px-4 py-2 text-sm">
 													{

@@ -142,6 +142,7 @@ function Leave(isDrawerOpen) {
                                             value={leaveData.startDate}
                                             onChange={(val) => handleChange("startDate", val)}
                                             slotProps={{ textField: { size: "small" } }}
+                                            format="DD/MM/YYYY"
                                         />
                                     </div>
                                 </span>
@@ -154,6 +155,7 @@ function Leave(isDrawerOpen) {
                                             value={leaveData.endDate}
                                             onChange={(val) => handleChange("endDate", val)}
                                             slotProps={{ textField: { size: "small" } }}
+                                            format="DD/MM/YYYY"
                                         />
                                     </div>
                                 </span>

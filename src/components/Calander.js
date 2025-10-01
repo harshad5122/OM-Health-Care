@@ -24,7 +24,7 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevi
         setCurrentView(newView);
         console.log("Switched to view:", newView);
     };
-    { console.log(new Date(date), ">> date ") }
+
     return (
         <Calendar
             localizer={localizer}
