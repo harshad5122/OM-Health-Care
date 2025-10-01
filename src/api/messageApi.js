@@ -22,8 +22,30 @@ export const useMessageApi = () => {
       throw error.response?.data || { msg: "Failed to fetch messages" };
     }
   };
+
+   const getBroadcastList = async (token) => {
+    try {
+      const response = await axiosInstance.get(
+        `/broadcasts`, // Assuming this is your API endpoint
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+      // return response.data.body;
+       return Array.isArray(response?.data?.body) ? response.data.body : [];
+    } catch (error) {
+       console.error("Failed to fetch broadcast list:", error);
+      throw error.response?.data || { msg: "Failed to fetch broadcast list" };
+      return [];
+    }
+  };
+
+
   return {
-    getMessageList
+    getMessageList,
+    getBroadcastList 
   };
 }
 

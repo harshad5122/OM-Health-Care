@@ -98,6 +98,20 @@ export const useUserApi = () => {
     }
   };
 
+  const getChatUsers = async (token) => {
+  try {
+    const response = await axiosInstance.get(`/chat/users`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+    return response.data.body; // response.body has the array
+  } catch (error) {
+    throw error.response?.data || { msg: "Failed to fetch chat users" };
+  }
+};
+
+
 
   return {
     getAdminList,
@@ -108,6 +122,7 @@ export const useUserApi = () => {
     createUser,
     editUser,
     getUserById,
-    deleteUser
+    deleteUser,
+    getChatUsers
   }
 }
