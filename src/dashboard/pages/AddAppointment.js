@@ -43,6 +43,14 @@ function AddAppointment({ isDrawerOpen }) {
     const today = new Date();
 
 
+    const formatTime12Hour = (time24) => {
+        const [hourStr, minute] = time24.split(':');
+        let hour = parseInt(hourStr, 10);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        hour = hour % 12 || 12; // Convert 0 to 12
+        return `${hour}:${minute} ${ampm}`;
+    };
+
     const fetchStaff = async (skip) => {
         try {
             setLoading(true);
@@ -391,7 +399,7 @@ function AddAppointment({ isDrawerOpen }) {
                                                 <label className="block text-sm font-medium text-gray-700 text-left ">
                                                     Available Slots
                                                 </label>
-                                                <div className="flex-wrap max-h-[44px] overflow-y-auto border border-gray-300 rounded py-2 px-1 flex gap-1">
+                                                <div className="flex-wrap max-h-[44px] overflow-y-auto border border-gray-300 rounded py-2 px-2 flex gap-1">
                                                     {matchingSlot.slots.available.length > 0 ? (
                                                         matchingSlot.slots.available.map((slot, idx) => (
                                                             <div
@@ -399,7 +407,8 @@ function AddAppointment({ isDrawerOpen }) {
                                                                 className="px-1 py-0.5 w-fit rounded bg-blue-100 text-blue-800 border border-blue-400 text-xs cursor-pointer hover:bg-blue-200"
 
                                                             >
-                                                                {slot.start} - {slot.end}
+                                                                {/* {slot.start} - {slot.end} */}
+                                                                {formatTime12Hour(slot.start)} - {formatTime12Hour(slot.end)}
                                                             </div>
                                                         ))
                                                     ) : (
@@ -411,14 +420,15 @@ function AddAppointment({ isDrawerOpen }) {
                                                 <label className="block text-sm font-medium text-gray-700 text-left">
                                                     Booked Slots
                                                 </label>
-                                                <div className="flex-wrap max-h-[44px] overflow-y-auto border border-gray-300 rounded py-2 px-1 gap-1 flex">
+                                                <div className="flex-wrap max-h-[44px] overflow-y-auto border border-gray-300 rounded py-2 px-2 gap-1 flex">
                                                     {matchingSlot.slots.booked.length > 0 ? (
                                                         matchingSlot.slots.booked.map((slot, idx) => (
                                                             <div
                                                                 key={idx}
                                                                 className="px-1 py-0.5 w-fit rounded bg-green-100 text-green-800 border border-green-400 text-xs cursor-pointer hover:bg-green-200"
                                                             >
-                                                                {slot.start} - {slot.end}
+                                                                {/* {slot.start} - {slot.end} */}
+                                                                 {formatTime12Hour(slot.start)} - {formatTime12Hour(slot.end)}
                                                             </div>
                                                         ))
                                                     ) : (
@@ -679,43 +689,53 @@ function AddAppointment({ isDrawerOpen }) {
                     </Stack>
                 </div>
             ) : (
-                <div className="flex-1 overflow-y-auto p-4">
-                    <div className="grid grid-cols-2 gap-4">
+
+               <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {staffData.map((staff) => (
                             <div
                                 key={staff._id}
-                                className="bg-white shadow-md rounded-[12px] p-4 flex flex-col justify-between w-full border border-[#e0e0e0] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2"
+                                className="bg-white rounded-2xl shadow-md px-6 py-4 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
                             >
-                                <div className="flex-1 text-left space-y-1">
-                                    <span className="text-xl font-bold text-[#1a6f8b]">
-                                        {staff.firstname} {staff.lastname}
-                                    </span>
-                                    <p className="text-sm text-gray-700">{staff.specialization}</p>
-                                    <p className="text-sm text-gray-700">
-                                        {staff.professionalStatus === "experienced"
-                                            ? `${staff.workExperience_totalYears} years experienced as a ${staff.workExperience_position}`
-                                            : staff.professionalStatus}
+                                <div className="space-y-2">
+                                <h2 className="text-xl font-bold text-[#1a6f8b] truncate">
+                                    {staff.firstname} {staff.lastname}
+                                </h2>
+
+                                <div className="border-b border-gray-300 w-full"></div>
+                                    <p className="text-gray-700 text-sm mt-2">
+                                        <span className="truncate block">
+                                            {staff.specialization}{" "}
+                                            {staff.professionalStatus === "experienced" && (
+                                            <span className="text-gray-700 font-semibold">
+                                                ({staff.workExperience_totalYears} yrs)
+                                            </span>
+                                            )}
+                                        </span>
                                     </p>
-                                    <p className="text-sm text-gray-600">
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        <span className="bg-gray-200 text-gray-800 text-xs font-semibold px-2 py-1 rounded-full truncate max-w-full block">
                                         {staff.qualification} - {staff.gender}
-                                    </p>
-                                    <p className="text-sm text-gray-600 flex items-center gap-1">
-                                        <FaMapMarkerAlt className="text-[#8b8a8a]" />
-                                        {staff.address}, {staff.city}, {staff.state}, {staff.country} - {staff.pincode}
-                                    </p>
-                                    <div className="flex items-center gap-6 mt-1">
-                                        <div className="flex items-center gap-1 text-sm text-gray-600">
-                                            <LuPhone className="text-[#8b8a8a]" fill="#8b8a8a" />
-                                            {staff.countryCode} {staff.phone}
-                                        </div>
-                                        <div className="flex items-center gap-1 text-sm text-gray-600">
-                                            <FaEnvelope className="text-[#8b8a8a]" />
-                                            {staff.email}
-                                        </div>
+                                        </span>
                                     </div>
                                 </div>
-                                <div className="flex justify-end mt-4">
-                                    <button className="bg-[#1a6f8b] text-white px-4 py-2 rounded-lg hover:bg-[#15596e] transition"
+                                <div className="flex flex-col gap-1 mt-4 text-gray-600 text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <LuPhone className="text-[#8b8a8a] flex-shrink-0" />
+                                        <span className="truncate block">{staff.countryCode} {staff.phone}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <FaEnvelope className="text-[#8b8a8a] flex-shrink-0" />
+                                        <span className="truncate block">{staff.email}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <FaMapMarkerAlt className="text-[#8b8a8a] flex-shrink-0" />
+                                        <span className="truncate block">{staff.address}, {staff.city}, {staff.state}, {staff.country} - {staff.pincode}</span>
+                                    </div>
+                                </div>
+                                <div className="mt-6 flex justify-end">
+                                    <button
+                                        className="bg-[#1a6f8b] hover:bg-[#15596e] text-white font-semibold px-5 py-2 rounded-md shadow-md transition-all"
                                         onClick={() => handleGetAppointments(staff)}
                                     >
                                         Book Appointment
