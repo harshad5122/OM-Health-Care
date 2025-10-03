@@ -187,7 +187,8 @@ const Chat = () => {
           ...u,
           _id: u.user_id, // Standardize the ID property
           unreadCount: u.unreadCount || 0,
-          is_online: false
+          is_online: false,
+          
         }));
 
          // <<< CHANGE #1: Sort the list right after fetching
@@ -613,7 +614,7 @@ const updateAndSortChatList = (message) => {
         const finalRecipients = Array.from(allRecipientsMap.values());
         setAllPotentialRecipients(finalRecipients);
         setAvailableRecipients(finalRecipients);
-        setRecipientTab('all');
+        setRecipientTab('doctor');
       // setAllPotentialRecipients(allRecipients);
       // setAvailableRecipients(allRecipients);
     } catch (err) {
@@ -730,80 +731,85 @@ const updateAndSortChatList = (message) => {
 
 
   // --- File Upload Logic ---
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !selectedChat) return;
+  
+    try {
+      const uploadedFileDetails = await uploadFile(file, token);
+      
+      const socket = getSocket();
+      if (!socket || !socket.connected) {
+          console.error("Socket not connected for file upload");
+          return;
+      }
+  
+      const msgData = {
+        sender_id: user._id,
+        receiver_id: selectedChat._id,
+        message_type: uploadedFileDetails.fileType,
+        attechment_id: [uploadedFileDetails._id],
+        message: file.name, // Use filename as message preview
+        created_at: new Date().toISOString(),
+        ...(replyingTo && { reply_to: replyingTo._id }),
+      };
+      
+      // Emit the message with attachment details
+      socket.emit("chat_message", msgData);
+  
+      // Add a temporary message to the UI with local file URL for preview
+      const tempId = `temp-${msgData.created_at}`;
+      setMessages(prev => [
+        ...prev,
+        {
+          ...msgData,
+          _id: tempId,
+          attechment_details: [{...uploadedFileDetails, url: URL.createObjectURL(file)}],
+          message_status: 'sent'
+        }
+      ]);
+  
+    } catch (err) {
+      console.error("File upload and message sending failed:", err);
+    } finally {
+      if(fileInputRef.current) fileInputRef.current.value = null;
+      setReplyingTo(null);
+    }
+  };
+
   // const handleFileUpload = async (e) => {
   //   const file = e.target.files[0];
-  //   if (!file || !selectedUser) return;
-  
+  //   if (!file || !selectedChat) return; // Use selectedChat
+  //   // Broadcasting files is not implemented in your socket, so we restrict it to 1-on-1
+  //   if (selectedChat.isBroadcast) {
+  //       alert("File uploads are not supported in broadcasts yet.");
+  //       return;
+  //   }
   //   try {
   //     const uploadedFileDetails = await uploadFile(file, token);
-      
   //     const socket = getSocket();
-  //     if (!socket || !socket.connected) {
-  //         console.error("Socket not connected for file upload");
-  //         return;
-  //     }
-  
   //     const msgData = {
   //       sender_id: user._id,
-  //       receiver_id: selectedUser._id,
+  //       receiver_id: selectedChat._id, // Use selectedChat._id
   //       message_type: uploadedFileDetails.fileType,
   //       attechment_id: [uploadedFileDetails._id],
-  //       message: file.name, // Use filename as message preview
+  //       message: file.name,
   //       created_at: new Date().toISOString(),
   //       ...(replyingTo && { reply_to: replyingTo._id }),
   //     };
-      
-  //     // Emit the message with attachment details
   //     socket.emit("chat_message", msgData);
-  
-  //     // Add a temporary message to the UI with local file URL for preview
-  //     const tempId = `temp-${msgData.created_at}`;
-  //     setMessages(prev => [
-  //       ...prev,
-  //       {
-  //         ...msgData,
-  //         _id: tempId,
-  //         attechment_details: [{...uploadedFileDetails, url: URL.createObjectURL(file)}],
-  //         message_status: 'sent'
-  //       }
-  //     ]);
-  
   //   } catch (err) {
-  //     console.error("File upload and message sending failed:", err);
+  //     console.error("File upload failed:", err);
   //   } finally {
-  //     if(fileInputRef.current) fileInputRef.current.value = null;
+  //     if (fileInputRef.current) fileInputRef.current.value = null;
   //     setReplyingTo(null);
   //   }
   // };
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file || !selectedChat) return; // Use selectedChat
-    // Broadcasting files is not implemented in your socket, so we restrict it to 1-on-1
-    if (selectedChat.isBroadcast) {
-        alert("File uploads are not supported in broadcasts yet.");
-        return;
-    }
-    try {
-      const uploadedFileDetails = await uploadFile(file, token);
-      const socket = getSocket();
-      const msgData = {
-        sender_id: user._id,
-        receiver_id: selectedChat._id, // Use selectedChat._id
-        message_type: uploadedFileDetails.fileType,
-        attechment_id: [uploadedFileDetails._id],
-        message: file.name,
-        created_at: new Date().toISOString(),
-        ...(replyingTo && { reply_to: replyingTo._id }),
-      };
-      socket.emit("chat_message", msgData);
-    } catch (err) {
-      console.error("File upload failed:", err);
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = null;
-      setReplyingTo(null);
-    }
-  };
+
+
+
+
 
 
   // const handleFileUpload = async (e) => {
@@ -907,7 +913,7 @@ const updateAndSortChatList = (message) => {
           <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
           <h3>Broadcast Info</h3>
           {/* Show Edit button only if the current user is the creator */}
-          {user._id === selectedChat.createdBy && (
+          { (
             <button className="edit-button" onClick={() => openBroadcastEditScreen(selectedChat)}>
               <Edit size={20} />
             </button>
@@ -931,28 +937,6 @@ const updateAndSortChatList = (message) => {
   // --- MODIFIED: Renders the "Create/Edit Broadcast" screen ---
   const renderBroadcastEditView = () => {
     const isEditing = sidebarView === 'edit-broadcast';
-    // ... (filtering logic is the same)
-    
-    return (
-      <div className="new-broadcast-container">
-        <div className="new-broadcast-header">
-          <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
-          {/* Change title based on mode */}
-          <h3>{isEditing ? 'Edit Broadcast' : 'Create Broadcast'}</h3>
-        </div>
-        {/* ... (rest of the JSX for inputs, tabs, lists is the same) */}
-        
-        {/* Change button to call the new save function */}
-        <button className="fab-create-broadcast" onClick={handleSaveBroadcast}>
-          <Check size={24} />
-        </button>
-      </div>
-    );
-  };
-
-
-    // NEW: Renders the "Create Broadcast" screen
-  const renderNewBroadcastView = () => {
     const filteredBySearch  = recipientSearch
       ? availableRecipients.filter(r => r.name.toLowerCase().includes(recipientSearch.toLowerCase()))
       : availableRecipients;
@@ -966,14 +950,15 @@ const updateAndSortChatList = (message) => {
     //     return true;
     // }
   );
-
+    
     return (
       <div className="new-broadcast-container">
         <div className="new-broadcast-header">
           <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
-          <h3>Create Broadcast</h3>
+          {/* Change title based on mode */}
+          <h3>{isEditing ? 'Edit Broadcast' : 'Create Broadcast'}</h3>
         </div>
-        <div className="broadcast-setup">
+       <div className="broadcast-setup">
           <input 
             type="text" 
             placeholder="Broadcast list title..." 
@@ -1026,12 +1011,97 @@ const updateAndSortChatList = (message) => {
                     <p className="no-users-message">No {recipientTab}s found.</p>
                 )}
         </div>
-        <button className="fab-create-broadcast" onClick={handleCreateBroadcast}>
+        
+        {/* Change button to call the new save function */}
+        <button className="fab-create-broadcast" onClick={handleSaveBroadcast}>
           <Check size={24} />
         </button>
       </div>
     );
   };
+
+
+    // NEW: Renders the "Create Broadcast" screen
+  // const renderNewBroadcastView = () => {
+  //   const filteredBySearch  = recipientSearch
+  //     ? availableRecipients.filter(r => r.name.toLowerCase().includes(recipientSearch.toLowerCase()))
+  //     : availableRecipients;
+
+  //     const filteredAvailable = filteredBySearch.filter(
+  //       r => r.type === recipientTab
+  //   //     r => {
+  //   //     if (recipientTab === 'all') return true;
+  //   //     if (recipientTab === 'doctor') return r.type === 'doctor';
+  //   //     if (recipientTab === 'patient') return r.type === 'patient';
+  //   //     return true;
+  //   // }
+  // );
+
+  //   return (
+  //     <div className="new-broadcast-container">
+  //       <div className="new-broadcast-header">
+  //         <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
+  //         <h3>Create Broadcast</h3>
+  //       </div>
+  //       <div className="broadcast-setup">
+  //         <input 
+  //           type="text" 
+  //           placeholder="Broadcast list title..." 
+  //           className="broadcast-title-input"
+  //           value={broadcastTitle}
+  //           onChange={(e) => setBroadcastTitle(e.target.value)}
+  //         />
+  //         <div className="recipient-selection">
+  //           {selectedRecipients.length > 0 && (
+  //             <div className="selected-recipients-container">
+  //               {selectedRecipients.map(r => (
+  //                 <div key={r._id} className="recipient-pill">
+  //                   {r.name}
+  //                   <button onClick={() => handleDeselectRecipient(r)}><X size={14} /></button>
+  //                 </div>
+  //               ))}
+  //             </div>
+  //           )}
+  //           <input 
+  //             type="text" 
+  //             placeholder="Search for doctors or users..." 
+  //             className="recipient-search-input"
+  //             value={recipientSearch}
+  //             onChange={(e) => setRecipientSearch(e.target.value)}
+  //           />
+  //         </div>
+  //       </div>
+  //       <div className="recipient-tabs">
+  //               {/* <button className={recipientTab === 'all' ? 'active' : ''} onClick={() => setRecipientTab('all')}>All</button> */}
+  //               <button className={recipientTab === 'doctor' ? 'active' : ''} onClick={() => setRecipientTab('doctor')}>Doctors</button>
+  //               <button className={recipientTab === 'patient' ? 'active' : ''} onClick={() => setRecipientTab('patient')}>Patients</button>
+  //           </div>
+  //       <div className="available-recipients-list">
+  //         {/* {filteredAvailable.map(r => (
+  //           <div key={r._id} className="user-list-item" onClick={() => handleSelectRecipient(r)}>
+              
+  //             <div className="user-info"><h4>{r.name}</h4></div>
+  //           </div>
+  //         ))} */}
+  //         {filteredAvailable.length > 0 ? (
+  //                   filteredAvailable.map(r => (
+  //                       <div key={r._id} className="user-list-item" onClick={() => handleSelectRecipient(r)}>
+  //                           <div className="user-info">
+  //                               <h4>{r.name}</h4>
+  //                               <p className="recipient-type">{r.type}</p> 
+  //                           </div>
+  //                       </div>
+  //                   ))
+  //               ) : (
+  //                   <p className="no-users-message">No {recipientTab}s found.</p>
+  //               )}
+  //       </div>
+  //       <button className="fab-create-broadcast" onClick={handleCreateBroadcast}>
+  //         <Check size={24} />
+  //       </button>
+  //     </div>
+  //   );
+  // };
   
   // NEW: Renders the list of existing broadcast channels
   const renderBroadcastList = () => {
@@ -1046,10 +1116,14 @@ const updateAndSortChatList = (message) => {
       >
         <div className="user-avatar"><Megaphone size={24} /></div>
         <div className="user-info">
-          <h4>{bc.title}</h4>
-          <p>{bc.lastMessage || `${bc.recipients.length} recipients`}</p>
+          {/* <h4>{bc.title}</h4>
+          <p>{bc.lastMessage || `${bc.recipients.length} recipients`}</p> */}
+           <h4 className="text-left font-semibold">{bc.title}</h4>
+            <p className="text-left text-sm text-gray-500 truncate w-[160px]">
+              {bc.lastMessage || `${bc.recipients.length} recipients`}
+            </p>
         </div>
-        <span className="time">{formatChatListTime(bc.createdAt)}</span>
+        <span className="text-[11px] text-gray-400">{formatChatListTime(bc.createdAt)}</span>
       </div>
     ));
   };
@@ -1281,7 +1355,7 @@ const updateAndSortChatList = (message) => {
                 <div className="chat-user-info clickable" onClick={() => showBroadcastInfo(selectedChat)}>
                   <div className="user-avatar"><Megaphone /></div>
                   <div className="user-details">
-                    <h3>{selectedChat.title}</h3>
+                    <h3 className="m-0 text-[16px] font-semibold text-[#343a40]">{selectedChat.title}</h3>
                     <p>{selectedChat.recipients.length} recipients</p>
                   </div>
                   <Info size={18} className="info-icon" />
