@@ -27,12 +27,23 @@ function AddAppointment({ isDrawerOpen }) {
     const [totalCounts, setTotalCounts] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
-    const [appointment, setAppointment] = useState(null);
+    // const [appointment, setAppointment] = useState(null);
+    
     const [patients, setPatients] = useState([]);
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [allBookings, setAllBookings] = useState([]);
     const [eventType, setEventType] = useState(null);
+    const [formDisabled, setFormDisabled] = useState(false);
     const { user } = useAuth();
+    const [appointment, setAppointment] = useState({
+        _id: null,
+        date: "",
+        time_slot: { start: "", end: "" },
+        visit_type: "",
+        patient_id: user?._id || "",
+        patient_name: `${user?.firstname || ""} ${user?.lastname || ""}`,
+    });
+
 
     const rowsPerPage = 6;
     const { getDoctor } = useDoctorApi();
@@ -295,7 +306,15 @@ function AddAppointment({ isDrawerOpen }) {
         }
     }
     const handleOnSelectEvent = (event) => {
+        console.log(event,"event")
 
+        let disableForm = false;
+
+        if (event && user?.role === 1) {
+            if (!(event.created_by === "USER" && event.creator === user?._id)) {
+                disableForm = true;
+            }
+        }
         const isoDate = dayjs(event.date).format("YYYY-MM-DD"); 
 
         setAppointment({
@@ -306,9 +325,11 @@ function AddAppointment({ isDrawerOpen }) {
                 end: dayjs(event?.end).format("HH:mm")
             },
             visit_type: event?.visit_type,
-            patient_id: event?.patient_id
+            patient_id: event?.patient_id,
+            patient_name:`${user?.firstname} ${user?.lastname}`,
         });
         setEventType(event?.type || null);
+        setFormDisabled(disableForm);
     }
     useEffect(() => {
         fetchStaff(0);
@@ -352,6 +373,7 @@ function AddAppointment({ isDrawerOpen }) {
                                     }),
                                 });
                                 setEventType(null)
+                                setFormDisabled(false);
                             }}
                             onSelectEvent={handleOnSelectEvent}
                             onNevigate={handleGetAppointments}
@@ -457,15 +479,15 @@ function AddAppointment({ isDrawerOpen }) {
                                                         },
                                                     }));
                                                 }}
-                                                readOnly={eventType === "leave"} 
+                                                readOnly={eventType === "leave"|| formDisabled} 
                                                 onOpen={(e) => {
-                                                    if (eventType === "leave") e.preventDefault(); 
+                                                    if (eventType === "leave"|| formDisabled) e.preventDefault(); 
                                                 }}
                                                 componentsProps={{
                                                     textField: {
                                                         size: "small",
                                                         InputProps: {
-                                                        readOnly: eventType === "leave",
+                                                        readOnly: eventType === "leave"|| formDisabled,
                                                         },
                                                         sx: {
                                                         "& .MuiInputBase-input": {
@@ -494,15 +516,15 @@ function AddAppointment({ isDrawerOpen }) {
                                                         },
                                                     }));
                                                 }}
-                                                 readOnly={eventType === "leave"} 
+                                                 readOnly={eventType === "leave"|| formDisabled} 
                                                 onOpen={(e) => {
-                                                    if (eventType === "leave") e.preventDefault(); 
+                                                    if (eventType === "leave"|| formDisabled) e.preventDefault(); 
                                                 }}
                                                 componentsProps={{
                                                     textField: {
                                                         size: "small",
                                                         InputProps: {
-                                                        readOnly: eventType === "leave",
+                                                        readOnly: eventType === "leave"|| formDisabled,
                                                         },
                                                         sx: {
                                                         "& .MuiInputBase-input": {
@@ -547,7 +569,7 @@ function AddAppointment({ isDrawerOpen }) {
                                             ))}
                                         </select>
                                     </div>)}
-                                {eventType !== "leave" && user?.role === 1 && (
+                                {eventType !== "leave" && user?.role === 1 && !formDisabled &&(
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 text-left">
                                             Select Patient
@@ -611,6 +633,72 @@ function AddAppointment({ isDrawerOpen }) {
                                         />
                                     </div>
                                 )}
+                                {/* {eventType !== "leave" && user?.role === 1 && !formDisabled && (
+    <div>
+        <label className="block text-sm font-medium text-gray-700 text-left">
+            Select Patient
+        </label>
+        {console.log(appointment,"appp")}
+        <div className="flex gap-4 items-center">
+            <label className="flex items-center gap-1 text-[13px] cursor-pointer">
+                <input
+                    type="radio"
+                    name="patientOption"
+                    value="self"
+                    checked={appointment?.patient_name === `${user.firstname} ${user.lastname}`}
+                    onChange={() => {
+                        setAppointment((prev) => ({
+                            ...prev,
+                            patient_id: user._id,
+                            patient_name: `${user.firstname} ${user.lastname}`,
+                        }));
+                    }}
+                    className="cursor-pointer"
+                />
+                {user.firstname} {user.lastname}
+            </label>
+
+            <label className="flex items-center gap-1 text-[13px] cursor-pointer">
+                <input
+                    type="radio"
+                    name="patientOption"
+                    value="other"
+                    checked={appointment?.patient_name !== `${user.firstname} ${user.lastname}`}
+                    onChange={() => {
+                        setAppointment((prev) => ({
+                            ...prev,
+                            patient_id: user._id,
+                            patient_name: "", // ready for typing new name
+                        }));
+                    }}
+                    className="cursor-pointer"
+                />
+                Other
+            </label>
+        </div>
+
+        <input
+            type="text"
+            className="mt-2 block w-full rounded text-[14px] border border-gray-300 p-2"
+            value={appointment?.patient_name || ""} // always controlled
+            onChange={(e) =>
+                setAppointment((prev) => ({
+                    ...prev,
+                    patient_id: user._id,
+                    patient_name: e.target.value,
+                }))
+            }
+            disabled={appointment?.patient_name === `${user.firstname} ${user.lastname}`} // self disables input
+            placeholder={
+                appointment?.patient_name !== `${user.firstname} ${user.lastname}`
+                    ? "Type patient name"
+                    : ""
+            }
+            required={appointment?.patient_name !== `${user.firstname} ${user.lastname}`}
+        />
+    </div>
+)} */}
+
                                 {eventType !== "leave" &&(
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 text-left">Visit Type</label>
@@ -622,6 +710,7 @@ function AddAppointment({ isDrawerOpen }) {
                                                     visit_type: e.target.value.toUpperCase(),
                                                 }))
                                             }
+                                            disabled={formDisabled}
                                         >
                                             <option value="">Select visit type</option>
                                             <option value="HOME">Home Visit</option>
@@ -664,11 +753,11 @@ function AddAppointment({ isDrawerOpen }) {
                                         </button>
                                         <button
                                             type="submit"
-                                            className={`px-4 py-1 rounded-md transition text-white bg-[#1a6f8b] ${isFormValid
+                                            className={`px-4 py-1 rounded-md transition text-white bg-[#1a6f8b] ${isFormValid&& !formDisabled
                                                 ? "hover:bg-[#15596e] cursor-pointer"
                                                 : "cursor-not-allowed opacity-50"
                                                 }`}
-                                            disabled={!isFormValid}
+                                            disabled={!isFormValid|| formDisabled}
                                         >
                                             Save
                                         </button>

@@ -5,17 +5,30 @@ import DrawerMenu from '../components/DrawerMenu';
 import TopBar from '../components/TopBar';
 import '../styles/DashboardLayout.css';
 import { useAuth } from "../context/AuthContext"; 
+import { useUserApi } from '../api/userApi';
 
 
 const DashboardLayout = ({ userRole, title }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 //   const navigate = useNavigate();
 
-  const { user } = useAuth();
+  const { user ,setUser} = useAuth();
+  const { getProfile} = useUserApi();
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen)
   };
+  const fetchProfile = async () => {
+    try {
+      const data = await getProfile();
+      setUser(data)
+    } catch (error) {
+      console.log("Error fetching profile:", error);
+    } 
+  };
+  React.useEffect(() => {
+    fetchProfile();
+  }, []);
   // const user = { name: "John Doe", role: userRole };
 
   return (

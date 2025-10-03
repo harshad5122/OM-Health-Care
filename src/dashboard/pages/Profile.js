@@ -9,7 +9,7 @@ import {showAlert} from '../../components/AlertComponent';
 
 const Profile = () => {
 
-  const { token } = useAuth();
+  const { token ,setUser} = useAuth();
 
   const [profileData, setProfileData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -17,14 +17,12 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const { getProfile, updateProfile } = useUserApi();
 
-  useEffect(() => {
-    if (!token) return;
-
     const fetchProfile = async () => {
       try {
         setLoading(true);
         const data = await getProfile();
         setProfileData(data);
+        setUser(data)
         setTempData(data);
       } catch (error) {
         console.log("Error fetching profile:", error);
@@ -33,6 +31,8 @@ const Profile = () => {
         setLoading(false);
       }
     };
+  useEffect(() => {
+    if (!token) return;
 
     fetchProfile();
   }, [token]);
@@ -55,6 +55,7 @@ const Profile = () => {
     try {
       const updated = await updateProfile(token, tempData);
       setProfileData(updated);
+      fetchProfile();
       setIsEditing(false);
      showAlert("Profile updated successfully!", "success")
     } catch (error) {
@@ -144,12 +145,21 @@ const Profile = () => {
                     ? tempData.dob.split("T")[0]
                     : ""} onChange={handleChange} />
                 ) : (
+                  // <p>
+                  //   {profileData.dob
+                  //     ? new Date(profileData.dob).toLocaleDateString()
+                  //     : ""}
+                  // </p>
                   <p>
-                    {/* {new Date(profileData.birthDate).toLocaleDateString()} */}
                     {profileData.dob
-                      ? new Date(profileData.dob).toLocaleDateString()
+                      ? new Date(profileData.dob).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })
                       : ""}
                   </p>
+
                 )}
               </div>
               <div className="form-group">

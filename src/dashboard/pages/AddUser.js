@@ -3,6 +3,7 @@ import "../../styles/dashboard/Profile.css";
 import { useUserApi } from "../../api/userApi";
 import { useNavigate, useParams } from "react-router-dom";
 // import { addUser } from "../../api/userApi"; // <-- you'll create this API function
+import { showAlert } from "../../components/AlertComponent";
 
 function AddUser() {
     const { id } = useParams();
@@ -90,6 +91,7 @@ function AddUser() {
                 navigate(`/dashboard/admin/members`);
             }
             if (result?.success) {
+                showAlert(id ? "User updated successfully!" : "User added successfully!","success")
                 resetForm();
             }
         } catch (err) {
@@ -150,11 +152,11 @@ function AddUser() {
     return (
         <div style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
             <span className='text-[1.8rem] text-[#1a6f8b] m-0 font-semibold flex justify-start pt-[20px] pb-[1rem] px-[20px] border-b border-[#eee] sticky top-0 z-10 bg-[#f5f7fa]' style={{ fontFamily: "'Arial', sans-serif" }}>
-                Add User
+                {id ? "Edit User" : "Add User"}
             </span>
             <form onSubmit={onSubmit} className="space-y-6 px-5 py-5" style={{ flex: 1, overflowY: "auto" }}>
                 <section className={sectionClass}>
-                    <h2 className="dashboard-section-title">Add User</h2>
+                    <h2 className="dashboard-section-title">{id ? "Edit User" : "Add User"}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className={labelClass}>First name *</label>

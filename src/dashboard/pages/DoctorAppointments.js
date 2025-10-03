@@ -14,7 +14,10 @@ import {
 	OutlinedInput,
 	Box,
 	FormControl,
+	Tooltip,
+	 IconButton
 } from '@mui/material';
+import { ContentCopy } from "@mui/icons-material";
 
 function DoctorAppointmnets(isDrawerOpen) {
 	const { user } = useAuth();
@@ -38,9 +41,19 @@ function DoctorAppointmnets(isDrawerOpen) {
 		'Appointment Date',
 		'Start Time',
 		'End Time',
-		'Status',
 		'Visit Type',
+		'Patient Phone',
+		'Patient Address',
+		'Status',
 	];
+
+	const formatTime12Hour = (time) => {
+		const [hour, minute] = time.split(':');
+		const h = parseInt(hour, 10);
+		const ampm = h >= 12 ? 'PM' : 'AM';
+		const hour12 = h % 12 === 0 ? 12 : h % 12;
+		return `${hour12}:${minute} ${ampm}`;
+	};
 
 	const fetchAppointments = async (
 		from = fromDate,
@@ -189,7 +202,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 								</label>
 								<input
 									type="text"
-									value={selectedAppointment.time_slot.start}
+									value= {formatTime12Hour(selectedAppointment.time_slot.start)}
 									readOnly
 									className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-700 text-[14px]"
 								/>
@@ -201,7 +214,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 								</label>
 								<input
 									type="text"
-									value={selectedAppointment.time_slot.end}
+									value= {formatTime12Hour(selectedAppointment.time_slot.end)}
 									readOnly
 									className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-700 text-[14px]"
 								/>
@@ -392,6 +405,17 @@ function DoctorAppointmnets(isDrawerOpen) {
 										const patientName = `${
 											patient?.firstname || ''
 										} ${patient?.lastname || ''}`;
+										const phone = patient
+											? `${patient.countryCode ? patient.countryCode + " " : ""}${patient.phone || ""}`.trim()
+											: "";
+										const addressParts = [
+											patient?.address,
+											patient?.city,
+											patient?.state,
+											patient?.country,
+											patient?.pincode, 
+										].filter(Boolean); 
+										const fullAddress = addressParts.join(", ");
 										return (
 											<tr
 												key={appointment._id}
@@ -406,13 +430,39 @@ function DoctorAppointmnets(isDrawerOpen) {
 													).toLocaleDateString("en-GB")}
 												</td>
 												<td className="px-4 py-2 text-sm">
-													{
-														appointment.time_slot
-															.start
-													}
+													  {formatTime12Hour(appointment.time_slot.start)}
 												</td>
 												<td className="px-4 py-2 text-sm">
-													{appointment.time_slot.end}
+													 {formatTime12Hour(appointment.time_slot.end)}
+												</td>
+												<td className="px-4 py-2 text-sm">
+													{appointment.visit_type}
+												</td>
+												<td className="px-4 py-2 text-sm">
+													{phone}
+													{phone && (
+														<Tooltip title="Copy phone">
+															<IconButton
+																size="small"
+																onClick={() => navigator.clipboard.writeText(phone)}
+															>
+																<ContentCopy sx={{ fontSize: "12px" }} />
+															</IconButton>
+														</Tooltip>
+													)}
+												</td>
+												<td className="px-4 py-2 text-sm">
+													{fullAddress}
+													{fullAddress && (
+														<Tooltip title="Copy address">
+															<IconButton
+																size="small"
+																onClick={() => navigator.clipboard.writeText(fullAddress)}
+															>
+																<ContentCopy sx={{ fontSize: "12px" }} />
+															</IconButton>
+														</Tooltip>
+													)}
 												</td>
 												<td className="px-4 py-2 text-sm">
 													<span
@@ -433,31 +483,32 @@ function DoctorAppointmnets(isDrawerOpen) {
 														{appointment.status}
 													</span>
 												</td>
-												<td className="px-4 py-2 text-sm">
-													{appointment.visit_type}
-												</td>
 												<td className="px-4 pl-8 py-2 flex">
-													<Edit
-														className="text-blue-500 cursor-pointer"
-														sx={{
-															fontSize: '18px',
-														}}
-														onClick={() => {
-															setIsEditModalOpen(
-																true,
-															);
-															setNewStatus(
-																appointment.status,
-															);
-															setSelectedAppointment(
-																{
-																	...appointment,
-																	patientName,
-																},
-															);
-														}}
-													/>
+													{appointment.status === "CONFIRMED" || appointment.status === "CANCELLED" ? (
+														 <Tooltip title="Cannot edit once status is confirmed or cancelled">
+																<span>
+																	<Edit
+																	className="text-gray-400 cursor-not-allowed"
+																	sx={{ fontSize: "18px" }}
+																	/>
+																</span>
+															</Tooltip>
+														) : (
+														<Edit
+															className="text-blue-500 cursor-pointer"
+															sx={{ fontSize: "18px" }}
+															onClick={() => {
+																setIsEditModalOpen(true);
+																setNewStatus(appointment.status);
+																setSelectedAppointment({
+																...appointment,
+																patientName,
+																});
+															}}
+														/>
+													)}
 												</td>
+
 											</tr>
 										);
 									})
