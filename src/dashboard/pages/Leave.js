@@ -9,11 +9,12 @@ import { showAlert } from "../../components/AlertComponent";
 import { useLeaveApi } from "../../api/leaveApi";
 import ReusableModal from "../../components/ReusableModal"
 import {
-    CircularProgress
+    CircularProgress,
+    Tooltip
 } from "@mui/material";
 
 function Leave(isDrawerOpen) {
-    const { createLeave, getLeaveById } = useLeaveApi();
+    const { createLeave, getLeaveById,deleteLeave} = useLeaveApi();
     const { user } = useAuth();
     const [leaveData, setLeaveData] = React.useState({
         startDate: null,
@@ -26,6 +27,7 @@ function Leave(isDrawerOpen) {
     const [loading, setLoading] = React.useState(false);
     const [isEditMode, setIsEditMode] = React.useState(false);
     const [editId, setEditId] = React.useState(null);
+    const [deleteId, setDeleteId] = React.useState(null);
     const columns = ["Start Date", "End Date", "Leave Type","Reason", "Status"];
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
@@ -85,6 +87,20 @@ function Leave(isDrawerOpen) {
         console.log("UPDATELEAVE")
     };
 
+    const handleDeleteLeave = async () => {
+        if (!deleteId) return;
+        try {
+            await deleteLeave(deleteId); 
+            showAlert("Leave cancelled successfully", "success");
+            setIsDeleteModalOpen(false);
+            setDeleteId(null);
+            fetchLeaveById(); 
+        } catch (error) {
+            console.log("Error deleting leave:", error);
+            showAlert("Failed to delete leave", "error");
+        }
+    };
+
 
     React.useEffect(() => {
         fetchLeaveById();
@@ -110,6 +126,7 @@ function Leave(isDrawerOpen) {
                         <div className='flex gap-2 justify-end mt-3'>
                             <button
                                 className={`px-4 py-1 rounded text-white transition bg-[#1a6f8b] hover:bg-[#15596e]`}
+                                onClick={handleDeleteLeave}
                             >
                                 Yes
                             </button>
@@ -276,22 +293,36 @@ function Leave(isDrawerOpen) {
                                                 </span>
                                             </td>
                                             <td className="px-4 py-2 flex gap-3">
-                                                <Edit className="text-blue-500 cursor-pointer" sx={{ fontSize: "18px" }} 
-                                                    onClick={() => {
-                                                        setIsEditMode(true);
-                                                        setEditId(leave._id);
-                                                        setLeaveData({
-                                                        startDate: dayjs(leave.start_date),
-                                                        endDate: dayjs(leave.end_date),
-                                                        reason: leave.reason,
-                                                        leave_type: leave.leave_type,
-                                                        });
-                                                    }}
-                                                />
+                                                <span>
+                                                    <Tooltip
+                                                        title={
+                                                            leave.status === "CONFIRMED" || leave.status === "CANCELLED"
+                                                                ? "Cannot edit once status is confirmed or cancelled"
+                                                                : "Edit leave"
+                                                        }
+                                                    >
+                                                        <Edit 
+                                                            className={`${leave.status === "CONFIRMED" || leave.status === "CANCELLED" ? "text-gray-400 cursor-not-allowed" : "text-blue-500 cursor-pointer"}`}
+                                                            sx={{ fontSize: "18px" }} 
+                                                            onClick={() => {
+                                                                if (leave.status === "CONFIRMED" || leave.status === "CANCELLED") return;
+                                                                setIsEditMode(true);
+                                                                setEditId(leave._id);
+                                                                setLeaveData({
+                                                                startDate: dayjs(leave.start_date),
+                                                                endDate: dayjs(leave.end_date),
+                                                                reason: leave.reason,
+                                                                leave_type: leave.leave_type,
+                                                                });
+                                                            }}
+                                                        />
+                                                    </Tooltip>
+                                                </span>
                                                 <Delete
                                                     className="text-red-500 cursor-pointer"
                                                     sx={{ fontSize: "18px" }}
                                                     onClick={() => {
+                                                        setDeleteId(leave._id); 
                                                         setIsDeleteModalOpen(true);
                                                     }}
                                                 />

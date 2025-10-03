@@ -20,6 +20,14 @@ export const useLeaveApi = () => {
             throw error.response?.data || { msg: "Failed to update appointment" };
         }
     }
+    const deleteLeave = async (id) => {
+        try {
+        const response = await axiosInstance.delete(`/delete-leave/${id}`);
+        return response.data;
+        } catch (error) {
+        throw error.response?.data || { msg: "Failed to delete user" };
+        }
+    };
 
-    return { createLeave,getLeaveById,updateLeave };
+    return { createLeave,getLeaveById,updateLeave,deleteLeave };
 };
