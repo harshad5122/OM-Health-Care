@@ -14,7 +14,7 @@ export const useLeaveApi = () => {
     }
      const updateLeave = async (payload) => {
         try {
-            const response = await axiosInstance.put(`/update-leave`, payload);
+            const response = await axiosInstance.put(`/update-leave-status`, payload);
             return response.data.body;
         } catch (error) {
             throw error.response?.data || { msg: "Failed to update appointment" };
@@ -28,6 +28,15 @@ export const useLeaveApi = () => {
         throw error.response?.data || { msg: "Failed to delete user" };
         }
     };
+    const editLeave = async (id, payload) => {
+        try {
+            const response = await axiosInstance.put(`/update-leave/${id}`, payload);
+            return response.data.body;
+        } catch (error) {
+            throw error.response?.data || { msg: "Failed to update leave" };
+        }
+    };
 
-    return { createLeave,getLeaveById,updateLeave,deleteLeave };
+
+    return { createLeave,getLeaveById,updateLeave,deleteLeave ,editLeave};
 };

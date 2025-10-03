@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 
 function Leave(isDrawerOpen) {
-    const { createLeave, getLeaveById,deleteLeave} = useLeaveApi();
+    const { createLeave, getLeaveById,deleteLeave,editLeave} = useLeaveApi();
     const { user } = useAuth();
     const [leaveData, setLeaveData] = React.useState({
         startDate: null,
@@ -83,8 +83,44 @@ function Leave(isDrawerOpen) {
             showAlert("Something went wrong", "error")
         }
     };
+    // const handleUpdateLeave = async () => {
+    //     console.log("UPDATELEAVE")
+    // };
     const handleUpdateLeave = async () => {
-        console.log("UPDATELEAVE")
+        if (!editId) return;
+
+        const payload = {
+            start_date: leaveData.startDate
+                ? dayjs(leaveData.startDate).format("YYYY-MM-DD")
+                : "",
+            end_date: leaveData.endDate
+                ? dayjs(leaveData.endDate).format("YYYY-MM-DD")
+                : "",
+            leave_type: leaveData.leave_type,
+            reason: leaveData.reason,
+        };
+
+        try {
+            await editLeave(editId, payload); // call your API
+
+            showAlert("Leave updated successfully", "success");
+
+            // Reset form and exit edit mode
+            setLeaveData({
+                startDate: null,
+                endDate: null,
+                reason: "",
+                leave_type: "",
+            });
+            setIsEditMode(false);
+            setEditId(null);
+
+            // Refresh the leave table
+            fetchLeaveById();
+        } catch (err) {
+            console.log("Failed to update leave:", err);
+            showAlert("Failed to update leave", "error");
+        }
     };
 
     const handleDeleteLeave = async () => {
