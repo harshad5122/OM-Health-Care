@@ -27,7 +27,7 @@ function AddAppointment({ isDrawerOpen }) {
     const [totalCounts, setTotalCounts] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
-    // const [appointment, setAppointment] = useState(null);
+    const [appointment, setAppointment] = useState(null);
     
     const [patients, setPatients] = useState([]);
     const [calendarEvents, setCalendarEvents] = useState([]);
@@ -35,14 +35,6 @@ function AddAppointment({ isDrawerOpen }) {
     const [eventType, setEventType] = useState(null);
     const [formDisabled, setFormDisabled] = useState(false);
     const { user } = useAuth();
-    const [appointment, setAppointment] = useState({
-        _id: null,
-        date: "",
-        time_slot: { start: "", end: "" },
-        visit_type: "",
-        patient_id: user?._id || "",
-        patient_name: `${user?.firstname || ""} ${user?.lastname || ""}`,
-    });
 
 
     const rowsPerPage = 6;
@@ -306,7 +298,6 @@ function AddAppointment({ isDrawerOpen }) {
         }
     }
     const handleOnSelectEvent = (event) => {
-        console.log(event,"event")
 
         let disableForm = false;
 
