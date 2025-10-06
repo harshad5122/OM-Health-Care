@@ -43,6 +43,30 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevi
             // date={new Date(date)}         // ✅ controlled date state
             onNavigate={handleNavigate} // ✅ handles next/prev/today
             popup
+            formats={{
+                timeGutterFormat: (date, culture, localizer) =>
+                localizer.format(date, "hh:mm A", culture),
+                eventTimeRangeFormat: ({ start, end }, culture, localizer) =>
+                `${localizer.format(start, "hh:mm A", culture)} - ${localizer.format(end, "hh:mm A", culture)}`,
+            }}
+            components={{
+                event: ({ event }) => {
+                    const formattedTime =
+                    event.type === "leave"
+                        ? "Doctor on Leave"
+                        : `${moment(event.start).format("hh:mm A")} - ${moment(event.end).format("hh:mm A")}`;
+
+                    return (
+                    <div
+                        title={formattedTime}
+                        onMouseOver={(e) => e.stopPropagation()}
+                        className="truncate max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+                    >
+                        <span>{formattedTime}</span>
+                    </div>
+                    );
+                },
+            }}
             eventPropGetter={(event) => {
                 let backgroundColor = "";
                 let borderColor = "";
@@ -85,7 +109,10 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevi
                         borderColor,
                         color: textColor,
                         borderRadius: "6px",
-                        padding: "2px 6px",
+                        // padding: "2px 6px",
+                        width: "calc(100% - 8px)",
+                        margin: "0 4px",
+                        boxSizing: "border-box",
                     },
                 };
             }}
