@@ -302,8 +302,24 @@ function Leave(isDrawerOpen) {
                     <span className="flex gap-2 justify-end my-2">
                         <button
                             // onClick={handleApplyLeave}
+                            disabled={
+                                !leaveData.startDate ||
+                                !leaveData.endDate ||
+                                !leaveData.leave_type ||
+                                !leaveData.admin_id ||
+                                !leaveData.reason.trim()
+                            }
                             onClick={isEditMode ? handleUpdateLeave : handleApplyLeave}
-                            className="bg-[#1a6f8b] text-white px-4 py-1.5 rounded hover:bg-[#15596e] transition"
+                            // className="bg-[#1a6f8b] text-white px-4 py-1.5 rounded hover:bg-[#15596e] transition"
+                            className={`px-4 py-1.5 rounded transition bg-[#1a6f8b] text-white ${
+                                leaveData.startDate &&
+                                leaveData.endDate &&
+                                leaveData.leave_type &&
+                                leaveData.admin_id &&
+                                leaveData.reason.trim()
+                                    ? 'hover:bg-[#15596e] opacity-1 cursor-pointer'
+                                    : 'opacity-50 cursor-not-allowed'
+                            }`}
                         >
                             {isEditMode ? "Update Leave" : "Apply Leave"}
                         </button>

@@ -62,6 +62,31 @@ p {
     opacity: 1;
   }
 }
+.navbar {
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background-color: var(--light-color);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  transition: left 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+}
+
+.drawer.open {
+  width: 300px;
+}
+.drawer.closed {
+  width: 70px;
+}
 .section-title::after {
   content: '';
   position: absolute;
@@ -1096,4 +1121,15 @@ p {
 }
 .leave-calendar .MuiSvgIcon-root{
   font-size: 18px !important;
+}
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--primary-color);
+  display: block;
+  opacity: 1;     
+  visibility: visible; 
+  transition: none;
 }

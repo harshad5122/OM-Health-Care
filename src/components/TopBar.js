@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import '../styles/TopBar.css';
 import { FaRegBell } from "react-icons/fa6";
 import { useNotification } from '../context/NotificationContext';
 import { useNotificationApi } from '../api/notification';
@@ -129,7 +128,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
 
 
   return (
-    <header className="top-bar">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-white shadow-md flex justify-between items-center px-4 z-50">
       {isConfirmModalOpen &&
         <ReusableModal
           isOpen={isConfirmModalOpen}
@@ -230,14 +229,14 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
           </div>
         </ReusableModal>
       }
-      <div className="left-section">
+      <div className="flex items-center gap-[1rem]">
         {/* <button className="menu-btn" onClick={toggleDrawer}>
           ☰
         </button>
         <h1 className="title">{title}</h1> */}
       </div>
 
-      <div className="right-section">
+      <div className="flex items-center gap-[1rem]">
         <div className="relative">
           <button
             className="relative"
@@ -258,7 +257,6 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
                 notifications.map((notif) => (
                   <div
                     key={notif._id}
-                    // className="border-b border-gray-200 py-1 last:border-none"
                     className={`border-b border-gray-200 py-1 last:border-none ${(notif.type !== "APPOINTMENT_REQUEST" && notif?.type !== "LEAVE_REQUEST") ? "cursor-pointer" : "cursor-default"
                       }`}
                     onClick={() => {
@@ -312,12 +310,12 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
         {user && (
           <Link
             to={`${basePaths[userRole]}/profile`}
-            className="user-profile-link"
+            className="flex items-center gap-3.5 px-2.5 py-1.5 rounded-full transition-colors hover:bg-blue-100"
           >
-            <span className="user-name">
+            <span className="font-medium text-[#495057]">
               {user.firstname} {user.lastname}
             </span>
-            <div className="user-avatar">
+            <div className="w-10 h-10 rounded-full bg-[#1a6f8b] text-white flex items-center justify-center font-bold">
               {user.firstname?.charAt(0).toUpperCase()}
             </div>
           </Link>

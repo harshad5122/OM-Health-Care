@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import CloseIcon from "@mui/icons-material/Close";
-import "../styles/Navbar.css";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -52,7 +51,10 @@ const Navbar = () => {
         <ul className="hidden xl:flex gap-6">
           {navLinks.map((link) => (
             <li key={link.path}>
-              <Link to={link.path} className="navbar-link">
+              <Link to={link.path} 
+              // className="navbar-link"
+               className="relative font-medium text-base text-[#495057] transition-colors duration-300 after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-[#4caf50] after:transition-all after:duration-300 hover:text-[#1a6f8b] hover:after:w-full"
+              >
                 {link.label}
               </Link>
             </li>
@@ -100,7 +102,8 @@ const Navbar = () => {
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className="navbar-link"
+                    // className="navbar-link"
+                    className="relative font-medium text-base text-[#495057] transition-colors duration-300 after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-[#4caf50] after:transition-all after:duration-300 hover:text-[#1a6f8b] hover:after:w-full"
                     onClick={() => setMenuOpen(false)}
                   >
                     {link.label}

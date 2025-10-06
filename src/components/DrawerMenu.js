@@ -11,8 +11,6 @@ import {
 FaCalendarAlt,
 
 } from "react-icons/fa";
-import "../styles/DrawerMenu.css";
-// import { logoutUser } from "../api/authApi";
 import ConfirmModal from "../components/ConfirmModal";
 import { useAuthApi } from "../api/authApi";
 import { showAlert } from "./AlertComponent";
@@ -80,11 +78,11 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
     className={`fixed top-0 left-0 h-screen bg-light-color shadow-md flex flex-col justify-between transition-all duration-300 z-[1000] ${isOpen ? "w-72" : "w-16"}`}
     >
       
-      {isOpen ? <div className="drawer-header">
-        <Link to="/" className="sidebar-title">
+      {isOpen ? <div className="p-4 flex justify-between items-center bg-[#1a6f8b] border-b border-white/20">
+        <Link to="/" className="m-0 text-[1.2rem] text-white font-semibold no-underline">
           Om Health Care
         </Link>
-        <button className="close-btn" onClick={toggleDrawer}>
+        <button className="bg-transparent border-none text-white text-[1.6rem] cursor-pointer" onClick={toggleDrawer}>
           &times;
         </button>
       </div>: 
@@ -94,28 +92,41 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
         </button>
       </div>}
       
-      <nav className={`${isOpen ? "drawer-nav":"drawerclose-nav"}`}>
-      {menuItems[userRole]?.map((item) => {
-        // Check if current path matches the menu item
-        const isActive = location.pathname === `${basePaths[userRole]}/${item.path}`;
+      <nav 
+      // className={`${isOpen ? "drawer-nav":"drawerclose-nav"}`}
+      className={`${isOpen ? "flex flex-col p-4 flex-grow" : "flex flex-col items-center flex-grow mt-5 p-2.5"}`}
+      >
+        {menuItems[userRole]?.map((item) => {
+          // Check if current path matches the menu item
+          const isActive = location.pathname === `${basePaths[userRole]}/${item.path}`;
 
-        return (
-          <Link
-            key={item.path}
-            to={`${basePaths[userRole]}/${item.path}`}
-            className={`sidebar-link ${isActive ? "active-link" : ""}`}
-          >
-            <span className="icon">{item.icon}</span>
-           {isOpen && <span className="label">{item.label}</span>}
-          </Link>
-        );
-      })}
-    </nav>
+          return (
+            <Link
+              key={item.path}
+              to={`${basePaths[userRole]}/${item.path}`}
+              // className={`sidebar-link ${isActive ? "active-link" : ""}`}
+              className={`flex items-center gap-4 px-3 py-3 mb-3 rounded-md font-medium text-[#495057] no-underline transition-colors duration-200 hover:bg-[#0077cc1a] hover:text-[#1a6f8b] ${
+                isActive
+                  ? "bg-[#0077cc1a] text-[#1a6f8b]"
+                  : ""
+              }`}
+            >
+              <span className="flex items-center text-[1.2rem]">{item.icon}</span>
+            {isOpen && <span className="label">{item.label}</span>}
+            </Link>
+          );
+        })}
+      </nav>
 
       {/* Logout at bottom */}
-      <div className="drawer-footer">
-        <button className={`logout-btn ${isOpen ? "":"justify-center"}`} onClick={() => setModalOpen(true)}>
-          <span className="icon">
+      <div className="p-4 border-t border-gray-200">
+        <button 
+        className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-md bg-transparent text-[#e63946] font-medium transition-colors duration-200 hover:bg-[#e639461a] hover:text-[#d62828] ${
+          !isOpen && "justify-center"
+        }`}
+         onClick={() => setModalOpen(true)}
+         >
+          <span className="flex items-center text-[1.2rem]">
             <FaSignOutAlt />
           </span>
          {isOpen && <span className="label">Logout</span>}
