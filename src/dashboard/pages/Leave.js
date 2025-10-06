@@ -12,23 +12,28 @@ import {
     CircularProgress,
     Tooltip
 } from "@mui/material";
+import { useUserApi } from "../../api/userApi";
 
 function Leave(isDrawerOpen) {
     const { createLeave, getLeaveById,deleteLeave,editLeave} = useLeaveApi();
-    const { user } = useAuth();
+    const {getChatUsers}= useUserApi();
+    const { user,token } = useAuth();
     const [leaveData, setLeaveData] = React.useState({
         startDate: null,
         endDate: null,
         reason: "",
         leave_type: "",
+        admin_id: "",
+        admin_name: "",
     });
     const [leaveByIdData, setLeaveByIdData] = React.useState(null);
+    const [adminList,setAdminList]= React.useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [isEditMode, setIsEditMode] = React.useState(false);
     const [editId, setEditId] = React.useState(null);
     const [deleteId, setDeleteId] = React.useState(null);
-    const columns = ["Start Date", "End Date", "Leave Type","Reason", "Status"];
+    const columns = ["Start Date", "End Date", "Leave Type","Admin","Reason", "Status"];
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
         return new Date(dateStr).toLocaleDateString("en-GB");
@@ -38,6 +43,15 @@ function Leave(isDrawerOpen) {
         setLeaveData((prev) => ({ ...prev, [key]: value }));
     };
 
+    const handleAdminChange = (e) => {
+        const selectedId = e.target.value;
+        const selectedAdmin = adminList.find((a) => a.user_id === selectedId);
+        setLeaveData((prev) => ({
+            ...prev,
+            admin_id: selectedId,
+            admin_name: selectedAdmin?.name || "",
+        }));
+    };
     const fetchLeaveById = async () => {
         if (!user?.staff_id) return;
         setLoading(true); 
@@ -65,6 +79,8 @@ function Leave(isDrawerOpen) {
                 : "",
             leave_type: leaveData.leave_type,
             reason: leaveData.reason,
+            admin_id:leaveData.admin_id,
+            admin_name:leaveData.admin_name,
         };
 
         try {
@@ -75,6 +91,8 @@ function Leave(isDrawerOpen) {
                 endDate: null,
                 reason: "",
                 leave_type: "",
+                admin_id: "",
+                admin_name: "",
             });
             fetchLeaveById();
             showAlert("Leave Created Successfully", "success")
@@ -98,6 +116,8 @@ function Leave(isDrawerOpen) {
                 : "",
             leave_type: leaveData.leave_type,
             reason: leaveData.reason,
+            admin_id:leaveData.admin_id,
+            admin_name:leaveData.admin_name,
         };
 
         try {
@@ -111,6 +131,8 @@ function Leave(isDrawerOpen) {
                 endDate: null,
                 reason: "",
                 leave_type: "",
+                admin_id: "",
+                admin_name: "",
             });
             setIsEditMode(false);
             setEditId(null);
@@ -137,10 +159,23 @@ function Leave(isDrawerOpen) {
         }
     };
 
+    const fetchAdmin = async () => {
+        try {
+            const result = await getChatUsers(token);
+            setAdminList(result);
+        } catch (error) {
+            console.log("Error fetching leave by ID:", error);
+        } 
+        
+    };
 
     React.useEffect(() => {
         fetchLeaveById();
     }, [user?._id]);
+
+    React.useEffect(()=>{
+        fetchAdmin()
+    },[])
 
     return (
         <div id="dashboard-container" className={isDrawerOpen ? 'drawer-open' : 'drawer-closed'}
@@ -231,6 +266,25 @@ function Leave(isDrawerOpen) {
                                 <option value="SECOND_HALF">Second Half</option>
                             </select>
                         </span>
+                        <span className="flex flex-col">
+                            <label className="text-sm text-gray-600 mb-1 text-left font-semibold">
+                                Select Admin
+                            </label>
+                            <select
+                                className="border border-gray-300 rounded px-1 py-1.5 text-[14px] text-gray-600 cursor-pointer"
+                                value={leaveData.admin_id}
+                                onChange={handleAdminChange}
+                            >
+                                <option value="">Select admin</option>
+                                {adminList
+                                    ?.filter((admin) => admin.role === 2)
+                                    .map((admin) => (
+                                        <option key={admin.user_id} value={admin.user_id}>
+                                            {admin.name}
+                                        </option>
+                                    ))}
+                            </select>
+                        </span>
 
                     </span>
                     <span className="flex flex-col">
@@ -260,6 +314,8 @@ function Leave(isDrawerOpen) {
                                     endDate: null,
                                     reason: "",
                                     leave_type: "",
+                                    admin_id: "",
+                                    admin_name: "",
                                 })
                                 setIsEditMode(false); 
                                 setEditId(null);
@@ -310,6 +366,7 @@ function Leave(isDrawerOpen) {
                                             <td className="px-4 py-2 text-sm">
                                                  {leave.leave_type}
                                             </td>
+                                            <td className="px-4 py-2 text-sm">{leave.admin_name || "-"}</td>
                                             <td className="px-4 py-2 text-sm max-w-[250px] truncate" title={leave.reason}>
                                                 {leave.reason}
                                             </td>
@@ -349,11 +406,14 @@ function Leave(isDrawerOpen) {
                                                                 endDate: dayjs(leave.end_date),
                                                                 reason: leave.reason,
                                                                 leave_type: leave.leave_type,
+                                                                admin_id: leave.admin_id,
+                                                                admin_name: leave.admin_name,
                                                                 });
                                                             }}
                                                         />
                                                     </Tooltip>
                                                 </span>
+                                                <span>
                                                 <Delete
                                                     className="text-red-500 cursor-pointer"
                                                     sx={{ fontSize: "18px" }}
@@ -362,6 +422,7 @@ function Leave(isDrawerOpen) {
                                                         setIsDeleteModalOpen(true);
                                                     }}
                                                 />
+                                                </span>
                                             </td>
                                         </tr>
                                     ))
