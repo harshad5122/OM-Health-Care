@@ -218,14 +218,16 @@ function Leave(isDrawerOpen) {
             <div className="px-4 flex flex-col gap-2 py-2 items-center flex-shrink-0">
                 <span className="border border-[#f0f0f0] rounded bg-[#fcfcfc] px-4 py-2 flex flex-col gap-2 w-full">
                     <p className='text-left text-[15px] font-semibold text-[#1a6f8b] border-b border-[#f0f0f0] pb-1'>Apply Leave</p>
-                    <span className="flex gap-4 items-center pt-2 pb-1">
+                    <span 
+                    className="flex gap-4 xl:items-center pt-2 pb-1 xl:flex-row md:flex-col sm:flex-col"
+                    >
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <div className="flex gap-4 items-center">
-                                <span className="flex flex-col">
+                            <div className="flex gap-4 xl:items-center xl:flex-row lg:flex-row md:flex-col sm:flex-col">
+                                <span className="flex flex-col leave-calendar">
                                     <label className="text-sm text-gray-600 mb-1 text-left font-semibold">
                                        Start Date
                                     </label>
-                                    <div className="flex gap-2 leave-calendar">
+                                    <div className="flex gap-2">
                                         <DatePicker
                                             value={leaveData.startDate}
                                             onChange={(val) => handleChange("startDate", val)}
@@ -344,7 +346,7 @@ function Leave(isDrawerOpen) {
 
                 </span>
             </div>
-            <div className="px-4 flex-1 py-2 overflow-hidden">
+            <div className="px-4 flex-1 py-2 xl:overflow-hidden">
                 <div className="border border-[#f0f0f0] rounded bg-[#fcfcfc] w-full h-full flex flex-col px-4 py-2">
                     <p className='text-left text-[15px] font-semibold text-[#1a6f8b] border-b border-[#f0f0f0] pb-1'>
                         Leave Records

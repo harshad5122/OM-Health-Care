@@ -100,7 +100,7 @@ const Profile = () => {
           <h3 className='text-left text-[#343a40] text-[1.4rem] mt-0 mb-6 pb-2 border-b border-[#e0e0e0]'>Personal Information</h3>
           <div className="flex flex-col gap-[1.5rem]">
             {/* Row 1: First Name, Last Name, Email */}
-            <div className="form-row triple">
+            <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 w-full gap-4">
               <div className="form-group">
                 <label>First Name</label>
                 {isEditing ? (
@@ -128,7 +128,7 @@ const Profile = () => {
             </div>
 
             {/* Row 2: Phone, Date of Birth, Gender */}
-            <div className="form-row triple">
+            <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 w-full gap-4">
               <div className="form-group">
                 <label>Phone Number</label>
                 {isEditing ? (
@@ -203,7 +203,7 @@ const Profile = () => {
 
 
             {/* Row 4: City, State, Country */}
-            <div className="form-row triple">
+            <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 w-full gap-4">
               <div className="form-group">
                 <label>Country</label>
                 {isEditing ? (
@@ -232,13 +232,6 @@ const Profile = () => {
           </div>
         </div>
         <div className={`profile-actions-bottom w-full flex ${profileData.role === 2 ? "justify-between":"justify-end"} mt-[2rem] pt-[1.5rem] border-t border-[#eee]`}>
-          {/* <Link 
-          // to="/dashboard/admin/home" 
-           to={profileData.role === 1 ? "/dashboard/user/home" : "/dashboard/admin/home"}
-          className="btn btn-tertiary"
-          >
-            Back to Dashboard
-          </Link> */}
           {profileData.role === 2 && (
             <Link 
               to="/dashboard/admin/home"
