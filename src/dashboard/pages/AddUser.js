@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/dashboard/Profile.css";
 import { useUserApi } from "../../api/userApi";
 import { useNavigate, useParams } from "react-router-dom";
 // import { addUser } from "../../api/userApi"; // <-- you'll create this API function

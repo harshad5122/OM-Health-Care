@@ -1,7 +1,6 @@
 // src/components/FloatingChatButton.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/FloatingChatButton.css";
 import { useAuth } from "../context/AuthContext";
 
 const FloatingChatButton = () => {
@@ -21,7 +20,11 @@ const FloatingChatButton = () => {
   };
 
   return (
-    <button className="floating-chat-btn" onClick={handleChatClick}>
+    <button 
+      // className="floating-chat-btn" 
+       className="fixed bottom-[30%] right-0 bg-[var(--secondary-color)] text-white rounded-tl-[10px] rounded-tr-[10px] rounded-bl-0 rounded-br-0 px-5 py-3 text-base font-medium shadow-lg z-[1000] cursor-pointer transition-all duration-300 ease-in-out transform translate-y-1/2 -rotate-90 origin-bottom-right"
+      onClick={handleChatClick}
+    >
      Talk to Us
     </button>
   );

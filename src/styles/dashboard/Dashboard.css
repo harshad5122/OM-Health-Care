@@ -1,7 +1,7 @@
 
 
 :root {
-  --primary-color: #3f51b5; /* A deep blue for primary actions/branding */
+  --primary-color: #1a6f8b; /* A deep blue for primary actions/branding */
   --secondary-color: #f50057; /* A vibrant pink for accents/highlights */
   --tertiary-color: #00bcd4; /* A light blue for supporting elements */
   --quaternary-color: #ff9800; /* An orange for warnings/attention */
@@ -118,7 +118,7 @@
 }
 
 #chart-type-toggle button.active {
-  background-color: var(--primary-color);
+  background-color: #1a6f8b;
   color: white;
 }
 
@@ -251,7 +251,7 @@
 .stat-value {
   font-size: 2.2rem;
   font-weight: bold;
-  color: var(--primary-color);
+  color: #1a6f8b;
 }
 
 .trend {

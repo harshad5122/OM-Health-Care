@@ -93,26 +93,21 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       </div>}
       
       <nav 
-      // className={`${isOpen ? "drawer-nav":"drawerclose-nav"}`}
-      className={`${isOpen ? "flex flex-col p-4 flex-grow" : "flex flex-col items-center flex-grow mt-5 p-2.5"}`}
+        className={`${isOpen ? "flex flex-col p-4 flex-grow" : "flex flex-col items-center flex-grow mt-5 p-2.5"}`}
       >
         {menuItems[userRole]?.map((item) => {
-          // Check if current path matches the menu item
           const isActive = location.pathname === `${basePaths[userRole]}/${item.path}`;
 
           return (
             <Link
               key={item.path}
               to={`${basePaths[userRole]}/${item.path}`}
-              // className={`sidebar-link ${isActive ? "active-link" : ""}`}
-              className={`flex items-center gap-4 px-3 py-3 mb-3 rounded-md font-medium text-[#495057] no-underline transition-colors duration-200 hover:bg-[#0077cc1a] hover:text-[#1a6f8b] ${
-                isActive
-                  ? "bg-[#0077cc1a] text-[#1a6f8b]"
-                  : ""
+              className={`flex items-center gap-4 px-3 py-3 mb-3 rounded-md font-medium no-underline transition-colors duration-200 hover:bg-[#0077cc1a] hover:text-[#1a6f8b] ${
+                isActive ? "bg-[#0077cc1a] text-[#1a6f8b]" : "text-[#495057]"
               }`}
             >
               <span className="flex items-center text-[1.2rem]">{item.icon}</span>
-            {isOpen && <span className="label">{item.label}</span>}
+              {isOpen && <span className="label">{item.label}</span>}
             </Link>
           );
         })}

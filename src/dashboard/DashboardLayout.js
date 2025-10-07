@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import DrawerMenu from '../components/DrawerMenu';
 import TopBar from '../components/TopBar';
-import '../styles/DashboardLayout.css';
 import { useAuth } from "../context/AuthContext"; 
 import { useUserApi } from '../api/userApi';
 

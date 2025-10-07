@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import "../../styles/dashboard/Profile.css";
 import { useDoctorApi } from "../../api/doctorApi";
 import { useNavigate, useParams } from "react-router-dom";
 // import { addDoctor } from "../../api/doctorApi";

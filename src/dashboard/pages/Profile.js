@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link  } from 'react-router-dom';
-import '../../styles/dashboard/Profile.css';
 // import { getProfile, updateProfile } from "../../api/userApi";
 import { useAuth } from "../../context/AuthContext";
 import { useUserApi } from '../../api/userApi';
@@ -73,12 +72,12 @@ const Profile = () => {
   if (!profileData) return <p>No profile data found.</p>;
 
   return (
-    <div className="profile-container py-[20px]" style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
-      <div className="profile-header px-[20px]">
+    <div className="profile-container py-[20px] mx-auto rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.05)] py-[20px] flex flex-col" style={{ height: "calc(100vh - 60px)"}}>
+      <div className="profile-header px-[20px] flex justify-between items-center pb-4 border-b border-[#eee]">
         <span className='text-[1.8rem] text-[#1a6f8b] m-0 font-semibold flex sticky top-0 z-10'>
           My Profile
         </span>
-        <div className="profile-actions-top">
+        <div className="profile-actions-top flex gap-[1rem]">
           {!isEditing ? (
             <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
               Edit Profile
@@ -97,9 +96,9 @@ const Profile = () => {
       </div>
 
       <div className="profile-content px-[20px] pt-[20px]" style={{ flex: 1, overflowY: "auto" }}>
-        <div className="profile-section">
-          <h3 className='text-left'>Personal Information</h3>
-          <div className="profile-grid">
+        <div className="mb-10 p-6 border border-[#f0f0f0] rounded-lg bg-[#fcfcfc]">
+          <h3 className='text-left text-[#343a40] text-[1.4rem] mt-0 mb-6 pb-2 border-b border-[#e0e0e0]'>Personal Information</h3>
+          <div className="flex flex-col gap-[1.5rem]">
             {/* Row 1: First Name, Last Name, Email */}
             <div className="form-row triple">
               <div className="form-group">
@@ -186,11 +185,11 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="profile-section">
-          <h3 className='text-left'>Address Information</h3>
+        <div className="mb-10 p-6 border border-[#f0f0f0] rounded-lg bg-[#fcfcfc]">
+          <h3 className='text-left text-[#343a40] text-[1.4rem] mt-0 mb-6 pb-2 border-b border-[#e0e0e0]'>Address Information</h3>
 
           {/* Row 3: Full Address */}
-          <div className="profile-grid">
+          <div className="flex flex-col gap-[1.5rem]">
             <div className="form-row group">
               <div className="form-group full-width">
                 <label>Address</label>
