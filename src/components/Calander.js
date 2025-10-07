@@ -14,12 +14,19 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevi
     // const [date, setDate] = React.useState(new Date());
 
 
+    // const handleNavigate = (newDate, view) => {
+    //     if (view === "month") {
+    //         setCurrentDate(newDate);
+    //         onNevigate(null, newDate)
+    //     }
+    // };
     const handleNavigate = (newDate, view) => {
-        if (view === "month") {
-            setCurrentDate(newDate);
-            onNevigate(null, newDate)
+        setCurrentDate(newDate);
+        if (onNevigate) {
+            onNevigate(null, newDate);
         }
     };
+
     const handleViewChange = (newView) => {
         setCurrentView(newView);
         console.log("Switched to view:", newView);
@@ -42,7 +49,8 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevi
             date={currentDate}
             // date={new Date(date)}         // ✅ controlled date state
             onNavigate={handleNavigate} // ✅ handles next/prev/today
-            popup
+            // popup
+            popup={false} 
             formats={{
                 timeGutterFormat: (date, culture, localizer) =>
                 localizer.format(date, "hh:mm A", culture),

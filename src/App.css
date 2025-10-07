@@ -1133,3 +1133,6 @@ p {
   visibility: visible; 
   transition: none;
 }
+.rbc-time-view .rbc-event-label {
+  display: none;
+}

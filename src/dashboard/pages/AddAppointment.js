@@ -340,7 +340,7 @@ function AddAppointment({ isDrawerOpen }) {
                     setIsModalOpen(false)
                     setAppointment(null)
                 }}
-                title={`${appointment?._id ? `Book Appointment - Dr. ${selectedDoctor?.firstname || ""}` : 'Edit Appointment'} `}
+                title={`${appointment?._id ? `Edit Appointment - ${selectedDoctor?.firstname || ""} ${selectedDoctor?.lastname || ""}`  : `Book Appointment - ${selectedDoctor?.firstname || ""} ${selectedDoctor?.lastname || ""}`} `}
                 modalClassName="mt-10"
             >
                 <div className="flex gap-4">
@@ -624,71 +624,7 @@ function AddAppointment({ isDrawerOpen }) {
                                         />
                                     </div>
                                 )}
-                                {/* {eventType !== "leave" && user?.role === 1 && !formDisabled && (
-    <div>
-        <label className="block text-sm font-medium text-gray-700 text-left">
-            Select Patient
-        </label>
-        {console.log(appointment,"appp")}
-        <div className="flex gap-4 items-center">
-            <label className="flex items-center gap-1 text-[13px] cursor-pointer">
-                <input
-                    type="radio"
-                    name="patientOption"
-                    value="self"
-                    checked={appointment?.patient_name === `${user.firstname} ${user.lastname}`}
-                    onChange={() => {
-                        setAppointment((prev) => ({
-                            ...prev,
-                            patient_id: user._id,
-                            patient_name: `${user.firstname} ${user.lastname}`,
-                        }));
-                    }}
-                    className="cursor-pointer"
-                />
-                {user.firstname} {user.lastname}
-            </label>
-
-            <label className="flex items-center gap-1 text-[13px] cursor-pointer">
-                <input
-                    type="radio"
-                    name="patientOption"
-                    value="other"
-                    checked={appointment?.patient_name !== `${user.firstname} ${user.lastname}`}
-                    onChange={() => {
-                        setAppointment((prev) => ({
-                            ...prev,
-                            patient_id: user._id,
-                            patient_name: "", // ready for typing new name
-                        }));
-                    }}
-                    className="cursor-pointer"
-                />
-                Other
-            </label>
-        </div>
-
-        <input
-            type="text"
-            className="mt-2 block w-full rounded text-[14px] border border-gray-300 p-2"
-            value={appointment?.patient_name || ""} // always controlled
-            onChange={(e) =>
-                setAppointment((prev) => ({
-                    ...prev,
-                    patient_id: user._id,
-                    patient_name: e.target.value,
-                }))
-            }
-            disabled={appointment?.patient_name === `${user.firstname} ${user.lastname}`} // self disables input
-            placeholder={
-                appointment?.patient_name !== `${user.firstname} ${user.lastname}`
-                    ? "Type patient name"
-                    : ""
-            }
-            required={appointment?.patient_name !== `${user.firstname} ${user.lastname}`}
-        />
-    </div>
-)} */}
+                             
 
                                 {eventType !== "leave" &&(
                                     <div>
@@ -709,11 +645,14 @@ function AddAppointment({ isDrawerOpen }) {
                                         </select>
                                     </div>
                                 )}
-                                 {(() => {
+                                {/* {(() => {
                                     const dayBooking = allBookings.find(b => b.date === appointment?.date);
                                     const leaveEvent = dayBooking?.events?.find(e => e.type === "leave");
+                                    console.log(dayBooking,"daybooking",leaveEvent,"leaveevnett")
 
                                     if (leaveEvent) {
+                                        const startTime = appointment?.time_slot?.start || leaveEvent.start;
+                                        const endTime = appointment?.time_slot?.end || leaveEvent.end;
                                         return (
                                         <div className="mt-4 p-3 border border-red-300 bg-red-50 text-red-700 rounded text-sm">
                                             {`The doctor will not be available on ${
@@ -721,9 +660,9 @@ function AddAppointment({ isDrawerOpen }) {
                                                 ? dayjs(appointment.date).format("D MMMM, YYYY")
                                                 : "this date"
                                             }${
-                                            leaveEvent.start && leaveEvent.end
-                                                ? `, from ${dayjs(leaveEvent.start, "HH:mm").format("h:mm A")} to ${dayjs(
-                                                    leaveEvent.end,
+                                            startTime && endTime
+                                                ? `, from ${dayjs(startTime, "HH:mm").format("h:mm A")} to ${dayjs(
+                                                    endTime,
                                                     "HH:mm"
                                                 ).format("h:mm A")}`
                                                 : ""
@@ -732,7 +671,54 @@ function AddAppointment({ isDrawerOpen }) {
                                         );
                                     }
                                     return null;
+                                })()} */}
+                                {(() => {
+                                    const dayBooking = allBookings.find(b => b.date === appointment?.date);
+                                    const leaveEvents = dayBooking?.events?.filter(e => e.type === "leave") || [];
+
+                                    if (leaveEvents.length > 0) {
+                                        const dateText = appointment?.date
+                                        ? dayjs(appointment.date).format("D MMMM, YYYY")
+                                        : "this date";
+
+                                        const startTime = appointment?.time_slot?.start;
+                                        const endTime = appointment?.time_slot?.end;
+
+                                        let timeMessage = "";
+
+                                        if (startTime && endTime) {
+                                        timeMessage = `from ${dayjs(startTime, "HH:mm").format("h:mm A")} to ${dayjs(
+                                            endTime,
+                                            "HH:mm"
+                                        ).format("h:mm A")}`;
+                                        } else {
+                                        const leaveTimes = leaveEvents
+                                            .map(e => {
+                                            if (e.start && e.end) {
+                                                return `${dayjs(e.start, "HH:mm").format("h:mm A")} to ${dayjs(
+                                                e.end,
+                                                "HH:mm"
+                                                ).format("h:mm A")}`;
+                                            }
+                                            return null;
+                                            })
+                                            .filter(Boolean)
+                                            .join(", ");
+                                        if (leaveTimes) timeMessage = `during ${leaveTimes}`;
+                                        }
+
+                                        return (
+                                        <div className="mt-4 p-3 border border-red-300 bg-red-50 text-red-700 rounded text-sm">
+                                            {`The doctor will not be available on ${dateText}${
+                                            timeMessage ? `, ${timeMessage}.` : "."
+                                            }`}
+                                        </div>
+                                        );
+                                    }
+                                    return null;
                                 })()}
+
+
                                 {eventType !== "leave" &&(
                                     <div className="flex justify-end gap-3 pt-2">
                                         <button
