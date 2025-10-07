@@ -131,7 +131,10 @@ const Chat = () => {
   const broadcastMenuRef = useRef(null);
   const messageMenuRef = useRef(null);
   const msgRefs = useRef({});
-  const socketRef = useRef(null); 
+  const socketRef = useRef(null);
+  const selectedChatRef = useRef(null);
+  const messageIdToChatIdMap = useRef({});
+  const recipientsContainerRef = useRef(null);
 
   const { getChatUsers, getUserList, getStaffList } = useUserApi();
   const { getMessageList, getBroadcastList, getBroadcastRecipients } = useMessageApi();
@@ -144,7 +147,11 @@ const Chat = () => {
     return allMessages[selectedChat?._id] || [];
   }, [allMessages, selectedChat]);
 
-  // --- Update Chat List Helper ---
+  useEffect(() => {
+    selectedChatRef.current = selectedChat;
+  }, [selectedChat]);
+
+
   const updateChatListWithNewMessage = useCallback((message) => {
     const isBroadcast = !!message.broadcast_id;
     if (isBroadcast) {
@@ -165,7 +172,8 @@ const Chat = () => {
               ...u,
               messagePreview: message.message || "Attachment",
               last_message: { created_at: message.created_at },
-              unreadCount: (selectedChat?._id === chatPartnerId) ? 0 : (u.unreadCount || 0) + 1
+              // unreadCount: (selectedChat?._id === chatPartnerId) ? 0 : (u.unreadCount || 0) + 1
+              unreadCount: (selectedChatRef.current?._id === chatPartnerId) ? 0 : (u.unreadCount || 0) + 1
             };
           }
           return u;
@@ -173,19 +181,18 @@ const Chat = () => {
         return list.sort((a, b) => new Date(b.last_message?.created_at || 0) - new Date(a.last_message?.created_at || 0));
       });
     }
-  }, [user?._id, selectedChat?._id]);
+  }, [user?._id]);
 
-  // --- SINGLE SOCKET CONNECTION - FIXED: Only one socket connection and all listeners ---
+
+
   useEffect(() => {
     if (!user?._id) return;
 
     const socket = initSocket(user._id);
     socketRef.current = socket;
 
-    // Emit that the current user is online
     socket.emit("user_online", user._id);
 
-    // --- Socket Event Handlers ---
     const handlePresenceUpdate = ({ userId, isOnline }) => {
       setOnlineUsers((prev) => new Map(prev).set(userId, isOnline));
       setChatUsers((prev) =>
@@ -194,23 +201,24 @@ const Chat = () => {
     };
 
     const handleIncomingMessage = (message) => {
-      console.log("📨 Received message:", message); // Debug log
+      console.log("📨 Received message:", message);
 
       const chatId = message.broadcast_id ||
         (message.sender_id === user._id ? message.receiver_id : message.sender_id);
 
-      // Update all messages state
+      messageIdToChatIdMap.current[message._id] = chatId;
+
       setAllMessages(prev => {
         const chatMessages = prev[chatId] || [];
-        // Avoid adding duplicate messages
+
         if (chatMessages.some(m => m._id === message._id)) return prev;
 
         const updatedMessages = [...chatMessages, message];
         return { ...prev, [chatId]: updatedMessages };
       });
 
-      // If this is the active chat, mark as seen
-      if (selectedChat?._id === chatId && message.sender_id !== user._id) {
+
+      if (selectedChatRef.current?._id === chatId && message.sender_id !== user._id) {
         socket.emit("message_seen", { messageId: message._id, user_id: user._id });
       }
 
@@ -250,18 +258,48 @@ const Chat = () => {
     const handleMessageStatusUpdate = ({ messageId, status, is_read }) => {
       console.log("📊 Message status updated:", { messageId, status, is_read });
 
-      // Only update for sender's messages
+      const chatId = messageIdToChatIdMap.current[messageId];
+
+      if (!chatId) {
+        console.warn(`Could not find chatId for messageId: ${messageId}`);
+        return;
+      }
+
       setAllMessages(prev => {
-        let updated = { ...prev };
-        for (const chatId in updated) {
-          updated[chatId] = updated[chatId].map(msg => {
-            if (msg._id === messageId && msg.sender_id === user._id) {
-              return { ...msg, message_status: status, is_read };
-            }
-            return msg;
-          });
-        }
-        return updated;
+
+        if (!prev[chatId]) return prev;
+
+        const updatedMessages = prev[chatId].map(msg => {
+          if (msg._id === messageId && msg.sender_id === user._id) {
+            return { ...msg, message_status: status, is_read };
+          }
+          return msg;
+        });
+
+
+        return {
+          ...prev,
+          [chatId]: updatedMessages,
+        };
+      });
+    };
+
+
+    const handleMessageAck = (confirmedMessage) => {
+
+      const { tempId, ...finalMessage } = confirmedMessage;
+
+      if (!tempId) return;
+
+      const chatId = finalMessage.broadcast_id || (finalMessage.sender_id === user._id ? finalMessage.receiver_id : finalMessage.sender_id);
+
+      setAllMessages(prev => {
+        const chatMessages = prev[chatId] || [];
+
+        const updatedMessages = chatMessages.map(msg =>
+          msg._id === tempId ? finalMessage : msg
+        );
+        return { ...prev, [chatId]: updatedMessages };
       });
     };
 
@@ -302,36 +340,38 @@ const Chat = () => {
       // Handle broadcast send confirmation if needed
     };
 
-    // --- Register all listeners ---
+
     socket.on("presence_update", handlePresenceUpdate);
     socket.on("chat_message", handleIncomingMessage);
     socket.on("message_updated", handleMessageUpdated);
     socket.on("message_deleted", handleMessageDeleted);
     socket.on("message_seen", handleMessageStatusUpdate);
+    socket.on("message_ack", handleMessageAck);
     socket.on("message_delivered", handleMessageStatusUpdate);
     socket.on("broadcast_created", handleBroadcastCreated);
     socket.on("broadcast_updated", handleBroadcastUpdated);
     socket.on("broadcast_ack", handleBroadcastAck);
 
-    // Cleanup function
+
     return () => {
       socket.emit("user_left_message_page", user._id);
-      // Unregister all listeners
+
       socket.off("presence_update");
       socket.off("chat_message");
       socket.off("message_updated");
       socket.off("message_deleted");
       socket.off("message_seen");
       socket.off("message_delivered");
+      socket.off("message_ack");
       socket.off("broadcast_created");
       socket.off("broadcast_updated");
       socket.off("broadcast_ack");
-      socketRef.current = null; 
+      socketRef.current = null;
     };
   }, [user?._id, selectedChat?._id, updateChatListWithNewMessage]);
 
 
-  // --- Fetch Initial Data (Users & Broadcasts) ---
+
   useEffect(() => {
     if (!token || !user) return;
 
@@ -350,16 +390,11 @@ const Chat = () => {
         );
         setChatUsers(sortedUsers || []);
 
-        // Auto-select first user if none selected
+
         if (!selectedChat && sortedUsers.length > 0) {
           setSelectedChat({ ...sortedUsers[0], isBroadcast: false });
         }
 
-        // Fetch broadcasts for admin
-        // if (user.role === 2) {
-        //   const broadcastList = await getBroadcastList(token);
-        //   setBroadcasts(broadcastList.map(b => ({ ...b, isBroadcast: true })) || []);
-        // }
 
 
         if (user.role === 2) {
@@ -385,10 +420,10 @@ const Chat = () => {
 
       if (!data || !data.broadcast) {
         console.error("Received invalid 'broadcast_created' event from server:", data);
-        return; // Exit the function to prevent the crash.
+        return;
       }
 
-      // const newBroadcast = newBroadcastData.broadcast;
+
       const newBroadcast = data.broadcast;
 
       const formattedBroadcast = {
@@ -402,8 +437,8 @@ const Chat = () => {
       };
 
       setBroadcasts(prev => [formattedBroadcast, ...prev]);
-      setSidebarView("list"); // Switch back to the list view
-      setSelectedChat(formattedBroadcast); // Automatically select the new broadcast
+      setSidebarView("list");
+      setSelectedChat(formattedBroadcast);
     };
     socket.on("broadcast_created", handleBroadcastCreated);
 
@@ -412,7 +447,7 @@ const Chat = () => {
     };
   }, [token, user]);
 
-  // --- Scroll to Bottom ---
+
   useEffect(() => {
     if (chatBoxRef.current && currentMessages.length > 0) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
@@ -420,235 +455,71 @@ const Chat = () => {
   }, [currentMessages]);
 
 
+  const markMessagesAsSeen = useCallback((msgs) => {
+    const socket = getSocket();
+    if (!socket || !user?._id) return;
 
-
-
-
-
-
-  // --- Main Socket Connection and Global Listeners ---
-  // useEffect(() => {
-  //   if (!user?._id) return;
-
-  //   const socket = initSocket(user._id);
-
-  //   // Emit that the current user is online
-  //   socket.emit("user_online", user._id);
-
-  //   const handlePresenceUpdate = ({ userId, isOnline }) => {
-  //     setOnlineUsers((prev) => new Map(prev).set(userId, isOnline));
-  //     setChatUsers((prev) =>
-  //       prev.map((u) => (u._id === userId ? { ...u, is_online: isOnline } : u))
-  //     );
-  //   };
-
-  //   const handleMessageDelivered = ({ _id, status }) => {
-  //     setMessages((prev) =>
-  //       prev.map((msg) => (msg._id === _id ? { ...msg, message_status: status } : msg))
-  //     );
-  //   };
-
-  //   const handleMessageSeenByReceiver = ({ messageId, message_status }) => {
-  //     setMessages((prev) =>
-  //       prev.map((msg) => (msg._id === messageId ? { ...msg, message_status } : msg))
-  //     );
-  //   };
-
-  //   socket.on("presence_update", handlePresenceUpdate);
-  //   socket.on("message_delivered", handleMessageDelivered);
-  //   socket.on("message_seen", handleMessageSeenByReceiver);
-
-  //   return () => {
-  //     socket.emit("user_left_message_page", user._id);
-  //     socket.off("presence_update", handlePresenceUpdate);
-  //     socket.off("message_delivered", handleMessageDelivered);
-  //     socket.off("message_seen", handleMessageSeenByReceiver);
-  //   };
-  // }, [user?._id]);
-
-
-
-
-  // --- Fetch Initial User List ---
-  // useEffect(() => {
-  //   if ( !token || !user) return;
-
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const usersFromServer = await getChatUsers(token);
-
-  //       const processedUsers = usersFromServer.map(u => ({
-  //         ...u,
-  //         _id: u.user_id, // Standardize the ID property
-  //         unreadCount: u.unreadCount || 0,
-  //         is_online: false,
-
-  //       }));
-
-  //        // <<< CHANGE #1: Sort the list right after fetching
-  //     const sortedUsers = processedUsers.sort((a, b) => 
-  //       new Date(b.last_message?.created_at || 0) - new Date(a.last_message?.created_at || 0)
-  //     );
-
-  //       setChatUsers(sortedUsers || []);
-
-  //       if (!selectedChat && sortedUsers.length > 0) {
-  //         // setSelectedUser(sortedUsers[0]);
-  //          setSelectedChat({ ...sortedUsers[0], isBroadcast: false });
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching chat users:", err);
-  //     }
-  //   };
-
-  //   fetchUsers();
-
-  //   if (user.role === 2) {
-  //     const fetchBroadcasts = async () => {
-  //       try {
-  //         const broadcastList = await getBroadcastList(token);
-  //         setBroadcasts(broadcastList || []);
-  //       } catch (err) {
-  //         console.error("Error fetching broadcasts:", err);
-  //       }
-  //     };
-  //     fetchBroadcasts();
-  //   }
-  //   const socket = getSocket();
-  //   const handleBroadcastCreated = (data) => {
-
-  //      if (!data || !data.broadcast) {
-  //           console.error("Received invalid 'broadcast_created' event from server:", data);
-  //           return; // Exit the function to prevent the crash.
-  //       }
-
-  //     // const newBroadcast = newBroadcastData.broadcast;
-  //     const newBroadcast = data.broadcast;
-
-  //        const formattedBroadcast = {
-  //           id: newBroadcast._id,
-  //           _id: newBroadcast._id,
-  //           title: newBroadcast.title,
-  //           createdAt: newBroadcast.createdAt,
-  //           recipients: newBroadcast.recipients,
-  //           lastMessage: "Broadcast created",
-  //           isBroadcast: true
-  //       };
-
-  //     setBroadcasts(prev => [formattedBroadcast, ...prev]);
-  //     setSidebarView("list"); // Switch back to the list view
-  //     setSelectedChat(formattedBroadcast); // Automatically select the new broadcast
-  //   };
-  //   socket.on("broadcast_created", handleBroadcastCreated);
-
-  //   return () => {
-  //     socket.off("broadcast_created", handleBroadcastCreated);
-  //   };
-  // }, [token, user]);
-
-
-
-
-  // --- Fetch Messages and Handle Chat-Specific Logic when a User is Selected ---
-    useEffect(() => {
-      if ( !token || !selectedChat?._id) {
-        setMessages([]);
-        return;
+    msgs.forEach((msg) => {
+      if (msg.sender_id !== user._id && msg.message_status !== "seen") {
+        socket.emit("message_seen", { messageId: msg._id, user_id: user._id });
       }
+    });
+  }, [user?._id]);
 
-      // const socket = getSocket();
 
-      const fetchMessages = async () => {
-        try {
-           const payload = {
-              id: selectedChat._id,
-              type: selectedChat.isBroadcast ? 'broadcast' : 'user'
-          };
-          const oldMsgs = await getMessageList(payload, token);
-          setMessages(oldMsgs?.reverse() || []);
-          // Once messages are loaded, mark them as seen
-          if (!selectedChat.isBroadcast) {
-              markMessagesAsSeen(oldMsgs);
-              // Reset unread count for the selected user chat
-              setChatUsers((prev) =>
-                prev.map((u) => (u._id === selectedChat._id ? { ...u, unreadCount: 0 } : u))
-              );
-          }
-          // markMessagesAsSeen(oldMsgs);
-        } catch (error) {
-          console.error("Error fetching messages:", error);
-          setMessages([]);
+
+  useEffect(() => {
+    if (!token || !selectedChat?._id) {
+      return;
+    }
+
+    const fetchMessages = async () => {
+      const chatId = selectedChat._id;
+      try {
+        const payload = {
+          id: selectedChat._id,
+          type: selectedChat.isBroadcast ? 'broadcast' : 'user'
+        };
+        const oldMsgs = await getMessageList(payload, token);
+        const sortedMsgs = oldMsgs ? [...oldMsgs].reverse() : [];
+
+        // if (!oldMsgs || oldMsgs.length === 0) {
+        //   setAllMessages(prev => ({ ...prev, [chatId]: [] }));
+        //   return; 
+        // }
+
+        sortedMsgs.forEach(msg => {
+          messageIdToChatIdMap.current[msg._id] = chatId;
+        });
+
+
+        setAllMessages(prev => ({
+          ...prev,
+          [chatId]: sortedMsgs
+        }));
+
+        if (!selectedChat.isBroadcast && oldMsgs) {
+          markMessagesAsSeen(oldMsgs);
+          setChatUsers((prev) =>
+            prev.map((u) => (u._id === selectedChat._id ? { ...u, unreadCount: 0 } : u))
+          );
         }
-      };
-      fetchMessages();
-   const socket = getSocket();
-      // Reset unread count for the selected user
-      setChatUsers((prev) =>
-        prev.map((u) => (u._id === selectedChat._id ? { ...u, unreadCount: 0 } : u))
-      );
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+        setAllMessages(prev => ({
+          ...prev,
+          [chatId]: []
+        }));
+      }
+    };
 
-      const handleIncomingMessage = (msg) => {
-          // Only process if it's part of the active chat
-        if (
-          (msg.sender_id === selectedChat._id && msg.receiver_id === user._id) ||
-          (msg.sender_id === user._id && msg.receiver_id === selectedChat._id)
-        ) {
-          setMessages((prev) => {
-            // Replace temp message with actual message from server
-            const tempId = `temp-${msg.created_at}`;
-            const finalMessages = prev.filter(m => m._id !== tempId);
-            return [...finalMessages, msg];
-          });
-          // Mark as seen immediately since the chat is open
-          socket.emit("message_seen", { messageId: msg._id, user_id: user._id });
-          updateAndSortChatList(msg);
-        } else {
-          // If message is for another chat, update sidebar
-          setChatUsers(prev => prev.map(u => {
-            if (u._id === msg.sender_id) {
-              return {
-                ...u,
-                unreadCount: (u.unreadCount || 0) + 1,
-                messagePreview: msg.message || "Attachment",
-                last_message: { created_at: msg.created_at }
-              };
-            }
-            return u;
-          }).sort((a, b) => new Date(b.last_message?.created_at || 0) - new Date(a.last_message?.created_at || 0)));
-        }
-      };
+    fetchMessages();
+  }, [selectedChat, token, markMessagesAsSeen]);
 
-      const handleMessageUpdated = (updatedMsg) => {
-        setMessages((prev) =>
-          prev.map((msg) => (msg._id === updatedMsg._id ? { ...updatedMsg, edited: true } : msg))
-        );
-      };
-
-      const handleMessageDeleted = (deletedMsg) => {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg._id === deletedMsg.messageId ? { ...msg, is_deleted: true, message: "This message was deleted" } : msg
-          )
-        );
-      };
-
-      socket.on("chat_message", handleIncomingMessage);
-      socket.on("new_message", handleIncomingMessage); // Listen to both
-      socket.on("message_updated", handleMessageUpdated);
-      socket.on("message_deleted", handleMessageDeleted);
-
-      return () => {
-        socket.off("chat_message", handleIncomingMessage);
-        socket.off("new_message", handleIncomingMessage);
-        socket.off("message_updated", handleMessageUpdated);
-        socket.off("message_deleted", handleMessageDeleted);
-      };
-      }, [selectedChat, token]); 
   // }, [selectedChat?._id, user?._id, token]);
 
 
 
-  // --- Add a listener for when a broadcast is updated ---
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
@@ -657,14 +528,14 @@ const Chat = () => {
       if (!updatedData || !updatedData.broadcast) return;
       const updatedBroadcast = updatedData.broadcast;
 
-      // Update the list of broadcasts
+
       setBroadcasts(prev => prev.map(bc =>
         bc.id === updatedBroadcast._id
           ? { ...bc, title: updatedBroadcast.title, recipients: updatedBroadcast.recipients }
           : bc
       ));
 
-      // If the updated broadcast is the currently selected one, update it
+
       if (selectedChat && selectedChat.id === updatedBroadcast._id) {
         setSelectedChat(prev => ({
           ...prev,
@@ -688,15 +559,14 @@ const Chat = () => {
     setBroadcastRecipients(recipients);
   };
 
-  // ✅ --- REFACTORED: This function now handles opening the screen for both "new" and "edit" modes ---
+
   const openBroadcastEditScreen = async (broadcastToEdit = null) => {
-    // Determine if we are editing or creating
+
     const isEditing = broadcastToEdit !== null;
     setSidebarView(isEditing ? 'edit-broadcast' : 'new-broadcast');
-    setEditingBroadcast(broadcastToEdit); // Store the broadcast if we are editing
+    setEditingBroadcast(broadcastToEdit);
 
     try {
-      // Fetch all potential recipients
       const doctors = await getStaffList(token);
       const usersResponse = await getUserList({ skip: null, limit: null, search: "" });
       const doctorList = doctors || [];
@@ -714,17 +584,14 @@ const Chat = () => {
       const finalRecipients = Array.from(allRecipientsMap.values());
       setAllPotentialRecipients(finalRecipients);
 
-      // Pre-populate fields if we are in "edit" mode
       if (isEditing) {
         setBroadcastTitle(broadcastToEdit.title);
-        // Pre-select recipients
         const currentRecipientIds = new Set(broadcastToEdit.recipients);
         const selected = finalRecipients.filter(p => currentRecipientIds.has(p._id));
         const available = finalRecipients.filter(p => !currentRecipientIds.has(p._id));
         setSelectedRecipients(selected);
         setAvailableRecipients(available);
       } else {
-        // Reset fields for "new" mode
         setBroadcastTitle("");
         setSelectedRecipients([]);
         setAvailableRecipients(finalRecipients);
@@ -735,7 +602,6 @@ const Chat = () => {
     }
   };
 
-  // ✅ --- REFACTORED: This function now handles both creating and editing a broadcast ---
   const handleSaveBroadcast = () => {
     const isEditing = sidebarView === 'edit-broadcast';
 
@@ -748,7 +614,6 @@ const Chat = () => {
     const recipientIds = selectedRecipients.map(r => r._id);
 
     if (isEditing) {
-      // Emit the "edit" event
       socket.emit("edit_broadcast", {
         admin_id: user._id,
         broadcast_id: editingBroadcast.id,
@@ -756,7 +621,6 @@ const Chat = () => {
         recipients: recipientIds,
       });
     } else {
-      // Emit the "create" event
       socket.emit("create_broadcast", {
         admin_id: user._id,
         title: broadcastTitle,
@@ -764,117 +628,21 @@ const Chat = () => {
       });
     }
 
-    // Reset state and switch view
     setBroadcastTitle("");
     setSelectedRecipients([]);
     setEditingBroadcast(null);
     setSidebarView("list");
   };
 
-  // --- Mark Messages as Seen Helper ---
-  const markMessagesAsSeen = useCallback((msgs) => {
-    const socket = getSocket();
-    if (!socket) return;
-    
-    msgs.forEach(msg => {
-      if (msg.sender_id !== user._id && msg.message_status !== 'seen') {
-        socket.emit("message_seen", { messageId: msg._id, user_id: user._id });
-      }
-    });
-  }, [user._id]);
 
-  // --- Mark Messages as Seen ---
-  // const markMessagesAsSeen = (msgs) => {
-  //   // if (!user || !msgs) return;
-  //   const socket = getSocket();
-  //    if (!socket) return;
-  //   msgs.forEach(msg => {
-  //     if (msg.sender_id !== user._id && msg.message_status !== 'seen') {
-  //       socket.emit("message_seen", { messageId: msg._id, user_id: user._id });
-  //     }
-  //   });
-  // };
-
-  // --- Add this new helper function inside your Chat component ---
-
-  const updateAndSortChatList = (message) => {
-    setChatUsers(prevChatUsers => {
-      // Determine which user in the list to update (the other person in the chat)
-      const chatPartnerId = message.sender_id === user._id ? message.receiver_id : message.sender_id;
-
-      let userExists = false;
-      const updatedList = prevChatUsers.map(u => {
-        if (u._id === chatPartnerId) {
-          userExists = true;
-          return {
-            ...u,
-            // Don't increase unread count if the chat is already open with that user
-            unreadCount: u._id === selectedChat?._id ? 0 : (u.unreadCount || 0) + 1,
-            messagePreview: message.message || "Attachment",
-            last_message: { created_at: message.created_at }
-          };
-        }
-        return u;
-      });
-
-      // Return the newly sorted list
-      return updatedList.sort((a, b) =>
-        new Date(b.last_message?.created_at || 0) - new Date(a.last_message?.created_at || 0)
-      );
-    });
-  };
-
-  // --- Start Reply Function ---
   const startReplying = (message) => {
     setReplyingTo(message);
     setActiveMessageMenu(null);
     inputRef.current?.focus();
   };
 
-  // --- Send/Edit Message Logic ---
-  // const sendMessage = async () => {
-  //   if ((!input.trim() && !fileInputRef.current?.files?.[0]) || !selectedUser) return;
 
-  //   const socket = getSocket();
-  //   if (!socket || !socket.connected) return;
 
-  //   // Handle Editing
-  //   if (editingMessage) {
-  //     socket.emit("update_message", { messageId: editingMessage._id, message: input });
-  //     setMessages((prev) =>
-  //       prev.map((msg) =>
-  //         msg._id === editingMessage._id ? { ...msg, message: input, edited: true } : msg
-  //       )
-  //     );
-  //     setEditingMessage(null);
-  //     setInput("");
-  //     return;
-  //   }
-
-  //   // Handle Sending New Message (Text or File)
-  //   const tempCreatedAt = new Date().toISOString();
-  //   const tempId = `temp-${tempCreatedAt}`;
-
-  //   let msgData = {
-  //     sender_id: user._id,
-  //     receiver_id: selectedUser._id,
-  //     message: input,
-  //     message_type: "text",
-  //     created_at: tempCreatedAt,
-  //     ...(replyingTo && { reply_to: replyingTo._id }),
-  //   };
-
-  //   // Add temporary message to UI immediately
-  //   setMessages((prev) => [...prev, { ...msgData, _id: tempId, message_status: "sent" }]);
-
-  //   // Clear inputs
-  //   setInput("");
-  //   setReplyingTo(null);
-
-  //   socket.emit("chat_message", msgData);
-  // };
-
-  // --- NEW: Open "New Broadcast" screen ---
   const openNewBroadcastScreen = async () => {
     setSidebarView("new-broadcast");
     // Fetch all doctors and users to select from
@@ -924,7 +692,7 @@ const Chat = () => {
     }
   };
 
-  // --- NEW: Handle Recipient Selection ---
+
   const handleSelectRecipient = (recipient) => {
     setSelectedRecipients(prev => [...prev, recipient]);
     setAvailableRecipients(prev => prev.filter(r => r._id !== recipient._id));
@@ -936,67 +704,115 @@ const Chat = () => {
     setAvailableRecipients(prev => [recipient, ...prev]);
   };
 
-  // --- NEW: Create Broadcast Socket Emitter ---
-  const handleCreateBroadcast = () => {
-    if (!broadcastTitle.trim() || selectedRecipients.length === 0) {
-      alert("Please provide a title and select at least one recipient.");
-      return;
-    }
-    const socket = getSocket();
-    socket.emit("create_broadcast", {
-      admin_id: user._id,
-      title: broadcastTitle,
-      recipients: selectedRecipients.map(r => r._id),
-    });
-    // Reset state after emitting
-    setBroadcastTitle("");
-    setSelectedRecipients([]);
-  };
-
 
   //   const sendMessage = async () => {
   //     if (!input.trim() || !selectedChat) return;
-  //     const socket = getSocket();
-  //      if (!socket?.connected) return;
 
-  //     const isBroadcast = selectedChat.recipients; // Check if it's a broadcast object
-
-  //     if (!socket?.connected) return;
-  //  if (isBroadcast) {
-  //       socket.emit("broadcast_message", {
-  //         sender_id: user._id,
-  //         broadcast_id: selectedChat.id,
-  //         message: input,
-  //       });
-  //     } else {
-  //     if (editingMessage) {
-  //       socket.emit("update_message", { messageId: editingMessage._id, message: input });
-  //       setEditingMessage(null);
-  //     } else {
-  //       const tempId = `temp-${Date.now()}`;
-  //       const msgData = {
-  //         _id: tempId,
-  //         sender_id: user._id,
-  //         receiver_id: selectedUser._id,
-  //         message: input,
-  //         message_type: "text",
-  //         created_at: new Date().toISOString(),
-  //         message_status: "sent",
-  //         ...(replyingTo && { reply_to: replyingTo._id }), // Add reply_to field
-  //       };
-  //       setMessages((prev) => [...prev, msgData]);
-  //       socket.emit("chat_message", { ...msgData, _id: undefined }); // Don't send temp ID to backend
+  //     // const socket = getSocket();
+  //     const socket = socketRef.current;
+  //     if (!socket || !socket.connected) {
+  //       console.error("Socket not connected");
+  //       return;
   //     }
 
-  //   }
+  //     const currentTime = new Date().toISOString();
+  //     const tempId = `temp-${Date.now()}-${Math.random()}`;
+
+  //     if (editingMessage) {
+  //       // Handle editing
+  //       socket.emit("update_message", {
+  //         messageId: editingMessage._id,
+  //         message: input,
+  //       });
+
+  //       // Optimistic update
+  //       const chatId = editingMessage.broadcast_id || 
+  //         (editingMessage.sender_id === user._id ? editingMessage.receiver_id : editingMessage.sender_id);
+
+  //       setAllMessages(prev => {
+  //         const chatMessages = (prev[chatId] || []).map(msg => 
+  //           msg._id === editingMessage._id 
+  //             ? { ...msg, message: input, edited: true } 
+  //             : msg
+  //         );
+  //         return { ...prev, [chatId]: chatMessages };
+  //       });
+
+  //       setEditingMessage(null);
+  //       setInput("");
+
+  //     } else if (selectedChat.isBroadcast) {
+  //       // Handle broadcast message
+  //       const msgData = {
+  //         sender_id: user._id,
+  //         broadcast_id: selectedChat._id,
+  //         message: input,
+  //         message_type: "text",
+  //         attachments: [],
+  //       };
+
+  //       // Optimistic update for sender
+  //       const optimisticMessage = {
+  //         ...msgData,
+  //         _id: tempId,
+  //         created_at: currentTime,
+  //         message_status: 'sent',
+  //         attechment_details: [],
+  //         sender_id: user._id,
+  //       };
+
+  //       // setAllMessages(prev => {
+  //       //   const chatMessages = prev[selectedChat._id] || [];
+  //       //   return { ...prev, [selectedChat._id]: [...chatMessages, optimisticMessage] };
+  //       // });
+  //             setAllMessages((prev) => ({
+  //   ...prev,
+  //   [selectedChat._id]: [...(prev[selectedChat._id] || []), optimisticMessage],
+  // }));
+
+
+  //       socket.emit("broadcast_message", msgData);
+
+  //     } else {
+  //       // Handle one-to-one message
+  //       const msgData = {
+  //         sender_id: user._id,
+  //         receiver_id: selectedChat._id,
+  //         message: input,
+  //         message_type: "text",
+  //         ...(replyingTo && { reply_to: replyingTo._id }),
+  //       };
+
+  //       // Optimistic update for sender
+  //       const optimisticMessage = {
+  //         ...msgData,
+  //         _id: tempId,
+  //         created_at: currentTime,
+  //         message_status: 'sent',
+  //         attechment_details: [],
+  //         sender_id: user._id,
+  //       };
+
+  //       setAllMessages(prev => {
+  //         const chatMessages = prev[selectedChat._id] || [];
+  //         return { ...prev, [selectedChat._id]: [...chatMessages, optimisticMessage] };
+  //       });
+  // //       setAllMessages((prev) => ({
+  // //   ...prev,
+  // //   [selectedChat._id]: [...(prev[selectedChat._id] || []), optimisticMessage],
+  // // }));
+
+  //       socket.emit("chat_message", msgData);
+  //     }
+
   //     setInput("");
-  //     setReplyingTo(null); // Clear reply state after sending
+  //     setReplyingTo(null);
+  //     inputRef.current?.focus();
   //   };
 
   const sendMessage = async () => {
     if (!input.trim() || !selectedChat) return;
 
-    // const socket = getSocket();
     const socket = socketRef.current;
     if (!socket || !socket.connected) {
       console.error("Socket not connected");
@@ -1007,20 +823,18 @@ const Chat = () => {
     const tempId = `temp-${Date.now()}-${Math.random()}`;
 
     if (editingMessage) {
-      // Handle editing
+
       socket.emit("update_message", {
         messageId: editingMessage._id,
         message: input,
       });
 
-      // Optimistic update
-      const chatId = editingMessage.broadcast_id || 
-        (editingMessage.sender_id === user._id ? editingMessage.receiver_id : editingMessage.sender_id);
-      
+      const chatId = editingMessage.broadcast_id || (editingMessage.sender_id === user._id ? editingMessage.receiver_id : editingMessage.sender_id);
+
       setAllMessages(prev => {
-        const chatMessages = (prev[chatId] || []).map(msg => 
-          msg._id === editingMessage._id 
-            ? { ...msg, message: input, edited: true } 
+        const chatMessages = (prev[chatId] || []).map(msg =>
+          msg._id === editingMessage._id
+            ? { ...msg, message: input, edited: true }
             : msg
         );
         return { ...prev, [chatId]: chatMessages };
@@ -1029,59 +843,52 @@ const Chat = () => {
       setEditingMessage(null);
       setInput("");
 
-    } else if (selectedChat.isBroadcast) {
-      // Handle broadcast message
-      const msgData = {
-        sender_id: user._id,
-        broadcast_id: selectedChat._id,
-        message: input,
-        message_type: "text",
-        attachments: [],
-      };
-
-      // Optimistic update for sender
-      const optimisticMessage = {
-        ...msgData,
-        _id: tempId,
-        created_at: currentTime,
-        message_status: 'sent',
-        attechment_details: [],
-        sender_id: user._id,
-      };
-
-      setAllMessages(prev => {
-        const chatMessages = prev[selectedChat._id] || [];
-        return { ...prev, [selectedChat._id]: [...chatMessages, optimisticMessage] };
-      });
-
-      socket.emit("broadcast_message", msgData);
-
     } else {
-      // Handle one-to-one message
-      const msgData = {
-        sender_id: user._id,
-        receiver_id: selectedChat._id,
-        message: input,
-        message_type: "text",
-        ...(replyingTo && { reply_to: replyingTo._id }),
-      };
 
-      // Optimistic update for sender
       const optimisticMessage = {
-        ...msgData,
         _id: tempId,
         created_at: currentTime,
         message_status: 'sent',
-        attechment_details: [],
+        message: input,
+        message_type: "text",
         sender_id: user._id,
+        attechment_details: [],
+        ...(selectedChat.isBroadcast
+          ? { broadcast_id: selectedChat._id }
+          : { receiver_id: selectedChat._id }
+        )
       };
 
-      setAllMessages(prev => {
-        const chatMessages = prev[selectedChat._id] || [];
-        return { ...prev, [selectedChat._id]: [...chatMessages, optimisticMessage] };
-      });
 
-      socket.emit("chat_message", msgData);
+      setAllMessages((prev) => ({
+        ...prev,
+        [selectedChat._id]: [...(prev[selectedChat._id] || []), optimisticMessage],
+      }));
+
+
+      let msgData;
+      let eventName;
+
+      if (selectedChat.isBroadcast) {
+        eventName = "broadcast_message";
+        msgData = {
+          sender_id: user._id,
+          broadcast_id: selectedChat._id,
+          message: input,
+          tempId: tempId,
+        };
+      } else {
+        eventName = "chat_message";
+        msgData = {
+          sender_id: user._id,
+          receiver_id: selectedChat._id,
+          message: input,
+          message_type: "text",
+          tempId: tempId,
+          ...(replyingTo && { reply_to: replyingTo._id }),
+        };
+      }
+      socket.emit(eventName, msgData);
     }
 
     setInput("");
@@ -1090,93 +897,7 @@ const Chat = () => {
   };
 
 
-  // const sendMessage = async () => {
-  //   if (!input.trim() || !selectedChat) return;
-  //   const socket = getSocket();
-  //   if (!socket?.connected) return;
-
-  //   if (selectedChat.isBroadcast) {
-  //     socket.emit("chat_message", {
-  //       sender_id: user._id,
-  //       broadcast_id: selectedChat._id,
-  //       message: input,
-  //     });
-  //   } else { // It's a one-on-one chat
-  //     if (editingMessage) {
-  //       socket.emit("update_message", { messageId: editingMessage._id, message: input });
-  //       setEditingMessage(null);
-  //     } else {
-  //       const tempId = `temp-${Date.now()}`;
-  //       const msgData = {
-  //         _id: tempId,
-  //         sender_id: user._id,
-  //         receiver_id: selectedChat._id, // Use selectedChat._id
-  //         message: input,
-  //         message_type: "text",
-  //         created_at: new Date().toISOString(),
-  //         message_status: "sent",
-  //         ...(replyingTo && { reply_to: replyingTo._id }),
-  //       };
-  //       setMessages((prev) => [...prev, msgData]);
-  //       socket.emit("chat_message", { ...msgData, _id: undefined });
-  //     }
-  //   }
-  //   setInput("");
-  //   setReplyingTo(null);
-  // };
-
-
-  // --- File Upload Logic ---
-  
-  
-  // const handleFileUpload = async (e) => {
-  //   const file = e.target.files[0];
-  //   if (!file || !selectedChat) return;
-
-  //   try {
-  //     const uploadedFileDetails = await uploadFile(file, token);
-
-  //     const socket = getSocket();
-  //     if (!socket || !socket.connected) {
-  //       console.error("Socket not connected for file upload");
-  //       return;
-  //     }
-
-  //     const msgData = {
-  //       sender_id: user._id,
-  //       receiver_id: selectedChat._id,
-  //       message_type: uploadedFileDetails.fileType,
-  //       attechment_id: [uploadedFileDetails._id],
-  //       message: file.name, // Use filename as message preview
-  //       created_at: new Date().toISOString(),
-  //       ...(replyingTo && { reply_to: replyingTo._id }),
-  //     };
-
-  //     // Emit the message with attachment details
-  //     socket.emit("chat_message", msgData);
-
-  //     // Add a temporary message to the UI with local file URL for preview
-  //     const tempId = `temp-${msgData.created_at}`;
-  //     setMessages(prev => [
-  //       ...prev,
-  //       {
-  //         ...msgData,
-  //         _id: tempId,
-  //         attechment_details: [{ ...uploadedFileDetails, url: URL.createObjectURL(file) }],
-  //         message_status: 'sent'
-  //       }
-  //     ]);
-
-  //   } catch (err) {
-  //     console.error("File upload and message sending failed:", err);
-  //   } finally {
-  //     if (fileInputRef.current) fileInputRef.current.value = null;
-  //     setReplyingTo(null);
-  //   }
-  // };
-
-
-   const handleFileUpload = async (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file || !selectedChat) return;
 
@@ -1230,67 +951,6 @@ const Chat = () => {
     }
   };
 
-  // const handleFileUpload = async (e) => {
-  //   const file = e.target.files[0];
-  //   if (!file || !selectedChat) return; // Use selectedChat
-  //   // Broadcasting files is not implemented in your socket, so we restrict it to 1-on-1
-  //   if (selectedChat.isBroadcast) {
-  //       alert("File uploads are not supported in broadcasts yet.");
-  //       return;
-  //   }
-  //   try {
-  //     const uploadedFileDetails = await uploadFile(file, token);
-  //     const socket = getSocket();
-  //     const msgData = {
-  //       sender_id: user._id,
-  //       receiver_id: selectedChat._id, // Use selectedChat._id
-  //       message_type: uploadedFileDetails.fileType,
-  //       attechment_id: [uploadedFileDetails._id],
-  //       message: file.name,
-  //       created_at: new Date().toISOString(),
-  //       ...(replyingTo && { reply_to: replyingTo._id }),
-  //     };
-  //     socket.emit("chat_message", msgData);
-  //   } catch (err) {
-  //     console.error("File upload failed:", err);
-  //   } finally {
-  //     if (fileInputRef.current) fileInputRef.current.value = null;
-  //     setReplyingTo(null);
-  //   }
-  // };
-
-
-
-
-
-
-
-  // const handleFileUpload = async (e) => {
-  //   const file = e.target.files[0];
-  //   if (!file || !selectedUser) return;
-  //   try {
-  //     const uploadedFileDetails = await uploadFile(file, token);
-  //     const socket = getSocket();
-  //     const msgData = {
-  //       sender_id: user._id,
-  //       receiver_id: selectedUser._id,
-  //       message_type: uploadedFileDetails.fileType,
-  //       attechment_id: [uploadedFileDetails._id],
-  //       message: file.name,
-  //       created_at: new Date().toISOString(),
-  //       ...(replyingTo && { reply_to: replyingTo._id }), // Add reply_to field
-  //     };
-  //     socket.emit("chat_message", msgData);
-  //   } catch (err) {
-  //     console.error("File upload failed:", err);
-  //   } finally {
-  //     if (fileInputRef.current) fileInputRef.current.value = null;
-  //     setReplyingTo(null); // Clear reply state after sending
-  //   }
-  // };
-
-  // --- Scroll to Replied Message ---
-
 
   const scrollToMessage = (messageId) => {
     const element = msgRefs.current[messageId];
@@ -1301,20 +961,27 @@ const Chat = () => {
     }
   };
 
-
-  // --- Delete Message ---
   const handleDeleteMessage = (messageId) => {
     const socket = getSocket();
     if (socket && socket.connected) {
       socket.emit("delete_message", { messageId });
-      setMessages((prev) =>
-        prev.map((msg) => (msg._id === messageId ? { ...msg, is_deleted: true, message: "This message was deleted" } : msg))
-      );
+      // setMessages((prev) =>
+      //   prev.map((msg) => (msg._id === messageId ? { ...msg, is_deleted: true, message: "This message was deleted" } : msg))
+      // );
+      setAllMessages((prev) => {
+        const chatId = selectedChat?._id;
+        const chatMessages = prev[chatId] || [];
+        const updatedMessages = chatMessages.map((msg) =>
+          msg._id === messageId
+            ? { ...msg, is_deleted: true, message: "This message was deleted" }
+            : msg
+        );
+        return { ...prev, [chatId]: updatedMessages };
+      });
     }
     setActiveMessageMenu(null);
   };
 
-  // --- Edit Message ---
   const startEditingMessage = (message) => {
     if (message.message_type === "text") {
       setEditingMessage(message);
@@ -1329,25 +996,48 @@ const Chat = () => {
     setInput("");
   };
 
-  // --- Menu Handling ---
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (messageMenuRef.current && !messageMenuRef.current.contains(event.target)) {
         setActiveMessageMenu(null);
       }
-      // if (broadcastMenuRef.current && !broadcastMenuRef.current.contains(event.target)) {
-      //   setShowBroadcastMenu(false);
-      // }
+
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleMessageMenu = (messageId) => {
-    setActiveMessageMenu(activeMessageMenu === messageId ? null : messageId);
-  };
 
-  // --- Render Functions ---
+
+  useEffect(() => {
+
+    const container = recipientsContainerRef.current;
+
+
+    if (!container) return;
+
+
+    const onWheel = (e) => {
+
+      if (container.scrollWidth <= container.clientWidth) return;
+
+
+      e.preventDefault();
+
+      container.scrollLeft += e.deltaY;
+    };
+
+
+    container.addEventListener('wheel', onWheel);
+
+
+    return () => container.removeEventListener('wheel', onWheel);
+
+
+  }, [sidebarView, selectedRecipients]);
+
+
 
   const getUserInitials = (person) => {
     if (!person?.name) return "?";
@@ -1357,7 +1047,6 @@ const Chat = () => {
     return `${firstInitial}${lastInitial}`.toUpperCase();
   };
 
-  // --- NEW: Renders the "Broadcast Info" screen ---
   const renderBroadcastInfoView = () => {
     if (!selectedChat) return null;
     return (
@@ -1365,7 +1054,7 @@ const Chat = () => {
         <div className="broadcast-info-header">
           <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
           <h3>Broadcast Info</h3>
-          {/* Show Edit button only if the current user is the creator */}
+
           {(
             <button className="edit-button" onClick={() => openBroadcastEditScreen(selectedChat)}>
               <Edit size={20} />
@@ -1387,7 +1076,6 @@ const Chat = () => {
     );
   };
 
-  // --- MODIFIED: Renders the "Create/Edit Broadcast" screen ---
   const renderBroadcastEditView = () => {
     const isEditing = sidebarView === 'edit-broadcast';
     const filteredBySearch = recipientSearch
@@ -1396,19 +1084,13 @@ const Chat = () => {
 
     const filteredAvailable = filteredBySearch.filter(
       r => r.type === recipientTab
-      //     r => {
-      //     if (recipientTab === 'all') return true;
-      //     if (recipientTab === 'doctor') return r.type === 'doctor';
-      //     if (recipientTab === 'patient') return r.type === 'patient';
-      //     return true;
-      // }
     );
 
     return (
       <div className="new-broadcast-container">
         <div className="new-broadcast-header">
           <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
-          {/* Change title based on mode */}
+
           <h3>{isEditing ? 'Edit Broadcast' : 'Create Broadcast'}</h3>
         </div>
         <div className="broadcast-setup">
@@ -1421,7 +1103,7 @@ const Chat = () => {
           />
           <div className="recipient-selection">
             {selectedRecipients.length > 0 && (
-              <div className="selected-recipients-container">
+              <div className="selected-recipients-container" ref={recipientsContainerRef}>
                 {selectedRecipients.map(r => (
                   <div key={r._id} className="recipient-pill">
                     {r.name}
@@ -1440,20 +1122,16 @@ const Chat = () => {
           </div>
         </div>
         <div className="recipient-tabs">
-          {/* <button className={recipientTab === 'all' ? 'active' : ''} onClick={() => setRecipientTab('all')}>All</button> */}
+
           <button className={recipientTab === 'doctor' ? 'active' : ''} onClick={() => setRecipientTab('doctor')}>Doctors</button>
           <button className={recipientTab === 'patient' ? 'active' : ''} onClick={() => setRecipientTab('patient')}>Patients</button>
         </div>
         <div className="available-recipients-list">
-          {/* {filteredAvailable.map(r => (
-            <div key={r._id} className="user-list-item" onClick={() => handleSelectRecipient(r)}>
-              
-              <div className="user-info"><h4>{r.name}</h4></div>
-            </div>
-          ))} */}
+
           {filteredAvailable.length > 0 ? (
             filteredAvailable.map(r => (
               <div key={r._id} className="user-list-item" onClick={() => handleSelectRecipient(r)}>
+                <div className="user-avatar">{getUserInitials(r)}</div>
                 <div className="user-info">
                   <h4>{r.name}</h4>
                   <p className="recipient-type">{r.type}</p>
@@ -1465,7 +1143,7 @@ const Chat = () => {
           )}
         </div>
 
-        {/* Change button to call the new save function */}
+
         <button className="fab-create-broadcast" onClick={handleSaveBroadcast}>
           <Check size={24} />
         </button>
@@ -1474,89 +1152,8 @@ const Chat = () => {
   };
 
 
-  // NEW: Renders the "Create Broadcast" screen
-  // const renderNewBroadcastView = () => {
-  //   const filteredBySearch  = recipientSearch
-  //     ? availableRecipients.filter(r => r.name.toLowerCase().includes(recipientSearch.toLowerCase()))
-  //     : availableRecipients;
 
-  //     const filteredAvailable = filteredBySearch.filter(
-  //       r => r.type === recipientTab
-  //   //     r => {
-  //   //     if (recipientTab === 'all') return true;
-  //   //     if (recipientTab === 'doctor') return r.type === 'doctor';
-  //   //     if (recipientTab === 'patient') return r.type === 'patient';
-  //   //     return true;
-  //   // }
-  // );
 
-  //   return (
-  //     <div className="new-broadcast-container">
-  //       <div className="new-broadcast-header">
-  //         <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
-  //         <h3>Create Broadcast</h3>
-  //       </div>
-  //       <div className="broadcast-setup">
-  //         <input 
-  //           type="text" 
-  //           placeholder="Broadcast list title..." 
-  //           className="broadcast-title-input"
-  //           value={broadcastTitle}
-  //           onChange={(e) => setBroadcastTitle(e.target.value)}
-  //         />
-  //         <div className="recipient-selection">
-  //           {selectedRecipients.length > 0 && (
-  //             <div className="selected-recipients-container">
-  //               {selectedRecipients.map(r => (
-  //                 <div key={r._id} className="recipient-pill">
-  //                   {r.name}
-  //                   <button onClick={() => handleDeselectRecipient(r)}><X size={14} /></button>
-  //                 </div>
-  //               ))}
-  //             </div>
-  //           )}
-  //           <input 
-  //             type="text" 
-  //             placeholder="Search for doctors or users..." 
-  //             className="recipient-search-input"
-  //             value={recipientSearch}
-  //             onChange={(e) => setRecipientSearch(e.target.value)}
-  //           />
-  //         </div>
-  //       </div>
-  //       <div className="recipient-tabs">
-  //               {/* <button className={recipientTab === 'all' ? 'active' : ''} onClick={() => setRecipientTab('all')}>All</button> */}
-  //               <button className={recipientTab === 'doctor' ? 'active' : ''} onClick={() => setRecipientTab('doctor')}>Doctors</button>
-  //               <button className={recipientTab === 'patient' ? 'active' : ''} onClick={() => setRecipientTab('patient')}>Patients</button>
-  //           </div>
-  //       <div className="available-recipients-list">
-  //         {/* {filteredAvailable.map(r => (
-  //           <div key={r._id} className="user-list-item" onClick={() => handleSelectRecipient(r)}>
-
-  //             <div className="user-info"><h4>{r.name}</h4></div>
-  //           </div>
-  //         ))} */}
-  //         {filteredAvailable.length > 0 ? (
-  //                   filteredAvailable.map(r => (
-  //                       <div key={r._id} className="user-list-item" onClick={() => handleSelectRecipient(r)}>
-  //                           <div className="user-info">
-  //                               <h4>{r.name}</h4>
-  //                               <p className="recipient-type">{r.type}</p> 
-  //                           </div>
-  //                       </div>
-  //                   ))
-  //               ) : (
-  //                   <p className="no-users-message">No {recipientTab}s found.</p>
-  //               )}
-  //       </div>
-  //       <button className="fab-create-broadcast" onClick={handleCreateBroadcast}>
-  //         <Check size={24} />
-  //       </button>
-  //     </div>
-  //   );
-  // };
-
-  // NEW: Renders the list of existing broadcast channels
   const renderBroadcastList = () => {
     if (broadcasts.length === 0) return <p className="no-users-message">No broadcast lists found.</p>;
 
@@ -1666,7 +1263,7 @@ const Chat = () => {
     const elements = [];
     let lastDate = null;
 
-    messages.forEach((msg, index) => {
+    currentMessages.forEach((msg, index) => {
       const msgDate = new Date(msg.created_at);
       if (!lastDate || msgDate.toDateString() !== lastDate.toDateString()) {
         elements.push(
@@ -1677,7 +1274,7 @@ const Chat = () => {
         lastDate = msgDate;
       }
 
-      const originalMsg = msg.reply_to ? messages.find(m => m._id === msg.reply_to) : null;
+      const originalMsg = msg.reply_to ? currentMessages.find(m => m._id === msg.reply_to) : null;
       const originalSenderName = originalMsg ? (originalMsg.sender_id === user._id ? "You" : selectedChat.name) : "";
 
 
@@ -1700,20 +1297,11 @@ const Chat = () => {
           </div>
 
           <div className="message-meta">
-            {/* "Edited" label is now here, it will only show if msg.edited is true */}
             {msg.edited && <span className="edited-label">Edited</span>}
             <span className="time">{formatTime(msg.created_at)}</span>
             {msg.sender_id === user._id && !msg.is_deleted && <MessageStatusIcon status={msg.message_status} />}
           </div>
 
-
-          {/* {msg.sender_id === user._id && !msg.is_deleted && (
-              <button className="menu-toggle" onClick={() => toggleMessageMenu(msg._id)}>
-                  <ChevronDown size={16} />
-              </button>
-          )} */}
-
-          {/* MODIFIED: Show menu button on ALL messages, not just sent */}
           {!msg.is_deleted && (
             <button className="menu-toggle" onClick={() => setActiveMessageMenu(activeMessageMenu === msg._id ? null : msg._id)}>
               <ChevronDown size={16} />
@@ -1723,15 +1311,12 @@ const Chat = () => {
           {activeMessageMenu === msg._id && (
             <div className="message-menu" ref={messageMenuRef}>
               <button onClick={() => startReplying(msg)}><CornerUpLeft size={14} /> Reply</button>
-              {/* Show Edit/Delete only for sent messages */}
-              {/* {msg.sender_id === user._id && (
-                <> */}
+
               {msg.sender_id === user._id && msg.message_type === "text" && (
                 <button onClick={() => startEditingMessage(msg)}><Edit size={14} /> Edit</button>
               )}
               <button onClick={() => handleDeleteMessage(msg._id)}><Trash2 size={14} /> Delete</button>
-              {/* </>
-              )} */}
+
             </div>
 
           )}
@@ -1742,14 +1327,12 @@ const Chat = () => {
     return elements;
   };
 
-  // --- Component Return (JSX) ---
+
   return (
     <div id="chat-app-container" className="chat-container">
       {/* --- Left Sidebar --- */}
       <div id="chat-sidebar" className="chat-sidebar">
-        {/* {sidebarView === 'new-broadcast' ? (
-          renderNewBroadcastView()
-        ) :  */}
+
         {sidebarView === 'list' &&
           (
             <>
@@ -1831,7 +1414,7 @@ const Chat = () => {
             </div>
 
             <div className="chat-box" ref={chatBoxRef}>
-              {messages.length === 0 ? (
+              {currentMessages.length === 0 ? (
                 <div className="no-messages">
                   <p>
                     {selectedChat.isBroadcast
@@ -1868,7 +1451,7 @@ const Chat = () => {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
                   ref={inputRef}
-                   disabled={!socketRef.current || !socketRef.current.connected}
+                  disabled={!socketRef.current || !socketRef.current.connected}
                 />
                 {editingMessage ? (
                   <div className="edit-actions">
@@ -1877,7 +1460,7 @@ const Chat = () => {
                   </div>
                 ) : (
                   <button className="send-btn" onClick={sendMessage}
-                 disabled={!input.trim() || !socketRef.current || !socketRef.current.connected} 
+                    disabled={!input.trim() || !socketRef.current || !socketRef.current.connected}
                   ><Send size={20} /></button>
                 )}
               </div>
