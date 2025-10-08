@@ -553,7 +553,7 @@ function AddAppointment({ isDrawerOpen }) {
                                             }}
                                         >
                                             <option value="">Select Patient</option>
-                                            {patients.map((patient) => (
+                                            {patients?.map((patient) => (
                                                 <option key={patient._id} value={patient._id}>
                                                     {patient.firstname} {patient.lastname}
                                                 </option>
