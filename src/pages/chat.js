@@ -124,6 +124,7 @@ const Chat = () => {
   const [recipientSearch, setRecipientSearch] = useState("");
 
   const [recipientTab, setRecipientTab] = useState('doctor'); // 'all', 'doctor', or 'patient'
+   const [initialUnreadCount, setInitialUnreadCount] = useState(0);
 
   const fileInputRef = useRef(null);
   const chatBoxRef = useRef(null);
@@ -146,6 +147,8 @@ const Chat = () => {
   const currentMessages = useMemo(() => {
     return allMessages[selectedChat?._id] || [];
   }, [allMessages, selectedChat]);
+
+  
 
   useEffect(() => {
     selectedChatRef.current = selectedChat;
@@ -370,7 +373,11 @@ const Chat = () => {
     };
   }, [user?._id, selectedChat?._id, updateChatListWithNewMessage]);
 
-
+    const handleSelectChat = (person) => {
+        // Capture the unread count at the moment of clicking, BEFORE it gets reset.
+        setInitialUnreadCount(person.unreadCount || 0);
+        setSelectedChat({ ...person, isBroadcast: false });
+    };
 
   useEffect(() => {
     if (!token || !user) return;
@@ -1204,7 +1211,8 @@ const Chat = () => {
       <div
         key={person._id}
         className={`user-list-item ${selectedChat?._id === person._id && !selectedChat?.isBroadcast ? "active" : ""}`}
-        onClick={() => setSelectedChat({ ...person, isBroadcast: false })}
+        // onClick={() => setSelectedChat({ ...person, isBroadcast: false })}
+         onClick={() => handleSelectChat(person)}
       >
         <div className="flex items-center gap-3">
           <div className="user-avatar">{getUserInitials(person)}</div>
@@ -1262,8 +1270,24 @@ const Chat = () => {
   const renderMessagesWithDateHeaders = () => {
     const elements = [];
     let lastDate = null;
+    let unreadBannerInserted = false;
+
+    const firstUnreadIndex = currentMessages.length - initialUnreadCount;
 
     currentMessages.forEach((msg, index) => {
+
+       // Check if we are at the correct position to insert the banner
+            if (initialUnreadCount > 0 && index === firstUnreadIndex && !unreadBannerInserted) {
+                elements.push(
+                    <div key="unread-banner" className="unread-messages-banner">
+                        <span>
+                            {initialUnreadCount} unread message{initialUnreadCount > 1 ? 's' : ''}
+                        </span>
+                    </div>
+                );
+                unreadBannerInserted = true;
+            }
+
       const msgDate = new Date(msg.created_at);
       if (!lastDate || msgDate.toDateString() !== lastDate.toDateString()) {
         elements.push(
@@ -1297,6 +1321,7 @@ const Chat = () => {
           </div>
 
           <div className="message-meta">
+            {msg.broadcast_id != null && <Megaphone />}
             {msg.edited && <span className="edited-label">Edited</span>}
             <span className="time">{formatTime(msg.created_at)}</span>
             {msg.sender_id === user._id && !msg.is_deleted && <MessageStatusIcon status={msg.message_status} />}
@@ -1469,9 +1494,14 @@ const Chat = () => {
         ) : (
           <div className="no-chat-selected">
             {/* <p>Select a conversation to start chatting.</p> */}
-            <MessageSquare size={80} className="text-gray-300" />
+            <MessageSquare size={40} className="text-gray-300" />
             <h2>Select a conversation</h2>
-            <p>Choose a user or broadcast from the list to start chatting.</p>
+             <p>
+                {user?.role === 2
+                    ? "Choose a user or broadcast from the list to start chatting."
+                    : "Choose a user from the list to start chatting."
+                }
+            </p>
           </div>
         )}
       </div>

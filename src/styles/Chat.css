@@ -610,6 +610,18 @@
   font-style: italic;
 }
 
+.message-meta svg {
+  /* Make the icon smaller */
+  width: 13px;
+  height: 13px;
+  /* Change the icon color to grey */
+  color: grey;
+  /* Align it properly with the text */
+  vertical-align: middle;
+  display: inline-block;
+}
+
+
 /* --- WhatsApp Hover Menu (NEW & MODIFIED) --- */
 .menu-toggle {
   /* NEW: This is the chevron icon button */
