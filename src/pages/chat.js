@@ -1407,7 +1407,7 @@ const Chat = () => {
                     {/* <p className="mt-[2px] mb-0 text-[12px] text-[#495057] opacity-80 text-left">
                     {onlineUsers.get(selectedUser._id) ? "Online" : "Offline"}
                   </p> */}
-                    <p>{selectedChat.isBroadcast ? `${selectedChat?.recipients.length} recipients` : (onlineUsers.get(selectedChat?._id) ? "Online" : "Offline")}</p>
+                    <p className="text-left">{selectedChat.isBroadcast ? `${selectedChat?.recipients.length} recipients` : (onlineUsers.get(selectedChat?._id) ? "Online" : "Offline")}</p>
                   </div>
                 </div>
               )}

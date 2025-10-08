@@ -260,7 +260,7 @@
   align-items: center;
    justify-content: space-between;  
   padding: 12px 15px;
-  gap: 15px;
+  /* gap: 15px; */
   cursor: pointer;
   border-bottom: 1px solid var(--border-color);
   transition: background 0.2s;
@@ -460,7 +460,8 @@
 .message-content {
   /* Add padding to prevent text from overlapping with the timestamp */
   padding-right: 70px;
-  min-height: 20px; /* Ensures bubble has height even if content is small */
+  min-height: 20px;
+  text-align: left;
 }
 
 
@@ -665,12 +666,12 @@
   opacity: 1;
 }
  
-
+/* 
 .chat-message.received .message-menu {
   left: 0;
   right: auto;
   top: 5px; 
-}
+} */
 
 .chat-message:hover .menu-toggle {
   opacity: 1;

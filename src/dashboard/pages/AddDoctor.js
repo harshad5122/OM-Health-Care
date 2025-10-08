@@ -310,6 +310,7 @@ function AddDoctor() {
             setIsSubmitting(false);
         } catch (err) {
             setIsSubmitting(false);
+            showAlert(err,"error")
         }
     };
     const resetForm = () => {
@@ -790,10 +791,10 @@ function AddDoctor() {
                 </section>
 
                 <div className="flex justify-end gap-3">
-                    <button type="button" className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 custom-button-secondary" onClick={resetForm}>Clear</button>
+                    <button type="button" className="px-4 py-2 text-[1rem] bg-[#f5f7fa] rounded border border-gray-300 text-gray-700 hover:bg-[#d0d9dd] " onClick={resetForm}>Clear</button>
                     <button
                         type="submit"
-                        className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 custom-button-primary" disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Save Doctor"}</button>
+                        className="px-4 py-2 text-[1rem] rounded bg-[#1a6f8b] text-white hover:bg-[#145369] disabled:opacity-50 " disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Save Doctor"}</button>
                 </div>
             </form>
         </div>

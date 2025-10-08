@@ -3,6 +3,7 @@ import { useUserApi } from "../../api/userApi";
 import { useNavigate, useParams } from "react-router-dom";
 // import { addUser } from "../../api/userApi"; // <-- you'll create this API function
 import { showAlert } from "../../components/AlertComponent";
+import { useDoctorApi } from "../../api/doctorApi";
 
 function AddUser() {
     const { id } = useParams();
@@ -19,12 +20,15 @@ function AddUser() {
         city: "",
         gender: "",
         dob: "",
+        assign_doctor: "",
     });
 
     const [formErrors, setFormErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { createUser, getUserById, editUser } = useUserApi();
     const navigate = useNavigate();
+    const {getDoctor}= useDoctorApi();
+    const [staffData, setStaffData] = useState([]);
 
     const genderOptions = [
         { value: "male", label: "Male" },
@@ -66,6 +70,7 @@ function AddUser() {
         if (!formData.city.trim()) errors.city = "City is required";
         if (!formData.gender.trim()) errors.gender = "Gender is required";
         if (!formData.dob.trim()) errors.dob = "Date of birth is required";
+        if (!formData.assign_doctor.trim()) errors.assign_doctor = "Doctor is required";
         return errors;
     };
 
@@ -94,6 +99,7 @@ function AddUser() {
                 resetForm();
             }
         } catch (err) {
+            showAlert(err,"error")
             console.log("Error adding user:", err);
         } finally {
             setIsSubmitting(false);
@@ -114,6 +120,7 @@ function AddUser() {
             city: "",
             gender: "",
             dob: "",
+            assign_doctor: "",
         });
         setFormErrors({});
     };
@@ -142,12 +149,26 @@ function AddUser() {
                     city: result?.city,
                     gender: result?.gender,
                     dob: result?.dob,
+                    assign_doctor:result?.assign_doctor
                 })
             });
         }
 
     }, [id]);
-
+    const fetchStaff = async () => {
+        try {
+            const data = await getDoctor({
+                skip:"", limit:"", rowsPerPage:"", search:"", from_date: "",
+                to_date: "",
+            });
+            setStaffData(data?.rows);
+        } catch (err) {
+            console.error("Error fetching staff:", err);
+        }
+    };
+    useEffect(() => {
+        fetchStaff();
+    }, []);
     return (
         <div style={{ height: "calc(100vh - 60px)",display:"flex",flexDirection:"column"}}>
             <span className='text-[1.8rem] text-[#1a6f8b] m-0 font-semibold flex justify-start pt-[20px] pb-[1rem] px-[20px] border-b border-[#eee] sticky top-0 z-10 bg-[#f5f7fa]' style={{ fontFamily: "'Arial', sans-serif" }}>
@@ -265,13 +286,30 @@ function AddUser() {
                                 {formErrors.city && <p className={errorClass}>{formErrors.city}</p>}
                             </span>
                         </div>
+                        <div className="md:col-span-2">
+                            <label className={labelClass}>Assign Doctor *</label>
+                                <select
+                                    // className={selectClass}
+                                    className={`${selectClass} w-[49%] flex`}
+                                    value={formData.assign_doctor}
+                                    onChange={(e) => handleChange("assign_doctor", e.target.value)}
+                                >
+                                    <option value="">Select doctor</option>
+                                    {staffData.map((doctor) => (
+                                        <option key={doctor._id} value={doctor._id}>
+                                            {doctor.firstname} {doctor.lastname}
+                                        </option>
+                                    ))}
+                                </select>
+                                {formErrors.assign_doctor && <p className={errorClass}>{formErrors.assign_doctor}</p>}
+                        </div>
 
                     </div>
                 </section>
 
                 <div className="flex justify-end gap-3">
-                    <button type="button" className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 custom-button-secondary" onClick={resetForm}>Clear</button>
-                    <button type="submit" className="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 custom-button-primary" disabled={isSubmitting}>
+                    <button type="button" className="px-4 py-2 text-[1rem] bg-[#f5f7fa] rounded border border-gray-300 text-gray-700 hover:bg-[#d0d9dd] " onClick={resetForm}>Clear</button>
+                    <button type="submit"  className="px-4 py-2 text-[1rem] rounded bg-[#1a6f8b] text-white hover:bg-[#145369] disabled:opacity-50 "  disabled={isSubmitting}>
                         {isSubmitting ? "Submitting..." : "Save User"}
                     </button>
                 </div>
