@@ -286,11 +286,11 @@ function AddUser() {
                                 {formErrors.city && <p className={errorClass}>{formErrors.city}</p>}
                             </span>
                         </div>
-                        <div className="md:col-span-2">
+                        <div className="md:col-span-2 w-[49%]">
                             <label className={labelClass}>Assign Doctor *</label>
                                 <select
                                     // className={selectClass}
-                                    className={`${selectClass} w-[49%] flex`}
+                                    className={`${selectClass} flex`}
                                     value={formData.assign_doctor}
                                     onChange={(e) => handleChange("assign_doctor", e.target.value)}
                                 >

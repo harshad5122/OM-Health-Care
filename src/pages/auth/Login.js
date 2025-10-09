@@ -6,7 +6,8 @@ import loginIllustration from '../../assets/auth/login-illustration.png';
 import { useAuth } from "../../context/AuthContext";
 import { useAuthApi } from '../../api/authApi';
 import { showAlert } from '../../components/AlertComponent';
-
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { IconButton } from '@mui/material';
 const UserTypes = Object.freeze({
   USER: 1,
   ADMIN: 2,
@@ -26,6 +27,7 @@ const Login = () => {
   const [otp, setOtp] = useState('');
   const navigate = useNavigate();
   const { signinUser } = useAuthApi();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -200,7 +202,7 @@ const Login = () => {
                     />
                   </div>
                 </div>
-                <div className="form-row single-col">
+                {/* <div className="form-row single-col">
                   <div className="form-group">
                     <label htmlFor="password">Password</label>
                     <input
@@ -212,7 +214,36 @@ const Login = () => {
                       required
                     />
                   </div>
+                </div> */}
+              <div className="form-row single-col pt-2">
+                <div className="form-group" style={{ position: "relative" }}>
+                  <label htmlFor="password">Password</label>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="password-input"
+                    style={{ paddingRight: "40px" }} 
+                  />
+                  <IconButton
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    style={{
+                      position: "absolute",
+                      right: "8px",
+                      top: "65%",
+                      transform: "translateY(-50%)",
+                      color: "#777",
+                      padding: 0,
+                    }}
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
                 </div>
+              </div>
               </>
             )}
 

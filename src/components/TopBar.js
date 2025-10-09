@@ -277,6 +277,8 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
                             ? "Appointment Cancelled"
                             : notif.type === "LEAVE_REQUEST"
                               ? "Leave Request"
+                              : notif.type === "ASSIGN_USER"
+                              ? "New Patient Assigned"
                               : "Notification"}
                     </p>
                     <p className="text-sm text-gray-700 text-left">{notif.message}</p>

@@ -8,9 +8,21 @@ export const useAppointmentApi = () => {
         const res = await axiosInstance.post("/create-appointment", payload);
         return res.data;
     };
-    const getPatients = async () => {
+    // const getPatients = async () => {
+    //     try {
+    //         const response = await axiosInstance.get(`/get-patients`);
+    //         return response.data.body;
+    //     } catch (error) {
+    //         throw error.response?.data || { msg: "Failed to fetch patients" };
+    //     }
+    // };
+    const getPatients = async (id, from_date, to_date) => {
         try {
-            const response = await axiosInstance.get(`/get-patients`);
+            let url = "/get-patients";
+            if (id && from_date && to_date) {
+                url = `/get-patients/?from_date=${from_date}&to_date=${to_date}&doctor_id=${id}`;
+            }
+            const response = await axiosInstance.get(url);
             return response.data.body;
         } catch (error) {
             throw error.response?.data || { msg: "Failed to fetch patients" };
@@ -43,6 +55,13 @@ export const useAppointmentApi = () => {
         }
     }
 
-
-    return { createAppointment, getPatients, getAppointments, updateAppointment ,getAppointmentList};
+   const getAppointmentsByPatients = async (doctorid,patientid, from_date, to_date) => {
+        try {
+            const response = await axiosInstance.get(`/get-appointment-by-patient/${doctorid}/${patientid}?from=${from_date}&to=${to_date}`);
+            return response.data.body;
+        } catch (error) {
+            throw error.response?.data || { msg: "Failed to fetch appointments" };
+        }
+    }
+    return { createAppointment, getPatients, getAppointments, updateAppointment ,getAppointmentList,getAppointmentsByPatients};
 };

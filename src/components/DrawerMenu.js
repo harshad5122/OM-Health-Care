@@ -44,6 +44,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       { path: "add-user", label: "Add User", icon: <FaUserPlus /> },
       { path: "members", label: "Members", icon: <FaUsers /> },
       { path: "appointment", label: "Book Appointment", icon: <FaCalendarAlt /> },
+      { path: "admin-appointment", label: "Appointments", icon: <ListAltIcon /> },
     ],
     3: [
       // { path: "home", label: "Dashboard", icon: <FaCubes /> },
