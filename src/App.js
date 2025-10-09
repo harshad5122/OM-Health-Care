@@ -32,6 +32,8 @@ import Leave from "./dashboard/pages/Leave";
 import DoctorAppointmnets from "./dashboard/pages/DoctorAppointments";
 import { Navigate } from "react-router-dom";
 import AdminAppointment from "./dashboard/pages/AdminAppointment";
+import BookAppointments from "./dashboard/pages/BookAppointments";
+import PatientStatus from "./dashboard/pages/PatientStatus";
 // import Messages from "./dashboard/pages/Messages";
 
 
@@ -107,6 +109,8 @@ function App() {
           <Route path="messages" element={<Chat />} />
           <Route path="leave" element={<Leave />} />
           <Route path="appointments" element={<DoctorAppointmnets />} />
+          <Route path="book-appointment" element={<BookAppointments/>}/>
+          <Route path="patient-status" element={<PatientStatus/>}/>
         </Route>
 
         {/* User Dashboard */}

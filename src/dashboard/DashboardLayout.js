@@ -46,7 +46,7 @@ const DashboardLayout = ({ userRole, title }) => {
       />
       
       <main className={`main-content ${isDrawerOpen ? 'drawer-open' : 'drawer-close'}`}>
-        <Outlet isDrawerOpen={isDrawerOpen}/>
+        <Outlet context={{ isDrawerOpen, user }} />
       </main>
     </div>
   );

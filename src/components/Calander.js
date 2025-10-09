@@ -7,7 +7,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 const localizer = momentLocalizer(moment);
 
 
-function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevigate }) {
+function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevigate,height = 500, }) {
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [currentView, setCurrentView] = useState(Views.MONTH);
@@ -39,7 +39,8 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevi
             startAccessor="start"
             endAccessor="end"
             selectable
-            style={{ height: 500 }}
+            // style={{ height: 500 }}
+             style={{ height }}
             onSelectSlot={onSelectSlot}
             onSelectEvent={onSelectEvent}
             views={{ month: true, week: true, day: true }}

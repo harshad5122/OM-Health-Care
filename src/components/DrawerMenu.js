@@ -16,6 +16,7 @@ import { useAuthApi } from "../api/authApi";
 import { showAlert } from "./AlertComponent";
 import { RiUserShared2Fill } from "react-icons/ri";
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
   const navigate = useNavigate();
@@ -51,7 +52,9 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       { path: "profile", label: "Profile", icon: <FaUser /> },
       { path: "messages", label: "Messages", icon: <FaEnvelope /> },
       {path:"leave",label:"Leave Management",icon: <RiUserShared2Fill className="text-[22px]"/> },
+      { path: "book-appointment", label: "Book Appointment", icon: <FaCalendarAlt /> },
       { path: "appointments", label: "Appointments", icon: <ListAltIcon /> },
+      { path: "patient-status", label: "Patients", icon: <AssignmentIndIcon /> },
     ],
   };
 

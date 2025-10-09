@@ -19,7 +19,10 @@ export const useAppointmentApi = () => {
     const getPatients = async (id, from_date, to_date) => {
         try {
             let url = "/get-patients";
-            if (id && from_date && to_date) {
+            if (id) {
+            url += `?doctor_id=${id}`; 
+            }
+            if ( from_date && to_date) {
                 url = `/get-patients/?from_date=${from_date}&to_date=${to_date}&doctor_id=${id}`;
             }
             const response = await axiosInstance.get(url);
