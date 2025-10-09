@@ -8,29 +8,38 @@ export const useAppointmentApi = () => {
         const res = await axiosInstance.post("/create-appointment", payload);
         return res.data;
     };
-    // const getPatients = async () => {
-    //     try {
-    //         const response = await axiosInstance.get(`/get-patients`);
-    //         return response.data.body;
-    //     } catch (error) {
-    //         throw error.response?.data || { msg: "Failed to fetch patients" };
-    //     }
-    // };
-    const getPatients = async (id, from_date, to_date) => {
+   
+    const getPatients = async (id, from_date, to_date, status) => {
         try {
-            let url = "/get-patients";
-            if (id) {
-            url += `?doctor_id=${id}`; 
-            }
-            if ( from_date && to_date) {
-                url = `/get-patients/?from_date=${from_date}&to_date=${to_date}&doctor_id=${id}`;
-            }
+            let url = `/get-patients?`;
+
+            if (id) url += `doctor_id=${id}&`;
+            if (from_date) url += `from_date=${from_date}&`;
+            if (to_date) url += `to_date=${to_date}&`;
+            if (status) url += `patient_status=${status}`;
+
             const response = await axiosInstance.get(url);
             return response.data.body;
         } catch (error) {
             throw error.response?.data || { msg: "Failed to fetch patients" };
         }
     };
+
+    // const getPatients = async (id, from_date, to_date,status) => {
+    //     try {
+    //         let url = "/get-patients";
+    //         if (id) {
+    //         url += `?doctor_id=${id}`; 
+    //         }
+    //         if ( from_date && to_date) {
+    //             url = `/get-patients/?from_date=${from_date}&to_date=${to_date}&doctor_id=${id}`;
+    //         }
+    //         const response = await axiosInstance.get(url);
+    //         return response.data.body;
+    //     } catch (error) {
+    //         throw error.response?.data || { msg: "Failed to fetch patients" };
+    //     }
+    // };
 
     const getAppointments = async (id, from_date, to_date) => {
         try {
