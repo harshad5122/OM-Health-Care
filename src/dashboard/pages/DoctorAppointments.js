@@ -21,15 +21,14 @@ import { ContentCopy } from "@mui/icons-material";
 
 function DoctorAppointmnets(isDrawerOpen) {
 	const { user } = useAuth();
-	const { getAppointmentList, getPatients } = useAppointmentApi();
+	const { getAppointmentList } = useAppointmentApi();
 	const { updateNotificationStatus } = useNotificationApi();
 	const [filter, setFilter] = React.useState('thisMonth');
 	const [appointmentList, setAppointmentList] = React.useState([]);
-	const [patients, setPatients] = React.useState([]);
 	const [fromDate, setFromDate] = React.useState(dayjs().startOf('month'));
 	const [toDate, setToDate] = React.useState(dayjs().endOf('month'));
 	const [status, setStatus] = React.useState([]);
-	const STATUS_OPTIONS = ['PENDING', 'CONFIRMED', 'CANCELLED'];
+	const STATUS_OPTIONS = ['CONFIRMED', 'CANCELLED','COMPLETED',];
 	const [loading, setLoading] = React.useState(false);
 	const [open, setOpen] = React.useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
@@ -95,14 +94,6 @@ function DoctorAppointmnets(isDrawerOpen) {
 		setStatus(value);
 		setOpen(false);
 	};
-	const fetchPatients = async () => {
-		try {
-			const data = await getPatients();
-			setPatients(data);
-		} catch (err) {
-			console.log('Error fetching staff:', err);
-		}
-	};
 	const handleSaveStatus = async () => {
 		try {
 			if (!selectedAppointment) return;
@@ -135,9 +126,6 @@ function DoctorAppointmnets(isDrawerOpen) {
 		fetchAppointments();
 	}, [user?.staff_id]);
 
-	React.useEffect(() => {
-		fetchPatients();
-	}, []);
 
 	return (
 		<div
@@ -178,7 +166,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 								</label>
 								<input
 									type="text"
-									value={selectedAppointment.patientName}
+									value={selectedAppointment.patient_name}
 									readOnly
 									className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-700 text-[14px]"
 								/>
@@ -313,11 +301,11 @@ function DoctorAppointmnets(isDrawerOpen) {
 												fontSize: '0.75rem',
 												fontWeight: 500,
 												px: 1,
-												...(st === 'PENDING' && {
+												...(st === 'CONFIRMED' && {
 													backgroundColor: '#dcfce7',
 													color: '#15803d',
 												}),
-												...(st === 'CONFIRMED' && {
+												...(st === 'COMPLETED' && {
 													backgroundColor: '#dbeafe',
 													color: '#1d4ed8',
 												}),
@@ -326,8 +314,8 @@ function DoctorAppointmnets(isDrawerOpen) {
 													color: '#b91c1c',
 												}),
 												...(![
-													'PENDING',
 													'CONFIRMED',
+													'COMPLETED',
 													'CANCELLED',
 												].includes(st) && {
 													backgroundColor: '#f3f4f6',
@@ -397,23 +385,12 @@ function DoctorAppointmnets(isDrawerOpen) {
 							<tbody>
 								{appointmentList.length > 0 ? (
 									appointmentList.map((appointment) => {
-										const patient = patients.find(
-											(p) =>
-												p._id ===
-												appointment.patient_id,
-										);
-										const patientName = `${
-											patient?.firstname || ''
-										} ${patient?.lastname || ''}`;
-										const phone = patient
-											? `${patient.countryCode ? patient.countryCode + " " : ""}${patient.phone || ""}`.trim()
-											: "";
 										const addressParts = [
-											patient?.address,
-											patient?.city,
-											patient?.state,
-											patient?.country,
-											patient?.pincode, 
+											appointment?.patient_address,
+											appointment?.patient_city,
+											appointment?.patient_state,
+											appointment?.patient_country,
+											 
 										].filter(Boolean); 
 										const fullAddress = addressParts.join(", ");
 										return (
@@ -422,7 +399,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 												className="border border-gray-200 text-left"
 											>
 												<td className="px-4 py-2 text-sm">
-													{`${patient?.firstname} ${patient?.lastname}`}
+													{appointment.patient_name}
 												</td>
 												<td className="px-4 py-2 text-sm">
 													{new Date(
@@ -439,12 +416,12 @@ function DoctorAppointmnets(isDrawerOpen) {
 													{appointment.visit_type}
 												</td>
 												<td className="px-4 py-2 text-sm">
-													{phone}
-													{phone && (
+													{appointment.patient_phone}
+													{appointment.patient_phone && (
 														<Tooltip title="Copy phone">
 															<IconButton
 																size="small"
-																onClick={() => navigator.clipboard.writeText(phone)}
+																onClick={() => navigator.clipboard.writeText(appointment.patient_phone)}
 															>
 																<ContentCopy sx={{ fontSize: "12px" }} />
 															</IconButton>
@@ -469,10 +446,10 @@ function DoctorAppointmnets(isDrawerOpen) {
 														className={`px-2 py-1 rounded text-xs font-medium
 														${
 															appointment.status ===
-															'PENDING'
+															'CONFIRMED'
 																? 'bg-green-100 text-green-700'
 																: appointment.status ===
-																  'CONFIRMED'
+																  'COMPLETED'
 																? 'bg-blue-100 text-blue-700'
 																: appointment.status ===
 																  'CANCELLED'
@@ -484,8 +461,8 @@ function DoctorAppointmnets(isDrawerOpen) {
 													</span>
 												</td>
 												<td className="px-4 pl-8 py-2 flex">
-													{appointment.status === "CONFIRMED" || appointment.status === "CANCELLED" ? (
-														 <Tooltip title="Cannot edit once status is confirmed or cancelled">
+													{appointment.status === "COMPLETED"  ? (
+														 <Tooltip title="Cannot edit once status is completed">
 																<span>
 																	<Edit
 																	className="text-gray-400 cursor-not-allowed"
@@ -502,7 +479,6 @@ function DoctorAppointmnets(isDrawerOpen) {
 																setNewStatus(appointment.status);
 																setSelectedAppointment({
 																...appointment,
-																patientName,
 																});
 															}}
 														/>

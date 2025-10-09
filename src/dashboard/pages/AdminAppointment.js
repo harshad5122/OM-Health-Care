@@ -6,11 +6,6 @@ import Filter from "../../components/Filter";
 import dayjs from 'dayjs';
 import { useAppointmentApi } from "../../api/appointment";
 import { CircularProgress } from '@mui/material';
-import {
-    Tooltip,
-     IconButton
-} from '@mui/material';
-import { ContentCopy } from "@mui/icons-material";
 import ReusableModal from "../../components/ReusableModal";
 import CustomCalendar from "../../components/Calander";
 import { showAlert } from "../../components/AlertComponent";
@@ -384,29 +379,9 @@ function AdminAppointment({ isDrawerOpen }) {
                                                 </td>                                                         
                                                 <td className="px-4 py-2 text-sm">
                                                     {patient.phone}
-                                                    {patient.phone && (
-                                                        <Tooltip title="Copy phone">
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => navigator.clipboard.writeText(patient.phone)}
-                                                            >
-                                                                <ContentCopy sx={{ fontSize: "12px" }} />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                    )}
                                                 </td>
                                                 <td className="px-4 py-2 text-sm">
                                                     {fullAddress}
-                                                    {fullAddress && (
-                                                        <Tooltip title="Copy address">
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => navigator.clipboard.writeText(fullAddress)}
-                                                            >
-                                                                <ContentCopy sx={{ fontSize: "12px" }} />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                    )}
                                                 </td>
                                                 <td className="px-4 py-2 text-sm">
                                                     {patient.visit_count}
