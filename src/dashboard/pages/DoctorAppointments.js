@@ -18,6 +18,7 @@ import {
 	 IconButton
 } from '@mui/material';
 import { ContentCopy } from "@mui/icons-material";
+import { showAlert } from '../../components/AlertComponent';
 
 function DoctorAppointmnets(isDrawerOpen) {
 	const { user } = useAuth();
@@ -34,6 +35,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 	const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
 	const [selectedAppointment, setSelectedAppointment] = React.useState(null);
 	const [newStatus, setNewStatus] = React.useState('');
+	const [reason, setReason] = React.useState('');
 
 	const columns = [
 		'Patient Name',
@@ -97,12 +99,16 @@ function DoctorAppointmnets(isDrawerOpen) {
 	const handleSaveStatus = async () => {
 		try {
 			if (!selectedAppointment) return;
+			if (newStatus === 'CANCELLED' && !reason.trim()) {
+				showAlert('Please enter a reason for cancel the appointment.', 'error');
+				return;
+			}
 			const payload = {
 				reference_id: selectedAppointment._id,
 				creator_id: selectedAppointment.creator,
 				patient_id:selectedAppointment.patient_id,
 				status: newStatus,
-				message: null,
+				message: newStatus === 'CANCELLED' ? reason.trim() : '',
 				notification_id: null,
 			};
 
@@ -116,6 +122,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 				)
 			);
 
+			fetchAppointments();
 			setIsEditModalOpen(false);
 			setSelectedAppointment(null);
 		} catch (error) {
@@ -228,7 +235,20 @@ function DoctorAppointmnets(isDrawerOpen) {
 								))}
 							</select>
 						</span>
-
+						{newStatus === 'CANCELLED' && (
+							<span>
+								<label className="block font-semibold text-[13px] text-left text-gray-700">
+									Reason
+								</label>
+								<textarea
+									value={reason}
+									onChange={(e) => setReason(e.target.value)}
+									rows="3"
+									placeholder="Enter reason for canceling appointment..."
+									className="w-full border rounded px-3 py-2 text-gray-700 text-[14px] resize-none"
+								></textarea>
+							</span>
+						)}
 						<div className="flex justify-end space-x-2 mt-4">
 							<button
 								onClick={() => setIsEditModalOpen(false)}
@@ -477,6 +497,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 															onClick={() => {
 																setIsEditModalOpen(true);
 																setNewStatus(appointment.status);
+																setReason(appointment.message || '');
 																setSelectedAppointment({
 																...appointment,
 																});

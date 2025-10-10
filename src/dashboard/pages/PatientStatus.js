@@ -456,7 +456,7 @@ function PatientStatus() {
 															setNewStatus(
 																patient.patient_status,
 															);
-															setReason(patient.message || '');
+															setReason(patient.patient_message || '');
 															setSelectedPatient({
 																...patient,
 															});
