@@ -17,10 +17,13 @@ import {
 } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
 import Filter from '../../components/Filter';
+import { usePatientApi } from '../../api/patientApi';
+import { showAlert } from '../../components/AlertComponent';
 
 function PatientStatus() {
 	const { isDrawerOpen, user } = useOutletContext();
 	const { getPatients } = useAppointmentApi();
+	const { editPatientStatus } = usePatientApi();
 	const [patientList, setPatientList] = React.useState([]);
 	const [loading, setLoading] = React.useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
@@ -39,6 +42,7 @@ function PatientStatus() {
 	const [status, setStatus] = React.useState([]);
 	const [filter, setFilter] = React.useState('thisMonth');
 	const [open, setOpen] = React.useState(false);
+	const [reason, setReason] = useState('');
 	const columns = [
 		'Patient Name',
 		'Patient Email',
@@ -64,24 +68,27 @@ function PatientStatus() {
 				setPatientList(data);
 			}
 		} catch (error) {
-			console.error('Error fetching appointments:', error);
+			console.log('Error fetching appointments:', error);
+			showAlert(error,"error")
 		} finally {
 			setLoading(false);
 		}
 	};
 	const handleSaveStatus = async () => {
-		try {
-			if (!selectedPatient) return;
-			// const payload = {
-			// 	reference_id: selectedAppointment._id,
-			// 	creator_id: selectedAppointment.creator,
-			// 	patient_id:selectedAppointment.patient_id,
-			// 	status: newStatus,
-			// 	message: null,
-			// 	notification_id: null,
-			// };
+		if (!selectedPatient) return;
+		if (newStatus === 'DISCONTINUE' && !reason.trim()) {
+			showAlert('Please enter a reason for discontinuing the patient.', 'error');
+			return;
+	    }
+		const payload = {
+			patient_status: newStatus,
+			message: newStatus === 'DISCONTINUE' ? reason.trim() : '',
+		};
 
-			// await updateNotificationStatus(payload);
+		try {
+			await editPatientStatus(selectedPatient._id, payload); 
+
+			showAlert('Patient status updated successfully', 'success');
 
 			setPatientList((prev) =>
 				prev.map((patient) =>
@@ -93,8 +100,10 @@ function PatientStatus() {
 
 			setIsEditModalOpen(false);
 			setSelectedPatient(null);
-		} catch (error) {
-			console.log('Error updating status:', error);
+			fetchPatients();
+		} catch (err) {
+			console.log('Failed to update leave:', err);
+			showAlert(err, 'error');
 		}
 	};
 	const handleChange = (event) => {
@@ -213,6 +222,21 @@ function PatientStatus() {
 								))}
 							</select>
 						</span>
+						{newStatus === 'DISCONTINUE' && (
+							<span>
+								<label className="block font-semibold text-[13px] text-left text-gray-700">
+									Reason
+								</label>
+								<textarea
+									value={reason}
+									onChange={(e) => setReason(e.target.value)}
+									rows="3"
+									placeholder="Enter reason for discontinuing..."
+									className="w-full border rounded px-3 py-2 text-gray-700 text-[14px] resize-none"
+								></textarea>
+							</span>
+						)}
+
 
 						<div className="flex justify-end space-x-2 mt-4">
 							<button
@@ -286,6 +310,8 @@ function PatientStatus() {
 												fontSize: '0.75rem',
 												fontWeight: 500,
 												px: 1,
+												backgroundColor: '#dbeafe',
+												color: '#1d4ed8',
 											}}
 											size="small"
 										/>
@@ -417,7 +443,8 @@ function PatientStatus() {
 													{patient.visit_count}
 												</td>
 												<td className="px-4 py-2 text-sm">
-													{patient.patient_status ||'-'}
+													{patient.patient_status ||
+														'-'}
 												</td>
 												<td className="px-4 py-2 text-center">
 													<Edit
@@ -429,6 +456,7 @@ function PatientStatus() {
 															setNewStatus(
 																patient.patient_status,
 															);
+															setReason(patient.message || '');
 															setSelectedPatient({
 																...patient,
 															});
