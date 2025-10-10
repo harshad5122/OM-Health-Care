@@ -46,6 +46,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       { path: "members", label: "Members", icon: <FaUsers /> },
       { path: "appointment", label: "Book Appointment", icon: <FaCalendarAlt /> },
       { path: "admin-appointment", label: "Appointments", icon: <ListAltIcon /> },
+      {path:"doctor-leave",label:"Leaves",icon: <RiUserShared2Fill className="text-[22px]"/> },
     ],
     3: [
       // { path: "home", label: "Dashboard", icon: <FaCubes /> },

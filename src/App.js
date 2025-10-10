@@ -34,6 +34,7 @@ import { Navigate } from "react-router-dom";
 import AdminAppointment from "./dashboard/pages/AdminAppointment";
 import BookAppointments from "./dashboard/pages/BookAppointments";
 import PatientStatus from "./dashboard/pages/PatientStatus";
+import AdminLeave from "./dashboard/pages/AdminLeave";
 // import Messages from "./dashboard/pages/Messages";
 
 
@@ -91,6 +92,8 @@ function App() {
           <Route path="members" element={<Members />} />
           <Route path="appointment" element={<AddAppointment/>}/>
           <Route path="admin-appointment" element={<AdminAppointment/>}/>
+          <Route path="doctor-leave" element={<AdminLeave/>}/>
+
         </Route>
 
         {/* Staff Dashboard */}

@@ -8,10 +8,24 @@ export const useLeaveApi = () => {
         const res = await axiosInstance.post("/create-leave", payload);
         return res.data;
     };
-    const getLeaveById = async (id) => {
-        const res = await axiosInstance.get(`/get-leave/${id}`);
-        return res.data.body;
-    }
+    // const getLeaveById = async (id) => {
+    //     const res = await axiosInstance.get(`/get-leave/${id}`);
+    //     return res.data.body;
+    // }
+    const getLeaveById = async (id, from_date, to_date) => {
+        try {
+            let url = `/get-leave/${id}`;
+            if (from_date && to_date) {
+                url += `?from=${from_date}&to=${to_date}`;
+            }
+
+            const res = await axiosInstance.get(url);
+            return res.data.body;
+        } catch (error) {
+            throw error.response?.data || { msg: "Failed to fetch leave data" };
+        }
+    };
+
      const updateLeave = async (payload) => {
         try {
             const response = await axiosInstance.put(`/update-leave-status`, payload);

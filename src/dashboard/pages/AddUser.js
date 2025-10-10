@@ -257,15 +257,15 @@ function AddUser() {
                                     value={formData.country}
                                     onChange={(e) => handleChange("country", e.target.value)}
                                 >
-                                    <option value="">Select country</option>
+                                    {/* <option value="">Select country</option> */}
                                     <option value="India">India</option>
-                                    <option value="United States">United States</option>
+                                    {/* <option value="United States">United States</option>
                                     <option value="Canada">Canada</option>
                                     <option value="United Kingdom">United Kingdom</option>
                                     <option value="Australia">Australia</option>
                                     <option value="Germany">Germany</option>
                                     <option value="France">France</option>
-                                    <option value="Singapore">Singapore</option>
+                                    <option value="Singapore">Singapore</option> */}
                                     {/* Add more countries as needed */}
                                 </select>
                                 {formErrors.country && <p className={errorClass}>{formErrors.country}</p>}
