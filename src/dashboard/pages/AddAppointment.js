@@ -81,7 +81,7 @@ function AddAppointment({ isDrawerOpen }) {
     const fetchPatients = async () => {
         try {
             const data = await getPatients();
-            setPatients(data)
+            setPatients(data?.rows)
         } catch (err) {
             console.log("Error fetching staff:", err);
 

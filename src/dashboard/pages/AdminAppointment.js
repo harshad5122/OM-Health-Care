@@ -38,6 +38,7 @@ function AdminAppointment({ isDrawerOpen }) {
 		'Patient Phone',
 		'Patient Address',
         'Visit Count',
+        'Total Appointments'
 	];
 	const fetchDoctors = async () => {
 		try {
@@ -90,7 +91,7 @@ function AdminAppointment({ isDrawerOpen }) {
                     from_date ? dayjs(from_date).format('YYYY-MM-DD') : '',
                     to_date ? dayjs( to_date).format('YYYY-MM-DD') : '',
                 );
-                setPatientList(result);
+                setPatientList(result?.rows);
                 setHasFetchedPatients(true);
             }
         } catch (error) {
@@ -405,6 +406,9 @@ function AdminAppointment({ isDrawerOpen }) {
                                                 </td>
                                                 <td className="px-4 py-2 text-sm">
                                                     {patient.visit_count}
+                                                </td>
+                                                <td className="px-4 py-2 text-sm">
+                                                    {patient.total_appointments}
                                                 </td>
 
                                             </tr>

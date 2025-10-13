@@ -35,8 +35,7 @@ function BookAppointments() {
 		try {
 			if (user.staff_id) {
 				const data = await getPatients(user.staff_id, '', '');
-				setPatients(data);
-				console.log(data, 'data');
+				setPatients(data?.rows);
 			}
 		} catch (err) {
 			console.log('Error fetching staff:', err);

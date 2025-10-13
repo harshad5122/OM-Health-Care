@@ -15,7 +15,8 @@ import {
 	Box,
 	FormControl,
 	Tooltip,
-	 IconButton
+	IconButton,
+	Pagination
 } from '@mui/material';
 import { ContentCopy } from "@mui/icons-material";
 import { showAlert } from '../../components/AlertComponent';
@@ -36,6 +37,10 @@ function DoctorAppointmnets(isDrawerOpen) {
 	const [selectedAppointment, setSelectedAppointment] = React.useState(null);
 	const [newStatus, setNewStatus] = React.useState('');
 	const [reason, setReason] = React.useState('');
+	const [search, setSearch] = React.useState("");
+	const [page, setPage] = React.useState(1);
+	 const [totalCounts, setTotalCounts] = React.useState(0);
+	 const rowsPerPage = 20;
 
 	const columns = [
 		'Patient Name',
@@ -60,6 +65,8 @@ function DoctorAppointmnets(isDrawerOpen) {
 		from = fromDate,
 		to = toDate,
 		currentStatus = status,
+		skip,
+		searchValue = search
 	) => {
 		setLoading(true);
 		try {
@@ -69,8 +76,12 @@ function DoctorAppointmnets(isDrawerOpen) {
 					from ? dayjs(from).format('YYYY-MM-DD') : '',
 					to ? dayjs(to).format('YYYY-MM-DD') : '',
 					currentStatus.length > 0 ? currentStatus.join(',') : '',
+					skip,
+                	rowsPerPage,      
+                	searchValue 
 				);
-				setAppointmentList(result);
+				setAppointmentList(result?.rows);
+				setTotalCounts(result.total_count)
 			}
 		} catch (error) {
 			console.error('Error fetching appointments:', error);
@@ -79,6 +90,15 @@ function DoctorAppointmnets(isDrawerOpen) {
 		}
 	};
 
+	const handleChangePage = (event, value) => {
+        setPage(value);
+        const skip = (value - 1) * rowsPerPage
+        fetchAppointments(fromDate, toDate, status,skip)
+    };
+	const handleSearch = () => {
+        const skip = (page - 1) * rowsPerPage
+        fetchAppointments(fromDate, toDate, status,skip);
+    }
 	const handleSearchButton = () => {
 		fetchAppointments();
 	};
@@ -89,7 +109,10 @@ function DoctorAppointmnets(isDrawerOpen) {
 		setFromDate(start);
 		setToDate(end);
 		setStatus([]);
-		fetchAppointments(start, end, []);
+		setSearch("")
+		setPage(1);
+		const skip = 0;
+		fetchAppointments(start, end, [],skip,"");
 	};
 	const handleChange = (event) => {
 		const value = event.target.value;
@@ -131,6 +154,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 	};
 	React.useEffect(() => {
 		fetchAppointments();
+		setPage(1)
 	}, [user?.staff_id]);
 
 
@@ -286,6 +310,7 @@ function DoctorAppointmnets(isDrawerOpen) {
 						onClose={() => setOpen(false)}
 						onChange={handleChange}
 						input={<OutlinedInput />}
+						className='bg-white'
 						renderValue={(selected) => {
 							if (selected.length === 0) {
 								return (
@@ -368,6 +393,9 @@ function DoctorAppointmnets(isDrawerOpen) {
 					</Select>
 				</FormControl>
 				<Filter
+				    search={search}
+                    setSearch={setSearch}
+					handleSearch={handleSearch}
 					filter={filter}
 					setFilter={setFilter}
 					fromDate={fromDate}
@@ -376,10 +404,10 @@ function DoctorAppointmnets(isDrawerOpen) {
 					setToDate={setToDate}
 					handleSearchButton={handleSearchButton}
 					handleClearButton={handleClearButton}
-					showSearch={false}
+					// showSearch={false}
 				/>
 			</div>
-			<div className="px-4 flex-1 py-4 overflow-hidden">
+			<div className="px-4 flex-1 py-4 overflow-hidden flex flex-col">
 				<div className="flex-1 overflow-y-auto">
 					{loading ? (
 						<div className="flex justify-center items-center h-full w-full">
@@ -534,6 +562,15 @@ function DoctorAppointmnets(isDrawerOpen) {
 						</table>
 					)}
 				</div>
+				<div className="flex justify-end">
+					<Pagination
+					count={Math.ceil(totalCounts / rowsPerPage)}
+					page={page}
+					onChange={handleChangePage}
+					color="primary"
+					className="member-pagination"/>
+				</div>
+
 			</div>
 		</div>
 	);

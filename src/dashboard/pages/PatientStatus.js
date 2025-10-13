@@ -14,6 +14,7 @@ import {
 	FormControl,
 	Tooltip,
 	IconButton,
+	Pagination
 } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
 import Filter from '../../components/Filter';
@@ -43,18 +44,25 @@ function PatientStatus() {
 	const [filter, setFilter] = React.useState('thisMonth');
 	const [open, setOpen] = React.useState(false);
 	const [reason, setReason] = useState('');
+	const [search, setSearch] = React.useState("");
+	const [page, setPage] = React.useState(1);
+	const [totalCounts, setTotalCounts] = React.useState(0);
+	const rowsPerPage = 20;
 	const columns = [
 		'Patient Name',
 		'Patient Email',
 		'Patient Phone',
 		'Patient Address',
 		'Visit Count',
+		'Total Appointments',
 		'Patient Status',
 	];
 	const fetchPatients = async (
 		from = fromDate,
 		to = toDate,
 		currentStatus = status,
+		skip,
+		searchValue = search
 	) => {
 		setLoading(true);
 		try {
@@ -64,8 +72,12 @@ function PatientStatus() {
 					from ? dayjs(from).format('YYYY-MM-DD') : '',
 					to ? dayjs(to).format('YYYY-MM-DD') : '',
 					currentStatus.length > 0 ? currentStatus.join(',') : '',
+					skip,
+                	rowsPerPage,      
+                	searchValue 
 				);
-				setPatientList(data);
+				setPatientList(data?.rows);
+				setTotalCounts(data?.total_count)
 			}
 		} catch (error) {
 			console.log('Error fetching appointments:', error);
@@ -74,6 +86,15 @@ function PatientStatus() {
 			setLoading(false);
 		}
 	};
+	const handleChangePage = (event, value) => {
+        setPage(value);
+        const skip = (value - 1) * rowsPerPage
+        fetchPatients(fromDate, toDate, status,skip)
+    };
+	const handleSearch = () => {
+        const skip = (page - 1) * rowsPerPage
+        fetchPatients(fromDate, toDate, status,skip);
+    }
 	const handleSaveStatus = async () => {
 		if (!selectedPatient) return;
 		if (newStatus === 'DISCONTINUE' && !reason.trim()) {
@@ -121,11 +142,15 @@ function PatientStatus() {
 		setFromDate(start);
 		setToDate(end);
 		setStatus([]);
-		fetchPatients(start, end, []);
+		setSearch("")
+		setPage(1);
+		const skip = 0;
+		fetchPatients(start, end, [],skip,"");
 	};
 	React.useEffect(() => {
 		if (user?.staff_id) {
 			fetchPatients();
+			setPage(1)
 		}
 	}, [user]);
 	return (
@@ -275,6 +300,7 @@ function PatientStatus() {
 						onClose={() => setOpen(false)}
 						onChange={handleChange}
 						input={<OutlinedInput />}
+						className='bg-white'
 						renderValue={(selected) => {
 							if (selected.length === 0) {
 								return (
@@ -339,6 +365,9 @@ function PatientStatus() {
 					</Select>
 				</FormControl>
 				<Filter
+					search={search}
+                    setSearch={setSearch}
+					handleSearch={handleSearch}
 					filter={filter}
 					setFilter={setFilter}
 					fromDate={fromDate}
@@ -347,10 +376,9 @@ function PatientStatus() {
 					setToDate={setToDate}
 					handleSearchButton={handleSearchButton}
 					handleClearButton={handleClearButton}
-					showSearch={false}
 				/>
 			</div>
-			<div className="px-4 flex-1 py-4 overflow-hidden">
+			<div className="px-4 flex-1 py-4 overflow-hidden flex flex-col">
 				<div className="flex-1 overflow-y-auto h-full">
 					{loading ? (
 						<div className="flex justify-center items-center h-full w-full">
@@ -374,7 +402,7 @@ function PatientStatus() {
 								</tr>
 							</thead>
 							<tbody>
-								{patientList.length > 0 ? (
+								{patientList?.length > 0 ? (
 									patientList.map((patient) => {
 										const addressParts = [
 											patient?.address,
@@ -455,6 +483,9 @@ function PatientStatus() {
 													{patient.visit_count}
 												</td>
 												<td className="px-4 py-2 text-sm">
+													{patient.total_appointments}
+												</td>
+												<td className="px-4 py-2 text-sm">
 													{patient.patient_status ||
 														'-'}
 												</td>
@@ -498,6 +529,14 @@ function PatientStatus() {
 							</tbody>
 						</table>
 					)}
+				</div>
+				<div className="flex justify-end">
+					<Pagination
+					count={Math.ceil(totalCounts / rowsPerPage)}
+					page={page}
+					onChange={handleChangePage}
+					color="primary"
+					className="member-pagination"/>
 				</div>
 			</div>
 		</div>
