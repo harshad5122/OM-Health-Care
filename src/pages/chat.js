@@ -3,21 +3,7 @@ import "../styles/Chat.css";
 import { getSocket, initSocket } from "../utils/socket";
 import { useAuth } from "../context/AuthContext";
 import {
-  Paperclip,
-  Send,
-  Trash2,
-  Edit,
-  CornerUpLeft,
-  Check,
-  X,
-  ChevronDown,
-  Search,
-  MoreVertical,
-  MessageSquare,
-  CheckCheck,
-  ArrowLeft,
-  Megaphone,
-  Info
+  Paperclip, Send, Trash2, Edit, CornerUpLeft, Check, X, ChevronDown, Search, MoreVertical, MessageSquare, CheckCheck, ArrowLeft, Megaphone, Info
 } from "lucide-react";
 import { useUserApi } from "../api/userApi";
 import { useMessageApi } from "../api/messageApi";
@@ -126,7 +112,7 @@ const Chat = () => {
   const [recipientSearch, setRecipientSearch] = useState("");
 
   const [recipientTab, setRecipientTab] = useState('doctor'); // 'all', 'doctor', or 'patient'
-   const [initialUnreadCount, setInitialUnreadCount] = useState(0);
+  const [initialUnreadCount, setInitialUnreadCount] = useState(0);
 
   const fileInputRef = useRef(null);
   const chatBoxRef = useRef(null);
@@ -151,7 +137,7 @@ const Chat = () => {
     return allMessages[selectedChat?._id] || [];
   }, [allMessages, selectedChat]);
 
-  
+
 
   useEffect(() => {
     selectedChatRef.current = selectedChat;
@@ -163,7 +149,7 @@ const Chat = () => {
     if (isBroadcast) {
       setBroadcasts(prev => {
         const list = prev.map(b =>
-          b._id === message.broadcast_id
+          b._id === message.broadcast_id || b.id === message.broadcast_id
             ? { ...b, lastMessage: message.message || "Attachment", createdAt: message.created_at }
             : b
         );
@@ -211,6 +197,9 @@ const Chat = () => {
 
       const chatId = message.broadcast_id ||
         (message.sender_id === user._id ? message.receiver_id : message.sender_id);
+
+         console.log(`Incoming message is for chatId: [${chatId}]`);
+    console.log(`Currently selected chat is: [${selectedChatRef.current?._id}]`);
 
       messageIdToChatIdMap.current[message._id] = chatId;
 
@@ -261,7 +250,7 @@ const Chat = () => {
       }
     };
 
-    const handleMessageStatusUpdate = ({ messageId, status, is_read }) => {
+    const handleMessageStatusUpdate = ({ messageId, message_status: status, is_read }) => {
       console.log("📊 Message status updated:", { messageId, status, is_read });
 
       const chatId = messageIdToChatIdMap.current[messageId];
@@ -298,6 +287,10 @@ const Chat = () => {
       if (!tempId) return;
 
       const chatId = finalMessage.broadcast_id || (finalMessage.sender_id === user._id ? finalMessage.receiver_id : finalMessage.sender_id);
+
+      if (finalMessage._id) {
+        messageIdToChatIdMap.current[finalMessage._id] = chatId;
+      }
 
       setAllMessages(prev => {
         const chatMessages = prev[chatId] || [];
@@ -360,7 +353,7 @@ const Chat = () => {
 
 
     return () => {
-      socket.emit("user_left_message_page", user._id);
+      // socket.emit("user_left_message_page", user._id);
 
       socket.off("presence_update");
       socket.off("chat_message");
@@ -376,17 +369,17 @@ const Chat = () => {
     };
   }, [user?._id, selectedChat?._id, updateChatListWithNewMessage]);
 
-    const handleSelectChat = (person) => {
-        // Capture the unread count at the moment of clicking, BEFORE it gets reset.
-        setInitialUnreadCount(person.unreadCount || 0);
-        setSelectedChat({ ...person, isBroadcast: false });
-    };
+  const handleSelectChat = (person) => {
+    // Capture the unread count at the moment of clicking, BEFORE it gets reset.
+    setInitialUnreadCount(person.unreadCount || 0);
+    setSelectedChat({ ...person, isBroadcast: false });
+  };
 
   useEffect(() => {
     if (!token || !user) return;
 
     const fetchInitialData = async () => {
-       setLoading(true);
+      setLoading(true);
       try {
         // Fetch users
         const usersFromServer = await getChatUsers(token);
@@ -421,9 +414,9 @@ const Chat = () => {
         }
       } catch (err) {
         console.error("Error fetching initial data:", err);
-      }finally {
-      setLoading(false); // ✅ stop loader
-    }
+      } finally {
+        setLoading(false); // stop loader
+      }
     };
 
     fetchInitialData();
@@ -665,7 +658,6 @@ const Chat = () => {
       // const users = usersResponse || []; 
       const doctorList = doctors || [];
       const userList = usersResponse || [];
-
 
       // Normalize both lists to ensure they have `_id` and `name`
       const normalizedDoctors = doctorList.map(doc => ({
@@ -1018,8 +1010,8 @@ const Chat = () => {
       }
       if (
         broadcastMenuRef.current &&
-        !broadcastMenuRef.current.contains(event.target)&&
-         toggleButtonRef.current &&
+        !broadcastMenuRef.current.contains(event.target) &&
+        toggleButtonRef.current &&
         !toggleButtonRef.current.contains(event.target)
       ) {
         setShowBroadcastMenu(false);
@@ -1184,7 +1176,7 @@ const Chat = () => {
         key={bc.id}
         className={`user-list-item ${selectedChat?._id === bc.id && selectedChat?.isBroadcast ? "active" : ""}`}
         // onClick={() => setSelectedChat(bc)}
-        onClick={() => setSelectedChat({ ...bc, _id: bc.id, isBroadcast: true })}
+        onClick={() => setSelectedChat({ ...bc, _id: bc._id || bc.id, isBroadcast: true })}
       >
         <div className="user-avatar"><Megaphone size={24} /></div>
         <div className="user-info broad-user">
@@ -1223,7 +1215,7 @@ const Chat = () => {
   //   }
 
   //   return filtered.map((person) => (
-      
+
   //     <div
   //       key={person._id}
   //       className={`user-list-item ${selectedChat?._id === person._id && !selectedChat?.isBroadcast ? "active" : ""}`}
@@ -1255,11 +1247,11 @@ const Chat = () => {
   const renderUserList = () => {
     let filtered = chatUsers;
 
-    if (user?.role === 2) { 
+    if (user?.role === 2) {
       if (activeTab === "admins") filtered = chatUsers.filter((u) => u.role === 2);
       else if (activeTab === "staff") filtered = chatUsers.filter((u) => u.role === 3);
       else if (activeTab === "users") filtered = chatUsers.filter((u) => u.role === 1);
-    } else { 
+    } else {
       filtered = chatUsers.filter((u) => u.role === 2);
     }
 
@@ -1330,9 +1322,9 @@ const Chat = () => {
   };
 
   const MessageStatusIcon = ({ status }) => {
-    if (status === 'seen') return <CheckCheck size={16} className="text-blue-500" />;
-    if (status === 'delivered') return <CheckCheck size={16} className="text-gray-500" />;
-    return <Check size={16} className="text-gray-500" />; // Sent
+    if (status === 'seen') return <CheckCheck size={16} className="status-seen text-blue-500" />;
+    if (status === 'delivered') return <CheckCheck size={16} className="status-delivered text-gray-500" />;
+    return <Check size={16} className="status-sent text-gray-500" />; // Sent
   };
 
   const renderMessagesWithDateHeaders = () => {
@@ -1344,17 +1336,17 @@ const Chat = () => {
 
     currentMessages.forEach((msg, index) => {
 
-       // Check if we are at the correct position to insert the banner
-            if (initialUnreadCount > 0 && index === firstUnreadIndex && !unreadBannerInserted) {
-                elements.push(
-                    <div key="unread-banner" className="unread-messages-banner">
-                        <span>
-                            {initialUnreadCount} unread message{initialUnreadCount > 1 ? 's' : ''}
-                        </span>
-                    </div>
-                );
-                unreadBannerInserted = true;
-            }
+      // Check if we are at the correct position to insert the banner
+      if (initialUnreadCount > 0 && index === firstUnreadIndex && !unreadBannerInserted) {
+        elements.push(
+          <div key="unread-banner" className="unread-messages-banner">
+            <span>
+              {initialUnreadCount} unread message{initialUnreadCount > 1 ? 's' : ''}
+            </span>
+          </div>
+        );
+        unreadBannerInserted = true;
+      }
 
       const msgDate = new Date(msg.created_at);
       if (!lastDate || msgDate.toDateString() !== lastDate.toDateString()) {
@@ -1392,7 +1384,12 @@ const Chat = () => {
             {msg.broadcast_id != null && <Megaphone />}
             {msg.edited && <span className="edited-label">Edited</span>}
             <span className="time">{formatTime(msg.created_at)}</span>
-            {msg.sender_id === user._id && !msg.is_deleted && <MessageStatusIcon status={msg.message_status} />}
+            {/* {msg.sender_id === user._id && !msg.is_deleted && <MessageStatusIcon status={msg.message_status} />} */}
+            {msg.sender_id === user._id && !msg.is_deleted && (
+              <span className="message-status-icon">
+                <MessageStatusIcon status={msg.message_status} />
+              </span>
+            )}
           </div>
 
           {!msg.is_deleted && (
@@ -1442,10 +1439,10 @@ const Chat = () => {
                 </div>
                 {user?.role === 2 && (
                   <div className="broadcast-menu-wrapper">
-                    <button className="broadcast-toggle" 
-                    // onClick={() => setShowBroadcastMenu(!showBroadcastMenu)}
-                    ref={toggleButtonRef}
-                    onClick={() => setShowBroadcastMenu((prev) => !prev)}
+                    <button className="broadcast-toggle"
+                      // onClick={() => setShowBroadcastMenu(!showBroadcastMenu)}
+                      ref={toggleButtonRef}
+                      onClick={() => setShowBroadcastMenu((prev) => !prev)}
                     >
                       <MoreVertical size={20} />
                     </button>
@@ -1474,16 +1471,16 @@ const Chat = () => {
                 
               </div> */}
               <div className="user-list ">
-              {loading ? (
-                <div className="flex justify-center items-center w-full h-full py-10">
-                  <CircularProgress size={30} />
-                </div>
-              ) : (
-                <>
-                  {activeTab === 'broadcast' ? renderBroadcastList() : renderUserList()}
-                </>
-              )}
-            </div>
+                {loading ? (
+                  <div className="flex justify-center items-center w-full h-full py-10">
+                    <CircularProgress size={30} />
+                  </div>
+                ) : (
+                  <>
+                    {activeTab === 'broadcast' ? renderBroadcastList() : renderUserList()}
+                  </>
+                )}
+              </div>
 
             </>
           )}
@@ -1514,7 +1511,7 @@ const Chat = () => {
                   <div className="user-details">
                     <h3 className="m-0 text-[16px] font-semibold text-[#343a40] text-left">
                       {/* {selectedChat?.title || selectedChat.name} */}
-                       {selectedChat.user_id === user._id ? "You" : selectedChat?.title || selectedChat.name}
+                      {selectedChat.user_id === user._id ? "You" : selectedChat?.title || selectedChat.name}
                     </h3>
                     {/* <p className="mt-[2px] mb-0 text-[12px] text-[#495057] opacity-80 text-left">
                     {onlineUsers.get(selectedUser._id) ? "Online" : "Offline"}
@@ -1583,11 +1580,11 @@ const Chat = () => {
             {/* <p>Select a conversation to start chatting.</p> */}
             <MessageSquare size={40} className="text-gray-300" />
             <h2>Select a conversation</h2>
-             <p>
-                {user?.role === 2
-                    ? "Choose a user or broadcast from the list to start chatting."
-                    : "Choose a user from the list to start chatting."
-                }
+            <p>
+              {user?.role === 2
+                ? "Choose a user or broadcast from the list to start chatting."
+                : "Choose a user from the list to start chatting."
+              }
             </p>
           </div>
         )}
