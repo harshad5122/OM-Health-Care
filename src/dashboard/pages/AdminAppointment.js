@@ -29,6 +29,7 @@ function AdminAppointment({ isDrawerOpen }) {
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const dropdownRef = React.useRef(null);
 
 
     const columns = [
@@ -73,6 +74,7 @@ function AdminAppointment({ isDrawerOpen }) {
 		setSelectedDoctor(doctor);
 		setDropdownOpen(false);
 		setSearchTerm("");
+        setFilteredDoctors(doctorList)
 	};
 
     const fetchAppointments = async (
@@ -110,6 +112,7 @@ function AdminAppointment({ isDrawerOpen }) {
         setSelectedDoctor(null);
         setPatientList([])
         setHasFetchedPatients(false);
+        setFilteredDoctors(doctorList)
     };
     const handleGetAppointments = async (newDate) => {
             try {
@@ -159,6 +162,17 @@ function AdminAppointment({ isDrawerOpen }) {
             handleGetAppointments();
         }
     }, [isModalOpen]);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setDropdownOpen(false);
+        }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
 	return (
 		<div
@@ -267,7 +281,7 @@ function AdminAppointment({ isDrawerOpen }) {
 				Appointments
 			</span>
 			<div className="p-[20px] flex justify-end gap-2">
-				<div className="relative w-full max-w-[250px]">
+				<div className="relative w-full max-w-[250px]" ref={dropdownRef}>
 					<div
 						className="border border-gray-300 rounded-md px-3 py-2 cursor-pointer bg-white flex justify-between items-center text-[14px]"
 						onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -371,16 +385,22 @@ function AdminAppointment({ isDrawerOpen }) {
                                                     setIsModalOpen(true);
                                                 }}
                                             >
-                                                <td className="px-4 py-2 text-sm">
+                                                <td className="px-4 py-2 text-sm truncate max-w-[150px]"
+                                                title={`${patient?.firstname} ${patient?.lastname}`}
+                                                >
                                                     {`${patient?.firstname} ${patient?.lastname}`}
                                                 </td>
-                                                <td className="px-4 py-2 text-sm">
+                                                <td className="px-4 py-2 text-sm truncate max-w-[180px]"
+                                                title={patient.email}
+                                                >
                                                     {patient.email}
                                                 </td>                                                         
                                                 <td className="px-4 py-2 text-sm">
                                                     {patient.phone}
                                                 </td>
-                                                <td className="px-4 py-2 text-sm">
+                                                <td className="px-4 py-2 text-sm truncate  max-w-[200px]"
+                                                title={fullAddress}
+                                                >
                                                     {fullAddress}
                                                 </td>
                                                 <td className="px-4 py-2 text-sm">

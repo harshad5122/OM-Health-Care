@@ -418,7 +418,9 @@ function DoctorAppointmnets(isDrawerOpen) {
 												key={appointment._id}
 												className="border border-gray-200 text-left"
 											>
-												<td className="px-4 py-2 text-sm">
+												<td className="px-4 py-2 text-sm truncate max-w-[150px]"
+												title={appointment.patient_name}
+												>
 													{appointment.patient_name}
 												</td>
 												<td className="px-4 py-2 text-sm">
@@ -448,13 +450,22 @@ function DoctorAppointmnets(isDrawerOpen) {
 														</Tooltip>
 													)}
 												</td>
-												<td className="px-4 py-2 text-sm">
-													{fullAddress}
+												<td className="px-4 py-2 text-sm relative flex"
+												title={fullAddress}
+												>
+													{/* {fullAddress} */}
+													<span
+														className="truncate block max-w-[200px]" 
+														title={fullAddress}
+													>
+														{fullAddress}
+													</span>
 													{fullAddress && (
 														<Tooltip title="Copy address">
 															<IconButton
 																size="small"
 																onClick={() => navigator.clipboard.writeText(fullAddress)}
+																 className="absolute right-0 "
 															>
 																<ContentCopy sx={{ fontSize: "12px" }} />
 															</IconButton>

@@ -260,10 +260,13 @@
   align-items: center;
    justify-content: space-between;  
   padding: 12px 15px;
-  /* gap: 15px; */
   cursor: pointer;
   border-bottom: 1px solid var(--border-color);
   transition: background 0.2s;
+}
+.user-brod{
+  justify-content: flex-start !important;
+  gap: 10px;
 }
 
 .user-list-item:hover {
@@ -300,7 +303,10 @@
   min-width: 0; 
   text-align: left;
 }
-
+.user-list-item .broad-user {
+  padding-left: 10px !important;
+ 
+}
 .user-list-item h4 {
   margin: 0;
   font-size: 15px;
@@ -427,9 +433,25 @@
   font-size: 14.5px;
   line-height: 1.4;
   margin-bottom: 12px;
-  /* REMOVED flex properties to allow natural content flow */
+  
 }
+.chat-message {
+  /* padding: 10px 12px;
+  border-radius: 8px;
+  max-width: 65%;
+  word-wrap: break-word;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-size: 14.5px;
+  line-height: 1.35; */
+  color: var(--dark-color);
+  transition: background 0.1s;
+/* 
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start;  */
 
+}
 
 /* .chat-message.sent {
   margin-left: auto;
@@ -459,7 +481,7 @@
 
 .message-content {
   /* Add padding to prevent text from overlapping with the timestamp */
-  padding-right: 70px;
+  /* padding-right: 70px; */
   min-height: 20px;
   text-align: left;
 }
@@ -696,7 +718,7 @@
   position: absolute;
   top: 30px; /* Position it below the icon */
   right: 10px;
-  min-width: 150px;
+  min-width: 100px;
   background: var(--menu-bg);
   border-radius: 8px;
   box-shadow: var(--menu-shadow);
@@ -731,23 +753,7 @@
   font-style: italic;
 }
 
-.chat-message {
-  padding: 10px 12px;
-  border-radius: 8px;
-  max-width: 65%;
-  word-wrap: break-word;
-  position: relative;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  font-size: 14.5px;
-  line-height: 1.35;
-  color: var(--dark-color);
-  transition: background 0.1s;
 
-  display: flex; 
-  flex-direction: column; 
-  align-items: flex-start; 
-
-}
 
 
 .chat-image, .chat-video {
@@ -1167,8 +1173,8 @@
 
 .fab-create-broadcast {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 0px;
+  right: 0px;
   background-color: var(--secondary-color);
   color: white;
   border: none;

@@ -22,6 +22,8 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
   const [selectedNotif, setSelectedNotif] = React.useState(null);
   const [isDeclineModalOpen, setIsDeclineModalOpen] = React.useState(false)
   const [declineReason, setDeclineReason] = React.useState("")
+  const notificationMenuRef = React.useRef(null);
+  const notificationButtonRef = React.useRef(null);
 
   const handleConfirm = async () => {
 
@@ -126,6 +128,21 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
     }
   };
 
+   React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationMenuRef.current &&
+        !notificationMenuRef.current.contains(event.target) &&
+        notificationButtonRef.current &&
+        !notificationButtonRef.current.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-white shadow-md flex justify-between items-center px-4 z-50">
@@ -241,6 +258,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
           <button
             className="relative"
             onClick={() => setOpen((prev) => !prev)}
+            ref={notificationButtonRef}
           >
             <FaRegBell className="text-xl cursor-pointer text-gray-600 hover:text-gray-800" />
             {notifications.length > 0 && (
@@ -250,7 +268,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
             )}
           </button>
           {open && (
-            <div className="absolute right-0 mt-2 w-80 bg-white shadow-md rounded-md border border-[#eee] p-3 z-50 max-h-[30rem] overflow-y-auto">
+            <div className="absolute right-0 mt-2 w-80 bg-white shadow-md rounded-md border border-[#eee] p-3 z-50 max-h-[30rem] overflow-y-auto" ref={notificationMenuRef}>
               {notifications.length === 0 ? (
                 <p className="text-gray-500 text-sm">No notifications</p>
               ) : (
@@ -268,7 +286,7 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
                       }
                     }}
                   >
-                    <p className="text-sm font-semibold text-gray-800 text-left pb-1">
+                    {/* <p className="text-sm font-semibold text-gray-800 text-left pb-1">
                       {notif.type === "APPOINTMENT_REQUEST"
                         ? "Appointment Request"
                         : notif.type === "APPOINTMENT_CONFIRMED"
@@ -279,9 +297,52 @@ const TopBar = ({ toggleDrawer, title, user, userRole }) => {
                               ? "Leave Request"
                               : notif.type === "ASSIGN_USER"
                               ? "New Patient Assigned"
+                              : notif.type === "LEAVE_CANCELLED"
+                              ? "Leave Cancelled"
+                              : notif.type === "LEAVE_CONFIRMED"
+                              ? "Leave Confirmed"
                               : "Notification"}
-                    </p>
-                    <p className="text-sm text-gray-700 text-left">{notif.message}</p>
+                    </p> */}
+                    {notif.type === "MESSAGE" ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#1a6f8b] text-white flex items-center justify-center text-xs font-semibold">
+                          {notif.sender_name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()}
+                        </div>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {notif.sender_name} (Message)
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-sm font-semibold text-gray-800 text-left pb-1">
+                        {notif.type === "APPOINTMENT_REQUEST"
+                          ? "Appointment Request"
+                          : notif.type === "APPOINTMENT_CONFIRMED"
+                          ? "Appointment Confirmed"
+                          : notif.type === "APPOINTMENT_CANCELLED"
+                          ? "Appointment Cancelled"
+                          : notif.type === "APPOINTMENT_COMPLETED"
+                          ? "Appointment Completed"
+                          : notif.type === "LEAVE_REQUEST"
+                          ? "Leave Request"
+                          : notif.type === "ASSIGN_USER"
+                          ? "New Patient Assigned"
+                          : notif.type === "LEAVE_CANCELLED"
+                          ? "Leave Cancelled"
+                          : notif.type === "LEAVE_CONFIRMED"
+                          ? "Leave Confirmed"
+                          : "Notification"}
+                      </p>
+                    )}
+                    <p 
+                      // className="text-sm text-gray-700 text-left break-words leading-[1.2]"
+                      className={`text-sm text-gray-700 text-left break-words leading-[1.2] ${
+                        notif.type === "MESSAGE" ? "pl-8" : ""
+                      }`}
+                    >{notif.message}</p>
                     {(notif?.type === "APPOINTMENT_REQUEST" || notif?.type === "LEAVE_REQUEST") &&
                       <div className="flex gap-2 mt-4 justify-end">
                         <button className="bg-[#1a6f8b] text-white text-xs px-2 py-1.5 rounded"

@@ -68,6 +68,33 @@ function Leave(isDrawerOpen) {
 
 
     const handleApplyLeave = async () => {
+        const isOverlap = leaveByIdData?.some((leave) => {
+            const existingStart = dayjs(leave.start_date);
+            const existingEnd = dayjs(leave.end_date);
+            const newStart = dayjs(leaveData.startDate);
+            const newEnd = dayjs(leaveData.endDate);
+
+            const sameStart = existingStart.isSame(newStart, 'day');
+            const sameEnd = existingEnd.isSame(newEnd, 'day');
+
+            if (leaveData.leave_type === "FULL_DAY" || leave.leave_type === "FULL_DAY") {
+                return (newStart.isBetween(existingStart, existingEnd, null, '[]') ||
+                        newEnd.isBetween(existingStart, existingEnd, null, '[]') ||
+                        (newStart.isBefore(existingStart) && newEnd.isAfter(existingEnd)));
+            }
+
+            if ((sameStart || sameEnd) && leaveData.leave_type === leave.leave_type) {
+                return true;
+            }
+
+            return false;
+        });
+
+        if (isOverlap) {
+            showAlert("You already have a leave for this period", "error");
+            return;
+        }
+
         const payload = {
             staff_id: user?.staff_id || "",
             staff_name: `${user?.firstname || ""} ${user?.lastname || ""}`.trim(),

@@ -727,7 +727,7 @@ function BookAppointments() {
 
 										return (
 											<div className="mt-4 p-3 border border-red-300 bg-red-50 text-red-700 rounded text-sm">
-												{`The doctor will not be available on ${dateText}${
+												{`You are on leave on ${dateText}${
 													timeMessage
 														? `, ${timeMessage}.`
 														: '.'

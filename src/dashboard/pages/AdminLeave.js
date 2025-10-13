@@ -19,6 +19,7 @@ function AdminLeave({ isDrawerOpen }) {
 	const [loading, setLoading] = React.useState(false);
 	const [leaveByIdData, setLeaveByIdData] = React.useState(null);
     const [hasFetchedLeaves, setHasFetchedLeaves] = useState(false);
+	const dropdownRef = React.useRef(null);
 
 	const columns = [
 		'Start Date',
@@ -80,6 +81,7 @@ function AdminLeave({ isDrawerOpen }) {
 		setSelectedDoctor(doctor);
 		setDropdownOpen(false);
 		setSearchTerm('');
+		setFilteredDoctors(doctorList)
 	};
 	const handleSearch = (e) => {
 		const value = e.target.value.toLowerCase();
@@ -102,9 +104,21 @@ function AdminLeave({ isDrawerOpen }) {
 		setSelectedDoctor(null);
 		setLeaveByIdData(null);
          setHasFetchedLeaves(false)
+		 setFilteredDoctors(doctorList)
 	};
 	useEffect(() => {
 		fetchDoctors();
+	}, []);
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+		if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+			setDropdownOpen(false);
+		}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+		document.removeEventListener("mousedown", handleClickOutside);
+		};
 	}, []);
 	return (
 		<div
@@ -123,7 +137,7 @@ function AdminLeave({ isDrawerOpen }) {
 				Leaves
 			</span>
 			<div className="p-[20px] flex justify-end gap-2">
-				<div className="relative w-full max-w-[250px]">
+				<div className="relative w-full max-w-[250px]" ref={dropdownRef}>
 					<div
 						className="border border-gray-300 rounded-md px-3 py-2 cursor-pointer bg-white flex justify-between items-center text-[14px]"
 						onClick={() => setDropdownOpen(!dropdownOpen)}

@@ -22,6 +22,7 @@ import {
 import { useUserApi } from "../api/userApi";
 import { useMessageApi } from "../api/messageApi";
 import { useUploadFile } from "../api/uploadFileApi";
+import { CircularProgress } from "@mui/material";
 
 // --- Helper Functions ---
 
@@ -111,6 +112,7 @@ const Chat = () => {
   const [chatUsers, setChatUsers] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState(new Map());
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // --- NEW state for Broadcast functionality ---
   const [sidebarView, setSidebarView] = useState("list");
@@ -130,6 +132,7 @@ const Chat = () => {
   const chatBoxRef = useRef(null);
   const inputRef = useRef(null);
   const broadcastMenuRef = useRef(null);
+  const toggleButtonRef = useRef(null);
   const messageMenuRef = useRef(null);
   const msgRefs = useRef({});
   const socketRef = useRef(null);
@@ -383,6 +386,7 @@ const Chat = () => {
     if (!token || !user) return;
 
     const fetchInitialData = async () => {
+       setLoading(true);
       try {
         // Fetch users
         const usersFromServer = await getChatUsers(token);
@@ -417,7 +421,9 @@ const Chat = () => {
         }
       } catch (err) {
         console.error("Error fetching initial data:", err);
-      }
+      }finally {
+      setLoading(false); // ✅ stop loader
+    }
     };
 
     fetchInitialData();
@@ -690,6 +696,7 @@ const Chat = () => {
       setAllPotentialRecipients(finalRecipients);
       setAvailableRecipients(finalRecipients);
       setRecipientTab('doctor');
+      setShowBroadcastMenu(false);
       // setAllPotentialRecipients(allRecipients);
       // setAvailableRecipients(allRecipients);
     } catch (err) {
@@ -1009,6 +1016,14 @@ const Chat = () => {
       if (messageMenuRef.current && !messageMenuRef.current.contains(event.target)) {
         setActiveMessageMenu(null);
       }
+      if (
+        broadcastMenuRef.current &&
+        !broadcastMenuRef.current.contains(event.target)&&
+         toggleButtonRef.current &&
+        !toggleButtonRef.current.contains(event.target)
+      ) {
+        setShowBroadcastMenu(false);
+      }
 
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -1094,7 +1109,7 @@ const Chat = () => {
     );
 
     return (
-      <div className="new-broadcast-container">
+      <div className="new-broadcast-container relative">
         <div className="new-broadcast-header">
           <button onClick={() => setSidebarView('list')}><ArrowLeft size={20} /></button>
 
@@ -1137,7 +1152,7 @@ const Chat = () => {
 
           {filteredAvailable.length > 0 ? (
             filteredAvailable.map(r => (
-              <div key={r._id} className="user-list-item" onClick={() => handleSelectRecipient(r)}>
+              <div key={r._id} className="user-list-item user-brod" onClick={() => handleSelectRecipient(r)}>
                 <div className="user-avatar">{getUserInitials(r)}</div>
                 <div className="user-info">
                   <h4>{r.name}</h4>
@@ -1172,7 +1187,7 @@ const Chat = () => {
         onClick={() => setSelectedChat({ ...bc, _id: bc.id, isBroadcast: true })}
       >
         <div className="user-avatar"><Megaphone size={24} /></div>
-        <div className="user-info">
+        <div className="user-info broad-user">
           {/* <h4>{bc.title}</h4>
           <p>{bc.lastMessage || `${bc.recipients.length} recipients`}</p> */}
           <h4 className="text-left font-semibold">{bc.title}</h4>
@@ -1186,14 +1201,65 @@ const Chat = () => {
   };
 
 
+  // const renderUserList = () => {
+  //   let listToRender;
+  //   let filtered = chatUsers;
+  //   if (user?.role === 2) { // Admin view
+  //     if (activeTab === "admins") filtered = chatUsers.filter((u) => u.role === 2);
+  //     else if (activeTab === "staff") filtered = chatUsers.filter((u) => u.role === 3);
+  //     else if (activeTab === "users") filtered = chatUsers.filter((u) => u.role === 1);
+  //   } else { // Normal user view
+  //     filtered = chatUsers.filter((u) => u.role === 2);
+  //   }
+
+  //   if (searchTerm) {
+  //     filtered = filtered.filter((person) =>
+  //       person.name.toLowerCase().includes(searchTerm.toLowerCase())
+  //     );
+  //   }
+
+  //   if (filtered.length === 0) {
+  //     return <p className="no-users-message">No users found.</p>;
+  //   }
+
+  //   return filtered.map((person) => (
+      
+  //     <div
+  //       key={person._id}
+  //       className={`user-list-item ${selectedChat?._id === person._id && !selectedChat?.isBroadcast ? "active" : ""}`}
+  //       // onClick={() => setSelectedChat({ ...person, isBroadcast: false })}
+  //        onClick={() => handleSelectChat(person)}
+  //     >
+  //       <div className="flex items-center gap-3">
+  //         <div className="user-avatar">{getUserInitials(person)}</div>
+  //         <div className="user-info">
+  //           <h4 className="text-left font-semibold">{person.name}</h4>
+  //           <p className="text-left text-sm text-gray-500 truncate w-[160px]">
+  //             {person.messagePreview || "No messages yet"}
+  //           </p>
+  //         </div>
+  //       </div>
+  //       <div className="flex flex-col items-end">
+  //         <span className="text-[11px] text-gray-400">
+  //           {person.last_message?.created_at ? formatChatListTime(person.last_message.created_at) : ""}
+  //         </span>
+  //         {person.unreadCount > 0 && (
+  //           <span className="unread-badge">{person.unreadCount}</span>
+  //         )}
+  //       </div>
+  //     </div>
+  //   ));
+  //   return listToRender;
+  // };
+
   const renderUserList = () => {
-    let listToRender;
     let filtered = chatUsers;
-    if (user?.role === 2) { // Admin view
+
+    if (user?.role === 2) { 
       if (activeTab === "admins") filtered = chatUsers.filter((u) => u.role === 2);
       else if (activeTab === "staff") filtered = chatUsers.filter((u) => u.role === 3);
       else if (activeTab === "users") filtered = chatUsers.filter((u) => u.role === 1);
-    } else { // Normal user view
+    } else { 
       filtered = chatUsers.filter((u) => u.role === 2);
     }
 
@@ -1207,33 +1273,35 @@ const Chat = () => {
       return <p className="no-users-message">No users found.</p>;
     }
 
-    return filtered.map((person) => (
-      <div
-        key={person._id}
-        className={`user-list-item ${selectedChat?._id === person._id && !selectedChat?.isBroadcast ? "active" : ""}`}
-        // onClick={() => setSelectedChat({ ...person, isBroadcast: false })}
-         onClick={() => handleSelectChat(person)}
-      >
-        <div className="flex items-center gap-3">
-          <div className="user-avatar">{getUserInitials(person)}</div>
-          <div className="user-info">
-            <h4 className="text-left font-semibold">{person.name}</h4>
-            <p className="text-left text-sm text-gray-500 truncate w-[160px]">
-              {person.messagePreview || "No messages yet"}
-            </p>
+    return filtered.map((person) => {
+      const displayName = person.user_id === user._id ? "You" : person.name;
+
+      return (
+        <div
+          key={person._id}
+          className={`user-list-item ${selectedChat?._id === person._id && !selectedChat?.isBroadcast ? "active" : ""}`}
+          onClick={() => handleSelectChat(person)}
+        >
+          <div className="flex items-center gap-3">
+            <div className="user-avatar">{getUserInitials(person)}</div>
+            <div className="user-info">
+              <h4 className="text-left font-semibold">{displayName}</h4>
+              <p className="text-left text-sm text-gray-500 truncate w-[160px]">
+                {person.messagePreview || "No messages yet"}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-[11px] text-gray-400">
+              {person.last_message?.created_at ? formatChatListTime(person.last_message.created_at) : ""}
+            </span>
+            {person.unreadCount > 0 && (
+              <span className="unread-badge">{person.unreadCount}</span>
+            )}
           </div>
         </div>
-        <div className="flex flex-col items-end">
-          <span className="text-[11px] text-gray-400">
-            {person.last_message?.created_at ? formatChatListTime(person.last_message.created_at) : ""}
-          </span>
-          {person.unreadCount > 0 && (
-            <span className="unread-badge">{person.unreadCount}</span>
-          )}
-        </div>
-      </div>
-    ));
-    return listToRender;
+      );
+    });
   };
 
   const renderMessageContent = (msg) => {
@@ -1374,7 +1442,11 @@ const Chat = () => {
                 </div>
                 {user?.role === 2 && (
                   <div className="broadcast-menu-wrapper">
-                    <button className="broadcast-toggle" onClick={() => setShowBroadcastMenu(!showBroadcastMenu)}>
+                    <button className="broadcast-toggle" 
+                    // onClick={() => setShowBroadcastMenu(!showBroadcastMenu)}
+                    ref={toggleButtonRef}
+                    onClick={() => setShowBroadcastMenu((prev) => !prev)}
+                    >
                       <MoreVertical size={20} />
                     </button>
                     {showBroadcastMenu && (
@@ -1397,10 +1469,22 @@ const Chat = () => {
                 </div>
               )}
 
-              <div className="user-list">
+              {/* <div className="user-list">
                 {activeTab === 'broadcast' ? renderBroadcastList() : renderUserList()}
-                {/* {renderUserList()} */}
-              </div>
+                
+              </div> */}
+              <div className="user-list ">
+              {loading ? (
+                <div className="flex justify-center items-center w-full h-full py-10">
+                  <CircularProgress size={30} />
+                </div>
+              ) : (
+                <>
+                  {activeTab === 'broadcast' ? renderBroadcastList() : renderUserList()}
+                </>
+              )}
+            </div>
+
             </>
           )}
         {(sidebarView === 'new-broadcast' || sidebarView === 'edit-broadcast') && renderBroadcastEditView()}
@@ -1417,7 +1501,7 @@ const Chat = () => {
                   <div className="user-avatar"><Megaphone /></div>
                   <div className="user-details">
                     <h3 className="m-0 text-[16px] font-semibold text-[#343a40]">{selectedChat.title}</h3>
-                    <p>{selectedChat.recipients.length} recipients</p>
+                    <p className="text-left">{selectedChat.recipients.length} recipients</p>
                   </div>
                   <Info size={18} className="info-icon" />
                 </div>
@@ -1428,7 +1512,10 @@ const Chat = () => {
                     {selectedChat.isBroadcast ? <Megaphone /> : getUserInitials(selectedChat)}
                   </div>
                   <div className="user-details">
-                    <h3 className="m-0 text-[16px] font-semibold text-[#343a40]">{selectedChat?.title || selectedChat.name}</h3>
+                    <h3 className="m-0 text-[16px] font-semibold text-[#343a40] text-left">
+                      {/* {selectedChat?.title || selectedChat.name} */}
+                       {selectedChat.user_id === user._id ? "You" : selectedChat?.title || selectedChat.name}
+                    </h3>
                     {/* <p className="mt-[2px] mb-0 text-[12px] text-[#495057] opacity-80 text-left">
                     {onlineUsers.get(selectedUser._id) ? "Online" : "Offline"}
                   </p> */}

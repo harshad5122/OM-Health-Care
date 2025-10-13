@@ -387,12 +387,16 @@ function PatientStatus() {
 										return (
 											<tr
 												key={patient._id}
-												className="border border-gray-200 text-left cursor-pointer text-center"
+												className="border border-gray-200 text-left text-center"
 											>
-												<td className="px-4 py-2 text-sm">
+												<td className="px-4 py-2 text-sm truncate max-w-[150px]"
+												title={`${patient?.firstname} ${patient?.lastname}`}
+												>
 													{`${patient?.firstname} ${patient?.lastname}`}
 												</td>
-												<td className="px-4 py-2 text-sm">
+												<td className="px-4 py-2 text-sm truncate max-w-[180px]"
+												title={patient.email}
+												>
 													{patient.email}
 												</td>
 												<td className="px-4 py-2 text-sm">
@@ -417,8 +421,15 @@ function PatientStatus() {
 														</Tooltip>
 													)}
 												</td>
-												<td className="px-4 py-2 text-sm">
-													{fullAddress}
+												<td className="px-4 py-2 text-sm relative flex justify-center"
+												title={fullAddress}
+												>
+													<span
+														className="truncate block max-w-[200px]" 
+														title={fullAddress}
+													>
+														{fullAddress}
+													</span>
 													{fullAddress && (
 														<Tooltip title="Copy address">
 															<IconButton
@@ -428,6 +439,7 @@ function PatientStatus() {
 																		fullAddress,
 																	)
 																}
+																className="absolute right-0 "
 															>
 																<ContentCopy
 																	sx={{
@@ -448,8 +460,12 @@ function PatientStatus() {
 												</td>
 												<td className="px-4 py-2 text-center">
 													<Edit
-														className="text-blue-500 cursor-pointer"
+														// className="text-blue-500 cursor-pointer"
+														className={` ${
+															!patient.patient_status ? 'text-gray-400 cursor-not-allowed' : 'text-blue-500 cursor-pointer'
+														}`}
 														onClick={() => {
+															if (!patient.patient_status) return;
 															setIsEditModalOpen(
 																true,
 															);

@@ -107,6 +107,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
             <Link
               key={item.path}
               to={`${basePaths[userRole]}/${item.path}`}
+              title={!isOpen ? item.label : ''} 
               className={`flex items-center gap-4 px-3 py-3 mb-3 rounded-md font-medium no-underline transition-colors duration-200 hover:bg-[#0077cc1a] hover:text-[#1a6f8b] ${
                 isActive ? "bg-[#0077cc1a] text-[#1a6f8b]" : "text-[#495057]"
               }`}

@@ -230,7 +230,7 @@ const Register = () => {
                 />
               </div>
             </div>
-            <div className="form-register-group">
+            {/* <div className="form-register-group">
               <label htmlFor="dob">Date of Birth</label>
               <input
                 type="date"
@@ -240,7 +240,30 @@ const Register = () => {
                 value={formData.dob}
                 onChange={handleChange}
               />
+            </div> */}
+            <div className="form-register-group">
+              <label htmlFor="dob">Date of Birth</label>
+              <input
+                type="text"
+                id="dob"
+                name="dob"
+                placeholder="DD/MM/YYYY"
+                value={formData.dob}
+                onChange={(e) => {
+                  let value = e.target.value
+                    .replace(/\D/g, "") // remove non-digits
+                    .slice(0, 8); // limit to 8 digits
+
+                  if (value.length >= 5)
+                    value = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4)}`;
+                  else if (value.length >= 3)
+                    value = `${value.slice(0, 2)}/${value.slice(2)}`;
+
+                  setFormData((prev) => ({ ...prev, dob: value }));
+                }}
+              />
             </div>
+
             <div className="form-register-group">
               <label htmlFor="gender">Gender</label>
               <select

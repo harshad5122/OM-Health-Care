@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { useAuth } from "../context/AuthContext";
 
 const localizer = momentLocalizer(moment);
 
@@ -11,6 +12,7 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevi
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [currentView, setCurrentView] = useState(Views.MONTH);
+    const { user } = useAuth();
     // const [date, setDate] = React.useState(new Date());
 
 
@@ -62,7 +64,7 @@ function CustomCalendar({ events = [], onSelectSlot, onSelectEvent, date, onNevi
                 event: ({ event }) => {
                     const formattedTime =
                     event.type === "leave"
-                        ? "Doctor on Leave"
+                        ? (user?.role === 3 ? "You are on Leave" : "Doctor on Leave")
                         : `${moment(event.start).format("hh:mm A")} - ${moment(event.end).format("hh:mm A")}`;
 
                     return (
