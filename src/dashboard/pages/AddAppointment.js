@@ -17,9 +17,11 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 import { showAlert } from "../../components/AlertComponent";
-import { useAuth } from "../../context/AuthContext";
+import { usePatientApi } from "../../api/patientApi";
+import { useOutletContext } from 'react-router-dom';
 
-function AddAppointment({ isDrawerOpen }) {
+function AddAppointment() {
+    const { isDrawerOpen, user } = useOutletContext();
     const [staffData, setStaffData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -34,12 +36,13 @@ function AddAppointment({ isDrawerOpen }) {
     const [allBookings, setAllBookings] = useState([]);
     const [eventType, setEventType] = useState(null);
     const [formDisabled, setFormDisabled] = useState(false);
-    const { user } = useAuth();
+
 
 
     const rowsPerPage = 6;
     const { getDoctor } = useDoctorApi();
     const { getPatients } = useAppointmentApi();
+    const {getPatientByAssignDoctor}=usePatientApi();
 
     const isFormValid = appointment?.date && appointment?.time_slot?.start && appointment?.time_slot?.end && appointment?.visit_type && (appointment?.patient_id);
     const { createAppointment, getAppointments, updateAppointment } = useAppointmentApi();
@@ -78,15 +81,16 @@ function AddAppointment({ isDrawerOpen }) {
         fetchStaff(skip);
     };
 
-    const fetchPatients = async () => {
-        try {
-            const data = await getPatients();
-            setPatients(data?.rows)
-        } catch (err) {
-            console.log("Error fetching staff:", err);
-
-        }
-    };
+    const fetchPatients = async (staff_id) => {
+		try {
+			if (staff_id) {
+				const data = await getPatientByAssignDoctor(staff_id);
+				setPatients(data);
+			}
+		} catch (err) {
+			console.log('Error fetching staff:', err);
+		}
+	};
     const toMinutes = (time) => {
         const [h, m] = time.split(":").map(Number);
         return h * 60 + m;
@@ -291,6 +295,7 @@ function AddAppointment({ isDrawerOpen }) {
             setCalendarEvents(mappedEvents)
             setSelectedDoctor(staff);
             setIsModalOpen(true);
+            fetchPatients(staff?._id)
 
         } catch (error) {
             console.error("Error getting appointments:", error);
@@ -326,9 +331,11 @@ function AddAppointment({ isDrawerOpen }) {
         fetchStaff(0);
         setPage(1)
     }, []);
-    useEffect(() => {
-        fetchPatients();
-    }, []);
+    // React.useEffect(() => {
+	// 	if (user?.staff_id) {
+	// 		fetchPatients();
+	// 	}
+    // }, [user]);
 
     return (
         <div id="dashboard-container" className={isDrawerOpen ? 'drawer-open' : 'drawer-closed'}
@@ -547,7 +554,7 @@ function AddAppointment({ isDrawerOpen }) {
                                                     setAppointment((prev) => ({
                                                         ...prev,
                                                         patient_id: selectedPatient._id,
-                                                        patient_name: `${selectedPatient.firstname} ${selectedPatient.lastname}`,
+                                                        patient_name: selectedPatient.full_name,
                                                     }));
                                                 }
                                             }}
@@ -555,7 +562,7 @@ function AddAppointment({ isDrawerOpen }) {
                                             <option value="">Select Patient</option>
                                             {patients?.map((patient) => (
                                                 <option key={patient._id} value={patient._id}>
-                                                    {patient.firstname} {patient.lastname}
+                                                    {patient.full_name}
                                                 </option>
                                             ))}
                                         </select>

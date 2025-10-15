@@ -13,6 +13,10 @@ export const usePatientApi = () => {
         }
     };
 
+    const getPatientByAssignDoctor = async (id) => {
+        const res = await axiosInstance.get(`/get-patients-by-assign-doctor?doctor_id=${id}`);
+        return res.data.body;
+    }
 
-    return { editPatientStatus};
+    return { editPatientStatus,getPatientByAssignDoctor};
 };

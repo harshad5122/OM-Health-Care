@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import { showAlert } from '../../components/AlertComponent';
 import { useAppointmentApi } from '../../api/appointment';
 import { useOutletContext } from 'react-router-dom';
+import { usePatientApi } from '../../api/patientApi';
 
 function BookAppointments() {
 	const { isDrawerOpen, user } = useOutletContext();
@@ -27,15 +28,15 @@ function BookAppointments() {
 		createAppointment,
 		getAppointments,
 		updateAppointment,
-		getPatients,
 	} = useAppointmentApi();
+	const {getPatientByAssignDoctor}=usePatientApi();
 	const today = new Date();
 
 	const fetchPatients = async () => {
 		try {
 			if (user.staff_id) {
-				const data = await getPatients(user.staff_id, '', '');
-				setPatients(data?.rows);
+				const data = await getPatientByAssignDoctor(user.staff_id);
+				setPatients(data);
 			}
 		} catch (err) {
 			console.log('Error fetching staff:', err);
@@ -619,7 +620,7 @@ function BookAppointments() {
 														...prev,
 														patient_id:
 															selectedPatient._id,
-														patient_name: `${selectedPatient.firstname} ${selectedPatient.lastname}`,
+														patient_name: selectedPatient.full_name,
 													}));
 												}
 											}}
@@ -632,8 +633,7 @@ function BookAppointments() {
 													key={patient._id}
 													value={patient._id}
 												>
-													{patient.firstname}{' '}
-													{patient.lastname}
+													{patient.full_name}
 												</option>
 											))}
 										</select>
