@@ -1208,14 +1208,14 @@ p {
 }
 .custom-cell {
   padding: 5px 8px !important; 
-  font-size: 16px !important ; 
+  font-size: 14px !important ; 
   line-height: 1.4 !important; 
   white-space: nowrap;
   color: #495057 !important;
 }
 .custom-th {
   padding: 6px 8px !important; 
-  font-size: 16px !important ; 
+  font-size: 14px !important ; 
   line-height: 1.4 !important; 
   white-space: nowrap;
   color: #495057 !important;

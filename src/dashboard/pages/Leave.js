@@ -68,66 +68,99 @@ function Leave(isDrawerOpen) {
 
 
     const handleApplyLeave = async () => {
-        const isOverlap = leaveByIdData?.some((leave) => {
-            const existingStart = dayjs(leave.start_date);
-            const existingEnd = dayjs(leave.end_date);
-            const newStart = dayjs(leaveData.startDate);
-            const newEnd = dayjs(leaveData.endDate);
+		const isOverlap = leaveByIdData?.some((leave) => {
+			const existingStart = dayjs(leave.start_date);
+			const existingEnd = dayjs(leave.end_date);
+			const newStart = dayjs(leaveData.startDate);
+			const newEnd = dayjs(leaveData.endDate);
 
-            const sameStart = existingStart.isSame(newStart, 'day');
-            const sameEnd = existingEnd.isSame(newEnd, 'day');
+			// FULL DAY overlap check
+			if (
+				leaveData.leave_type === 'FULL_DAY' ||
+				leave.leave_type === 'FULL_DAY'
+			) {
+				return (
+					newStart.isBetween(
+						existingStart,
+						existingEnd,
+						null,
+						'[]',
+					) ||
+					newEnd.isBetween(existingStart, existingEnd, null, '[]') ||
+					(newStart.isBefore(existingStart) &&
+						newEnd.isAfter(existingEnd))
+				);
+			}
 
-            if (leaveData.leave_type === "FULL_DAY" || leave.leave_type === "FULL_DAY") {
-                return (newStart.isBetween(existingStart, existingEnd, null, '[]') ||
-                        newEnd.isBetween(existingStart, existingEnd, null, '[]') ||
-                        (newStart.isBefore(existingStart) && newEnd.isAfter(existingEnd)));
-            }
+			// HALF DAY overlap check
+			const overlapDays =
+				newStart.isBetween(existingStart, existingEnd, null, '[]') ||
+				newEnd.isBetween(existingStart, existingEnd, null, '[]') ||
+				(newStart.isBefore(existingStart) &&
+					newEnd.isAfter(existingEnd));
 
-            if ((sameStart || sameEnd) && leaveData.leave_type === leave.leave_type) {
-                return true;
-            }
+			if (overlapDays) {
+				// If same date range overlaps for half days
+				// Disallow same half type (e.g., 15 second half already exists)
+				if (leaveData.leave_type === leave.leave_type) {
+					return true;
+				}
 
-            return false;
-        });
+				// If any single day matches exactly (e.g., 15 second half vs 15 first half)
+				// Allow only if the halves are different and not covering same half
+				if (
+					newStart.isSame(existingStart, 'day') ||
+					newEnd.isSame(existingEnd, 'day')
+				) {
+					if (leaveData.leave_type === leave.leave_type) {
+						return true;
+					}
+				}
+			}
 
-        if (isOverlap) {
-            showAlert("You already have a leave for this period", "error");
-            return;
-        }
+			return false;
+		});
 
-        const payload = {
-            staff_id: user?.staff_id || "",
-            staff_name: `${user?.firstname || ""} ${user?.lastname || ""}`.trim(),
-            start_date: leaveData.startDate
-                ? dayjs(leaveData.startDate).format("YYYY-MM-DD")
-                : "",
-            end_date: leaveData.endDate
-                ? dayjs(leaveData.endDate).format("YYYY-MM-DD")
-                : "",
-            leave_type: leaveData.leave_type,
-            reason: leaveData.reason,
-            admin_id:leaveData.admin_id,
-            admin_name:leaveData.admin_name,
-        };
+		if (isOverlap) {
+			showAlert('You already have a leave for this period', 'error');
+			return;
+		}
 
-        try {
-            await createLeave(payload);
+		const payload = {
+			staff_id: user?.staff_id || '',
+			staff_name: `${user?.firstname || ''} ${
+				user?.lastname || ''
+			}`.trim(),
+			start_date: leaveData.startDate
+				? dayjs(leaveData.startDate).format('YYYY-MM-DD')
+				: '',
+			end_date: leaveData.endDate
+				? dayjs(leaveData.endDate).format('YYYY-MM-DD')
+				: '',
+			leave_type: leaveData.leave_type,
+			reason: leaveData.reason,
+			admin_id: leaveData.admin_id,
+			admin_name: leaveData.admin_name,
+		};
 
-            setLeaveData({
-                startDate: null,
-                endDate: null,
-                reason: "",
-                leave_type: "",
-                admin_id: "",
-                admin_name: "",
-            });
-            fetchLeaveById();
-            showAlert("Leave Created Successfully", "success")
-        } catch (err) {
-            console.log("Failed to apply leave:", err);
-            showAlert("Something went wrong", "error")
-        }
-    };
+		try {
+			await createLeave(payload);
+
+			setLeaveData({
+				startDate: null,
+				endDate: null,
+				reason: '',
+				leave_type: '',
+				admin_id: '',
+				admin_name: '',
+			});
+			fetchLeaveById();
+			showAlert('Leave Created Successfully', 'success');
+		} catch (err) {
+			console.log('Failed to apply leave:', err);
+			showAlert('Something went wrong', 'error');
+		}
+	};
     // const handleUpdateLeave = async () => {
     //     console.log("UPDATELEAVE")
     // };
@@ -385,7 +418,7 @@ function Leave(isDrawerOpen) {
                         </div>
                     ) : (
                         <table className="min-w-full border-collapse">
-                            <thead className="sticky top-0 bg-[#f5f7fa] z-10">
+                            <thead className="sticky top-0 bg-[#ddedf7] z-10">
                                 <tr className="border border-gray-200b">
                                     {columns.map((col, index) => (
                                         <th
