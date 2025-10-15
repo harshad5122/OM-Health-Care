@@ -38,7 +38,8 @@ function AdminAppointment({ isDrawerOpen }) {
 		'Patient Phone',
 		'Patient Address',
         'Visit Count',
-        'Total Appointments'
+        'Total Appointments',
+        'Patient Status'
 	];
 	const fetchDoctors = async () => {
 		try {
@@ -409,6 +410,9 @@ function AdminAppointment({ isDrawerOpen }) {
                                                 </td>
                                                 <td className="px-4 py-2 text-sm">
                                                     {patient.total_appointments}
+                                                </td>
+                                                <td className="px-4 py-2 text-sm">
+                                                    {patient.patient_status}
                                                 </td>
 
                                             </tr>
