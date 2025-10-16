@@ -1381,7 +1381,7 @@ const Chat = () => {
           </div>
 
           <div className="message-meta">
-            {msg.broadcast_id != null && <Megaphone />}
+            {msg.broadcast_id != null && <Megaphone size={20}/>}
             {msg.edited && <span className="edited-label">Edited</span>}
             <span className="time">{formatTime(msg.created_at)}</span>
             {/* {msg.sender_id === user._id && !msg.is_deleted && <MessageStatusIcon status={msg.message_status} />} */}
@@ -1399,7 +1399,11 @@ const Chat = () => {
           )}
 
           {activeMessageMenu === msg._id && (
-            <div className="message-menu" ref={messageMenuRef}>
+            <div 
+            // className={`message-menu`} ref={messageMenuRef}
+              className={`message-menu ${msg.sender_id === user._id ? "menu-sent" : "menu-received"}`}
+    ref={messageMenuRef}
+            >
               <button onClick={() => startReplying(msg)}><CornerUpLeft size={14} /> Reply</button>
 
               {msg.sender_id === user._id && msg.message_type === "text" && (
@@ -1416,6 +1420,42 @@ const Chat = () => {
 
     return elements;
   };
+
+useEffect(() => {
+  if (activeMessageMenu && messageMenuRef.current) {
+    const menu = messageMenuRef.current;
+    const messageEl = menu.parentElement; 
+    if (!messageEl) return;
+
+    const messageRect = messageEl.getBoundingClientRect();
+    const menuRect = menu.getBoundingClientRect();
+    const screenWidth = window.innerWidth;
+
+    menu.style.left = "";
+    menu.style.right = "";
+
+    if (messageEl.classList.contains("received")) {
+      const menuRightEdge = messageRect.left + messageRect.width;
+      const overflowRight = menuRightEdge + menuRect.width - screenWidth;
+
+      if (overflowRight > 0) {
+        menu.style.left = `${messageRect.width - menuRect.width}px`;
+      } else {
+        menu.style.left = `${messageRect.width-20}px`;
+      }
+    }
+    else if (messageEl.classList.contains("sent")) {
+      const menuLeftEdge = messageRect.right - menuRect.width - 10;
+      const overflowLeft = menuLeftEdge < 0;
+
+      if (overflowLeft) {
+        menu.style.right = `${messageRect.width - menuRect.width}px`;
+      } else {
+        menu.style.right = "10px";
+      }
+    }
+  }
+}, [activeMessageMenu]);
 
 
   return (

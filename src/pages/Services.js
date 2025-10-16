@@ -25,6 +25,7 @@ import serviceImgParkinsons from '../assets/images/services/parkinsons.jpg';
 import serviceImgParalysis from '../assets/images/services/paralysis.jpg';
 import serviceImgNeurological from '../assets/images/services/neurological.jpg';
 import serviceImgManualTherapy from '../assets/images/services/manual-therapy.jpg';
+import contactHeroBg from '../assets/images/hero-image.jpg';
 
 const allServices = [
   {
@@ -311,15 +312,25 @@ const Services = () => {
   };
 
   return (
-    <div className="pt-5 bg-[#f8fbfd] text-[#333] overflow-x-hidden">
-      {/* Hero Section (keep your existing hero section) */}
+    <div className="bg-[#f8fbfd] text-[#333] overflow-x-hidden">
+      <section className="about-hero relative h-[50vh] min-h-[350px]  flex items-center justify-center text-center text-white mb-20">
+				<div className="absolute top-0 left-0 w-[100%] h-[100%] bg-[rgba(26,111,139,0.7)] z-10"></div>
+				<div className="about-hero-content relative z-20 max-w-[900px] px-4">
+					<h1 className="text-[3.5rem] mb-3 leading-tight font-bold text-white animate-fade-in-up">
+						Our Physiotherapy Services
+					</h1>
+					<p className="text-[1.5rem] text-white/90 animate-fade-in-up delay-100">
+						Move better, feel better, live better.
+					</p>
+				</div>
+			</section>
       
       {/* Main Services Grid Section */}
-      <section ref={servicesGridRef} className={`main-services-grid-section py-20 bg-white rounded-[20px] mx-8 mb-20 shadow-[0_10px_40px_rgba(0,0,0,0.05)] opacity-0 translate-y-[50px] transition-opacity transition-transform duration-800 ease-out ${servicesGridInView ? 'in-view' : ''}`}>
+      <section ref={servicesGridRef} className={`main-services-grid-section py-10 bg-white rounded-[20px] mx-8 mb-20 shadow-[0_10px_40px_rgba(0,0,0,0.05)] opacity-0 translate-y-[50px] transition-opacity transition-transform duration-800 ease-out ${servicesGridInView ? 'in-view' : ''}`}>
         <div className="container max-w-[1200px] mx-auto px-8">
           <div className="section-about-header">
             <h2>Comprehensive Care for Every Need</h2>
-            <p className="section-subtitle text-[1.1rem] text-[#495057] mt-8 max-w-[700px] mx-auto leading-relaxed animate-fade-in delay-1">Discover how our expert team can help you regain mobility, reduce pain, and improve your quality of life.</p>
+            <p className="section-subtitle text-[1.1rem] text-[#495057] my-6 max-w-[700px] mx-auto leading-relaxed animate-fade-in delay-1">Discover how our expert team can help you regain mobility, reduce pain, and improve your quality of life.</p>
           </div>
 
           <div className="grid gap-8 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
