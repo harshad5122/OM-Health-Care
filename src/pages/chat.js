@@ -9,6 +9,7 @@ import { useUserApi } from "../api/userApi";
 import { useMessageApi } from "../api/messageApi";
 import { useUploadFile } from "../api/uploadFileApi";
 import { CircularProgress } from "@mui/material";
+import MessageIcon from '@mui/icons-material/Message';
 
 // --- Helper Functions ---
 
@@ -194,32 +195,39 @@ const Chat = () => {
     };
 
     const handleIncomingMessage = (message) => {
-      console.log("📨 Received message:", message);
+      console.log('📨 Received message:', message);
 
-      const chatId = message.broadcast_id ||
-        (message.sender_id === user._id ? message.receiver_id : message.sender_id);
-
-         console.log(`Incoming message is for chatId: [${chatId}]`);
-    console.log(`Currently selected chat is: [${selectedChatRef.current?._id}]`);
+      const chatId = message.broadcast_id
+        ? message.sender_id 
+        : message.sender_id === user._id
+          ? message.receiver_id
+          : message.sender_id;
 
       messageIdToChatIdMap.current[message._id] = chatId;
 
       setAllMessages(prev => {
         const chatMessages = prev[chatId] || [];
-
         if (chatMessages.some(m => m._id === message._id)) return prev;
-
-        const updatedMessages = [...chatMessages, message];
-        return { ...prev, [chatId]: updatedMessages };
+        return {
+          ...prev,
+          [chatId]: [...chatMessages, message]
+        };
       });
-
 
       if (selectedChatRef.current?._id === chatId && message.sender_id !== user._id) {
         socket.emit("message_seen", { messageId: message._id, user_id: user._id });
       }
 
-      // Update chat list
       updateChatListWithNewMessage(message);
+
+      if (message.broadcast_id && message.sender_id === user._id) {
+        const broadcastChat = {
+          _id: message.broadcast_id,
+          isBroadcast: true,
+        };
+        setSelectedChat(broadcastChat);
+        setSidebarView("list");
+      }
     };
 
     const handleMessageUpdated = (updatedMsg) => {
@@ -396,9 +404,9 @@ const Chat = () => {
         setChatUsers(sortedUsers || []);
 
 
-        if (!selectedChat && sortedUsers.length > 0) {
-          setSelectedChat({ ...sortedUsers[0], isBroadcast: false });
-        }
+        // if (!selectedChat && sortedUsers.length > 0) {
+        //   setSelectedChat({ ...sortedUsers[0], isBroadcast: false });
+        // }
 
 
 
@@ -712,110 +720,6 @@ const Chat = () => {
   };
 
 
-  //   const sendMessage = async () => {
-  //     if (!input.trim() || !selectedChat) return;
-
-  //     // const socket = getSocket();
-  //     const socket = socketRef.current;
-  //     if (!socket || !socket.connected) {
-  //       console.error("Socket not connected");
-  //       return;
-  //     }
-
-  //     const currentTime = new Date().toISOString();
-  //     const tempId = `temp-${Date.now()}-${Math.random()}`;
-
-  //     if (editingMessage) {
-  //       // Handle editing
-  //       socket.emit("update_message", {
-  //         messageId: editingMessage._id,
-  //         message: input,
-  //       });
-
-  //       // Optimistic update
-  //       const chatId = editingMessage.broadcast_id || 
-  //         (editingMessage.sender_id === user._id ? editingMessage.receiver_id : editingMessage.sender_id);
-
-  //       setAllMessages(prev => {
-  //         const chatMessages = (prev[chatId] || []).map(msg => 
-  //           msg._id === editingMessage._id 
-  //             ? { ...msg, message: input, edited: true } 
-  //             : msg
-  //         );
-  //         return { ...prev, [chatId]: chatMessages };
-  //       });
-
-  //       setEditingMessage(null);
-  //       setInput("");
-
-  //     } else if (selectedChat.isBroadcast) {
-  //       // Handle broadcast message
-  //       const msgData = {
-  //         sender_id: user._id,
-  //         broadcast_id: selectedChat._id,
-  //         message: input,
-  //         message_type: "text",
-  //         attachments: [],
-  //       };
-
-  //       // Optimistic update for sender
-  //       const optimisticMessage = {
-  //         ...msgData,
-  //         _id: tempId,
-  //         created_at: currentTime,
-  //         message_status: 'sent',
-  //         attechment_details: [],
-  //         sender_id: user._id,
-  //       };
-
-  //       // setAllMessages(prev => {
-  //       //   const chatMessages = prev[selectedChat._id] || [];
-  //       //   return { ...prev, [selectedChat._id]: [...chatMessages, optimisticMessage] };
-  //       // });
-  //             setAllMessages((prev) => ({
-  //   ...prev,
-  //   [selectedChat._id]: [...(prev[selectedChat._id] || []), optimisticMessage],
-  // }));
-
-
-  //       socket.emit("broadcast_message", msgData);
-
-  //     } else {
-  //       // Handle one-to-one message
-  //       const msgData = {
-  //         sender_id: user._id,
-  //         receiver_id: selectedChat._id,
-  //         message: input,
-  //         message_type: "text",
-  //         ...(replyingTo && { reply_to: replyingTo._id }),
-  //       };
-
-  //       // Optimistic update for sender
-  //       const optimisticMessage = {
-  //         ...msgData,
-  //         _id: tempId,
-  //         created_at: currentTime,
-  //         message_status: 'sent',
-  //         attechment_details: [],
-  //         sender_id: user._id,
-  //       };
-
-  //       setAllMessages(prev => {
-  //         const chatMessages = prev[selectedChat._id] || [];
-  //         return { ...prev, [selectedChat._id]: [...chatMessages, optimisticMessage] };
-  //       });
-  // //       setAllMessages((prev) => ({
-  // //   ...prev,
-  // //   [selectedChat._id]: [...(prev[selectedChat._id] || []), optimisticMessage],
-  // // }));
-
-  //       socket.emit("chat_message", msgData);
-  //     }
-
-  //     setInput("");
-  //     setReplyingTo(null);
-  //     inputRef.current?.focus();
-  //   };
 
   const sendMessage = async () => {
     if (!input.trim() || !selectedChat) return;
@@ -1200,57 +1104,6 @@ const Chat = () => {
   };
 
 
-  // const renderUserList = () => {
-  //   let listToRender;
-  //   let filtered = chatUsers;
-  //   if (user?.role === 2) { // Admin view
-  //     if (activeTab === "admins") filtered = chatUsers.filter((u) => u.role === 2);
-  //     else if (activeTab === "staff") filtered = chatUsers.filter((u) => u.role === 3);
-  //     else if (activeTab === "users") filtered = chatUsers.filter((u) => u.role === 1);
-  //   } else { // Normal user view
-  //     filtered = chatUsers.filter((u) => u.role === 2);
-  //   }
-
-  //   if (searchTerm) {
-  //     filtered = filtered.filter((person) =>
-  //       person.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //     );
-  //   }
-
-  //   if (filtered.length === 0) {
-  //     return <p className="no-users-message">No users found.</p>;
-  //   }
-
-  //   return filtered.map((person) => (
-
-  //     <div
-  //       key={person._id}
-  //       className={`user-list-item ${selectedChat?._id === person._id && !selectedChat?.isBroadcast ? "active" : ""}`}
-  //       // onClick={() => setSelectedChat({ ...person, isBroadcast: false })}
-  //        onClick={() => handleSelectChat(person)}
-  //     >
-  //       <div className="flex items-center gap-3">
-  //         <div className="user-avatar">{getUserInitials(person)}</div>
-  //         <div className="user-info">
-  //           <h4 className="text-left font-semibold">{person.name}</h4>
-  //           <p className="text-left text-sm text-gray-500 truncate w-[160px]">
-  //             {person.messagePreview || "No messages yet"}
-  //           </p>
-  //         </div>
-  //       </div>
-  //       <div className="flex flex-col items-end">
-  //         <span className="text-[11px] text-gray-400">
-  //           {person.last_message?.created_at ? formatChatListTime(person.last_message.created_at) : ""}
-  //         </span>
-  //         {person.unreadCount > 0 && (
-  //           <span className="unread-badge">{person.unreadCount}</span>
-  //         )}
-  //       </div>
-  //     </div>
-  //   ));
-  //   return listToRender;
-  // };
-
   const renderUserList = () => {
     let filtered = chatUsers;
 
@@ -1544,7 +1397,7 @@ const Chat = () => {
                   <div className="user-avatar"><Megaphone /></div>
                   <div className="user-details">
                     <h3 className="m-0 text-[16px] font-semibold text-[#343a40]">{selectedChat.title}</h3>
-                    <p className="text-left">{selectedChat.recipients.length} recipients</p>
+                    <p className="text-left">{selectedChat?.recipients?.length} recipients</p>
                   </div>
                   <Info size={18} className="info-icon" />
                 </div>
@@ -1622,16 +1475,17 @@ const Chat = () => {
             </div>
           </>
         ) : (
-          <div className="no-chat-selected">
-            {/* <p>Select a conversation to start chatting.</p> */}
-            <MessageSquare size={40} className="text-gray-300" />
-            <h2>Select a conversation</h2>
-            <p>
-              {user?.role === 2
-                ? "Choose a user or broadcast from the list to start chatting."
-                : "Choose a user from the list to start chatting."
-              }
+          <div className="flex flex-col items-center justify-center h-full bg-gray-50">
+            <div className="flex items-center justify-center w-48 h-48 bg-blue-50 rounded-full mb-6">
+              <MessageIcon className="text-blue-400" sx={{ fontSize: 60 }} />
+            </div>
+
+            <p className="text-center text-gray-500 max-w-xs">
+              Select a user from the left panel to start chatting instantly.
             </p>
+            <div className="mt-6 text-sm text-gray-400">
+              Your chats will appear here once selected.
+            </div>
           </div>
         )}
       </div>
