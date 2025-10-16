@@ -119,12 +119,13 @@ const Chat = () => {
   const inputRef = useRef(null);
   const broadcastMenuRef = useRef(null);
   const toggleButtonRef = useRef(null);
-  const messageMenuRef = useRef(null);
   const msgRefs = useRef({});
   const socketRef = useRef(null);
   const selectedChatRef = useRef(null);
   const messageIdToChatIdMap = useRef({});
   const recipientsContainerRef = useRef(null);
+  const messageMenuRefs = useRef({}); 
+  const messageToggleRefs = useRef({}); 
 
   const { getChatUsers, getUserList, getStaffList } = useUserApi();
   const { getMessageList, getBroadcastList, getBroadcastRecipients } = useMessageApi();
@@ -1005,7 +1006,14 @@ const Chat = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (messageMenuRef.current && !messageMenuRef.current.contains(event.target)) {
+      const clickedInsideMessage = Object.values(messageMenuRefs.current).some(
+        (ref) => ref && ref.contains(event.target)
+      );
+      const clickedOnToggle = Object.values(messageToggleRefs.current).some(
+        (ref) => ref && ref.contains(event.target)
+      );
+
+      if (!clickedInsideMessage && !clickedOnToggle) {
         setActiveMessageMenu(null);
       }
       if (
@@ -1016,7 +1024,6 @@ const Chat = () => {
       ) {
         setShowBroadcastMenu(false);
       }
-
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -1393,16 +1400,17 @@ const Chat = () => {
           </div>
 
           {!msg.is_deleted && (
-            <button className="menu-toggle" onClick={() => setActiveMessageMenu(activeMessageMenu === msg._id ? null : msg._id)}>
+            <button className="menu-toggle" onClick={() => setActiveMessageMenu(activeMessageMenu === msg._id ? null : msg._id)}
+              ref={(el) => (messageToggleRefs.current[msg._id] = el)}
+            >
               <ChevronDown size={16} />
             </button>
           )}
 
           {activeMessageMenu === msg._id && (
             <div 
-            // className={`message-menu`} ref={messageMenuRef}
               className={`message-menu ${msg.sender_id === user._id ? "menu-sent" : "menu-received"}`}
-    ref={messageMenuRef}
+              ref={(el) => (messageMenuRefs.current[msg._id] = el)}
             >
               <button onClick={() => startReplying(msg)}><CornerUpLeft size={14} /> Reply</button>
 
@@ -1421,42 +1429,40 @@ const Chat = () => {
     return elements;
   };
 
-useEffect(() => {
-  if (activeMessageMenu && messageMenuRef.current) {
-    const menu = messageMenuRef.current;
-    const messageEl = menu.parentElement; 
-    if (!messageEl) return;
+  useEffect(() => {
+    if (activeMessageMenu && messageMenuRefs.current[activeMessageMenu]) {
+      const menu = messageMenuRefs.current[activeMessageMenu];
+      const messageEl = menu.parentElement;
+      if (!messageEl) return;
 
-    const messageRect = messageEl.getBoundingClientRect();
-    const menuRect = menu.getBoundingClientRect();
-    const screenWidth = window.innerWidth;
+      const messageRect = messageEl.getBoundingClientRect();
+      const menuRect = menu.getBoundingClientRect();
+      const screenWidth = window.innerWidth;
 
-    menu.style.left = "";
-    menu.style.right = "";
+      menu.style.left = "";
+      menu.style.right = "";
 
-    if (messageEl.classList.contains("received")) {
-      const menuRightEdge = messageRect.left + messageRect.width;
-      const overflowRight = menuRightEdge + menuRect.width - screenWidth;
+      if (messageEl.classList.contains("received")) {
+        const menuRightEdge = messageRect.left + messageRect.width;
+        const overflowRight = menuRightEdge + menuRect.width - screenWidth;
 
-      if (overflowRight > 0) {
-        menu.style.left = `${messageRect.width - menuRect.width}px`;
-      } else {
-        menu.style.left = `${messageRect.width-20}px`;
+        if (overflowRight > 0) {
+          menu.style.left = `${messageRect.width - menuRect.width}px`;
+        } else {
+          menu.style.left = `${messageRect.width - 20}px`;
+        }
+      } else if (messageEl.classList.contains("sent")) {
+        const menuLeftEdge = messageRect.right - menuRect.width - 10;
+        const overflowLeft = menuLeftEdge < 0;
+
+        if (overflowLeft) {
+          menu.style.right = `${messageRect.width - menuRect.width}px`;
+        } else {
+          menu.style.right = "10px";
+        }
       }
     }
-    else if (messageEl.classList.contains("sent")) {
-      const menuLeftEdge = messageRect.right - menuRect.width - 10;
-      const overflowLeft = menuLeftEdge < 0;
-
-      if (overflowLeft) {
-        menu.style.right = `${messageRect.width - menuRect.width}px`;
-      } else {
-        menu.style.right = "10px";
-      }
-    }
-  }
-}, [activeMessageMenu]);
-
+  }, [activeMessageMenu]);
 
   return (
     <div id="chat-app-container" className="chat-container">

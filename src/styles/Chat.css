@@ -522,6 +522,7 @@
   font-weight: 500;
   color: var(--secondary-color);
   margin: 0;
+  text-align: left;
 }
 
 .reply-context-message {
@@ -575,6 +576,7 @@
   font-weight: 500;
   color: var(--secondary-color); /* Green name */
   margin: 0;
+  text-align: left;
 }
 
 .reply-preview-message {
@@ -584,6 +586,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; /* Add '...' for long messages */
+  text-align: left;
 }
 
 .reply-preview-close {
