@@ -167,6 +167,46 @@ function Leave(isDrawerOpen) {
     const handleUpdateLeave = async () => {
         if (!editId) return;
 
+         const isOverlap = leaveByIdData?.some((leave) => {
+        // Skip the leave being edited
+        if (leave._id === editId) return false;
+
+        const existingStart = dayjs(leave.start_date);
+        const existingEnd = dayjs(leave.end_date);
+        const newStart = dayjs(leaveData.startDate);
+        const newEnd = dayjs(leaveData.endDate);
+
+        // FULL DAY overlap
+        if (leaveData.leave_type === 'FULL_DAY' || leave.leave_type === 'FULL_DAY') {
+            return (
+                newStart.isBetween(existingStart, existingEnd, null, '[]') ||
+                newEnd.isBetween(existingStart, existingEnd, null, '[]') ||
+                (newStart.isBefore(existingStart) && newEnd.isAfter(existingEnd))
+            );
+        }
+
+        // HALF DAY overlap
+        const overlapDays =
+            newStart.isBetween(existingStart, existingEnd, null, '[]') ||
+            newEnd.isBetween(existingStart, existingEnd, null, '[]') ||
+            (newStart.isBefore(existingStart) && newEnd.isAfter(existingEnd));
+
+        if (overlapDays) {
+            if (leaveData.leave_type === leave.leave_type) return true;
+
+            if (newStart.isSame(existingStart, 'day') || newEnd.isSame(existingEnd, 'day')) {
+                if (leaveData.leave_type === leave.leave_type) return true;
+            }
+        }
+
+        return false;
+    });
+
+    if (isOverlap) {
+        showAlert('You already have a leave for this period', 'error');
+        return;
+    }
+
         const payload = {
             start_date: leaveData.startDate
                 ? dayjs(leaveData.startDate).format("YYYY-MM-DD")
@@ -354,7 +394,7 @@ function Leave(isDrawerOpen) {
                             Reason for Leave
                         </span>
                         <textarea
-                            className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none text-[14px]"
+                            className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none text-[14px]resize-y min-h-[80px] max-h-[200px]"
                             rows="4"
                             placeholder="Enter your reason..."
                             value={leaveData.reason}
