@@ -85,7 +85,7 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
       
       {isOpen ? <div className="p-4 flex justify-between items-center bg-[#1a6f8b] border-b border-white/20">
         <Link to="/" className="m-0 text-[1.2rem] text-white font-semibold no-underline">
-          Om Health Care
+          OM Physio Care
         </Link>
         <button className="bg-transparent border-none text-white text-[1.6rem] cursor-pointer" onClick={toggleDrawer}>
           &times;

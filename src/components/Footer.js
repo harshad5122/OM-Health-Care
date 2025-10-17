@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaFacebookF, FaInstagram, FaTwitter, FaLinkedinIn } from 'react-icons/fa';
 import { RiWhatsappFill } from 'react-icons/ri'; // For WhatsApp icon
+import mainlogo from "../assets/images/main-logo.jpg"
 
 const Footer = () => {
   const footerLinks = [
@@ -18,7 +19,7 @@ const Footer = () => {
         {/* Section 1: About Om Health Care */}
         <div className="footer-v2-section footer-v2-about mb-[2rem] text-left">
           <h3 className="footer-v2-logo text-[2.2rem] font-bold text-white mb-6">
-            <span className="text-[#4caf50]">OM</span> Health Care
+            <span className="text-[#4caf50]">OM</span> Physio Care
           </h3>
           <p className="footer-v2-about-text text-[0.95rem] leading-[1.7] mb-8 text-[#ecf0f1] opacity-85">
             Dedicated to restoring your health and enhancing your life through expert, personalized physiotherapy care. Your well-being is our priority.
@@ -71,7 +72,7 @@ const Footer = () => {
             <li>
               <a href="mailto:info@omhealthcare.com" className="flex items-center gap-2">
                 <FaEnvelope className="footer-v2-icon" />
-                <span>info@omhealthcare.com</span>
+                <span>info@omphysiocare.com</span>
               </a>
             </li>
             <li>
@@ -88,7 +89,7 @@ const Footer = () => {
       </div>
 
       <div className="footer-v2-bottom bg-[rgba(0,0,0,0.15)] border-t border-[rgba(255,255,255,0.05)] mt-16 py-6 text-center">
-        <p className="mb-3 text-[0.85rem] text-[#b0c4de] opacity-75">&copy; {new Date().getFullYear()} Om Health Care. All Rights Reserved.</p>
+        <p className="mb-3 text-[0.85rem] text-[#b0c4de] opacity-75">&copy; {new Date().getFullYear()} Om Physio Care. All Rights Reserved.</p>
         <div className="footer-v2-legal-links flex justify-center gap-7 mt-2">
           <Link to="/privacy-policy" className="text-[rgba(236,240,241,0.6)] text-[0.85rem] transition-colors duration-300 ease-linear hover:text-white">Privacy Policy</Link>
           <Link to="/terms-of-service" className="text-[rgba(236,240,241,0.6)] text-[0.85rem] transition-colors duration-300 ease-linear hover:text-white">Terms of Service</Link>

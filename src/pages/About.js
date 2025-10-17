@@ -52,7 +52,7 @@ const About = () => {
 						Our Journey to Your Well-being
 					</h1>
 					<p className="text-[1.5rem] text-white/90 animate-fade-in-up delay-100">
-						Discover the Heart of Om Health Care
+						Discover the Heart of Om Physio Care
 					</p>
 				</div>
 			</section>
@@ -76,7 +76,7 @@ const About = () => {
 						<div className="story-text animate-slide-right flex-1 text-[1.1rem] leading-[1.8] text-[#495057]">
 							<p className="mb-6">
 								<strong className="text-[#1a6f8b] font-semibold">
-									Om Health Care
+									Om Physio Care
 								</strong>{' '}
 								was founded with a profound vision: to transform
 								the physiotherapy experience by providing
@@ -223,7 +223,7 @@ const About = () => {
 				<div className="container max-w-[1200px] mx-auto px-8">
 					<div className="section-about-header text-center mb-16">
 						<h2 className="animate-scale-in">
-							Why Choose Om Health Care?
+							Why Choose Om Physio Care?
 						</h2>
 						<p className="section-subtitle text-[1.1rem] text-[#495057] mt-8 max-w-[700px] mx-auto leading-relaxed animate-fade-in delay-1">
 							Your trusted partner in recovery and wellness.

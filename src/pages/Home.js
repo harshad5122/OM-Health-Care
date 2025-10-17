@@ -61,7 +61,7 @@ const Home = () => {
 	const testimonials = [
 		{
 			id: 1,
-			quote: 'Thanks to Om Health Care, my back pain is gone, and I feel strong again!',
+			quote: 'Thanks to Om Physio Care, my back pain is gone, and I feel strong again!',
 			author: 'Rajesh P.',
 		},
 		{
@@ -134,13 +134,13 @@ const Home = () => {
 			>
 				<div className="container max-w-[1200px] mx-auto px-8">
 					<h2 className="section-title fade-in text-[2.2rem] mb-4 relative inline-block text-primary animate-fadeIn">
-						Welcome to Om Health Care
+						Welcome to Om Physio Care
 					</h2>
 					<p
 						className="fade-in"
 						style={{ animationDelay: '0.3s' }}
 					>
-						At Om Health Care, we believe in providing personalized
+						At Om Physio Care, we believe in providing personalized
 						physiotherapy treatments to help you recover faster,
 						reduce pain, and improve your quality of life. Our
 						evidence-based approach combines the latest techniques

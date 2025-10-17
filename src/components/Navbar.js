@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import CloseIcon from "@mui/icons-material/Close";
+import mainlogo from "../assets/images/main-logo.jpg"
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -45,7 +46,12 @@ const Navbar = () => {
             to="/"
             className="flex text-[1.4rem] sm:text-[1.6rem] xl:text-[1.8rem] font-bold no-underline text-[#1a6f8b]"
           >
-            <span className="text-[#4caf50]">OM</span> Health Care
+            {/* <span className="text-[#4caf50]">OM</span> Health Care */}
+              <img
+                src={mainlogo}
+                alt="OM Health Care Logo"
+                className="h-[40px] sm:h-[50px] xl:h-[60px] w-auto"
+              />
           </Link>
         )}
         <ul className="hidden xl:flex gap-6">
@@ -91,7 +97,12 @@ const Navbar = () => {
                 className="text-[1.4rem] font-bold no-underline text-[#1a6f8b]"
                 onClick={() => setMenuOpen(false)}
               >
-                <span className="text-[#4caf50]">OM</span>Health Care
+                <span className="text-[#4caf50] pr-2">OM</span>Physio Care
+                {/* <img
+                src={mainlogo}
+                alt="OM Health Care Logo"
+                className="h-[40px] sm:h-[50px] xl:h-[60px] w-auto"
+              /> */}
               </Link>
               <button onClick={() => setMenuOpen(false)}>
                 <CloseIcon className="text-[#1a6f8b]" />

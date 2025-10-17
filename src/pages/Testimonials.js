@@ -20,8 +20,8 @@ const testimonialsData = [
     mediaType: 'image', // 'image' or 'video'
     mediaSrc: patient1Photo,
     challenge: 'Suffered from severe chronic lower back pain for 6 months, impacting daily life.',
-    result: 'After just a few weeks of personalized therapy at Om Health Care, my pain is completely gone, and I can finally work and enjoy my hobbies normally again!',
-    quote: "Om Health Care gave me my life back. Their dedication and tailored approach are truly exceptional. I haven't felt this good in years!"
+    result: 'After just a few weeks of personalized therapy at Om Physio Care, my pain is completely gone, and I can finally work and enjoy my hobbies normally again!',
+    quote: "Om Physio Care gave me my life back. Their dedication and tailored approach are truly exceptional. I haven't felt this good in years!"
   },
   {
     id: 'test-2',
@@ -32,7 +32,7 @@ const testimonialsData = [
     mediaSrc: 'https://www.youtube.com/embed/M0T9t8G0Y0Y?controls=0&modestbranding=1&rel=0', // Placeholder YouTube video
     challenge: 'Struggled with limited shoulder mobility after a sports injury, unable to lift arm.',
     result: 'Thanks to their focused rehabilitation program, I have full range of motion back and am ready to return to my sport stronger than ever!',
-    quote: "I thought my athletic career was over, but Om Health Care's therapists pushed me gently and effectively. Their expertise is unmatched!"
+    quote: "I thought my athletic career was over, but Om Physio Care's therapists pushed me gently and effectively. Their expertise is unmatched!"
   },
   {
     id: 'test-3',
@@ -41,7 +41,7 @@ const testimonialsData = [
     mediaSrc: patient3Photo,
     challenge: 'Persistent neck stiffness and frequent headaches from prolonged desk work.',
     result: 'My headaches are gone, and my neck feels incredibly loose. I can now focus better at work without constant discomfort.',
-    quote: "Professional, attentive, and incredibly effective. Om Health Care transformed my workday. Highly recommend their ergonomic advice and treatments!"
+    quote: "Professional, attentive, and incredibly effective. Om Physio Care transformed my workday. Highly recommend their ergonomic advice and treatments!"
   },
   {
     id: 'test-4',
@@ -50,7 +50,7 @@ const testimonialsData = [
     mediaSrc: 'https://www.youtube.com/embed/oQ3Q-5yN86A?controls=0&modestbranding=1&rel=0', // Placeholder YouTube video
     challenge: 'Recovering from knee replacement surgery, needed to regain strength and walking ability.',
     result: 'The post-op physiotherapy was incredible. I’m walking confidently without pain, far ahead of my recovery schedule!',
-    quote: "Choosing Om Health Care for my rehab was the best decision. They made a challenging recovery process smooth and empowering. Truly grateful!"
+    quote: "Choosing Om Physio Care for my rehab was the best decision. They made a challenging recovery process smooth and empowering. Truly grateful!"
   },
   {
     id: 'test-5',
@@ -59,7 +59,7 @@ const testimonialsData = [
     mediaSrc: patient5Photo,
     challenge: 'Experiencing numbness and tingling in hands and feet due to nerve compression.',
     result: 'The specific nerve gliding exercises and manual therapy worked wonders. The sensation is returning, and the pain has significantly reduced.',
-    quote: "I was losing hope with the tingling and numbness, but Om Health Care provided clear explanations and effective treatments. Life-changing experience!"
+    quote: "I was losing hope with the tingling and numbness, but Om Physio Care provided clear explanations and effective treatments. Life-changing experience!"
   },
 ];
 
@@ -140,7 +140,7 @@ const Testimonials = () => {
         <div className="container max-w-[1200px] mx-auto px-8">
           <div className="section-about-header">
             <h2>Transforming Lives, One Success Story at a Time</h2>
-            <p className="section-subtitle text-[1.1rem] text-[#495057] mt-8 max-w-[700px] mx-auto leading-relaxed animate-fade-in delay-1">Read how Om Health Care has helped countless individuals regain their health, mobility, and confidence.</p>
+            <p className="section-subtitle text-[1.1rem] text-[#495057] mt-8 max-w-[700px] mx-auto leading-relaxed animate-fade-in delay-1">Read how Om Physio Care has helped countless individuals regain their health, mobility, and confidence.</p>
           </div>
 
           <div className="testimonials-grid">

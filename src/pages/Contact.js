@@ -145,10 +145,10 @@ const Contact = () => {
                 <FaEnvelope />
               </div>
               <h3 className="text-xl text-[#1a6f8b] mb-3 font-semibold">Email Us</h3>
-              <p className="text-sm text-[#333] mb-1 leading-relaxed">info@omhealthcare.com</p>
+              <p className="text-sm text-[#333] mb-1 leading-relaxed">info@omphysiocare.com</p>
               <p className="text-sm text-[#333] mb-4 leading-relaxed">We respond within 24 hours</p>
               <a
-                href="mailto:info@omhealthcare.com"
+                href="mailto:info@omphysiocare.com"
                 className="inline-block text-[#1a6f8b] font-semibold no-underline relative pb-1 after:content-[''] after:absolute after:w-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-[#4caf50] after:transition-all after:duration-300 hover:after:w-full"
               >
                 Send Email
@@ -179,7 +179,7 @@ const Contact = () => {
       >
         <img
           src={contactFormImg}
-          alt="Contact us at Om Health Care"
+          alt="Contact us at Om Physio Care"
           className="w-full h-full object-cover block transition-transform duration-500 ease-in-out hover:scale-105"
         />
       </div>
@@ -336,7 +336,7 @@ const Contact = () => {
                 allowFullScreen={true}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Om Health Care Location"
+                title="Om Physio Care Location"
               ></iframe>
             </div>
           </div>

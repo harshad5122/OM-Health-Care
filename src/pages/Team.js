@@ -98,7 +98,7 @@ const TeamMemberCard = ({ member, index, inView }) => {
             </div>
           )}
 
-          <Link to="/appointment"  className="inline-block bg-[var(--primary-color)] text-white px-6 py-3 rounded-full text-[0.95rem] font-semibold no-underline transition-all duration-300 mt-4 shadow-md hover:bg-[#145369] hover:-translate-y-0.5 hover:shadow-lg">
+          <Link to="/auth/login"  className="inline-block bg-[var(--primary-color)] text-white px-6 py-3 rounded-full text-[0.95rem] font-semibold no-underline transition-all duration-300 mt-4 shadow-md hover:bg-[#145369] hover:-translate-y-0.5 hover:shadow-lg">
             Book an Appointment with {member.name.split(' ')[0]}
           </Link>
         </div>
@@ -150,7 +150,7 @@ const Team = () => {
         <div className="container max-w-[1200px] mx-auto px-8">
           <h2 className="text-4xl font-bold mb-6 text-white">Ready to Experience Personalized Care?</h2>
           <p className="text-lg text-white/90 mb-12">Our team is eager to partner with you on your path to optimal health. Schedule your first consultation today.</p>
-          <Link to="/appointment" className="inline-block bg-[var(--secondary-color)] text-white px-10 py-4 rounded-[30px] text-xl font-semibold shadow-[0_4px_10px_rgba(0,0,0,0.2)] transition-all duration-300 hover:bg-[#3b8e3f] hover:-translate-y-[3px] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)]">Schedule Your Visit</Link>
+          <Link to="/auth/login" className="inline-block bg-[var(--secondary-color)] text-white px-10 py-4 rounded-[30px] text-xl font-semibold shadow-[0_4px_10px_rgba(0,0,0,0.2)] transition-all duration-300 hover:bg-[#3b8e3f] hover:-translate-y-[3px] hover:shadow-[0_6px_15px_rgba(0,0,0,0.3)]">Schedule Your Visit</Link>
         </div>
       </section>
     </div>
