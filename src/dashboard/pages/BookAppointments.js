@@ -31,6 +31,10 @@ function BookAppointments() {
 	} = useAppointmentApi();
 	const {getPatientByAssignDoctor}=usePatientApi();
 	const today = new Date();
+	const isPastDate =
+	appointment?.date &&
+	dayjs(appointment.date).isBefore(dayjs().startOf('day'));
+
 
 	const fetchPatients = async () => {
 		try {
@@ -511,9 +515,9 @@ function BookAppointments() {
 														},
 													}));
 												}}
-												readOnly={eventType === 'leave'}
+												readOnly={eventType === 'leave'|| isPastDate}
 												onOpen={(e) => {
-													if (eventType === 'leave')
+													if (eventType === 'leave'|| isPastDate)
 														e.preventDefault();
 												}}
 												componentsProps={{
@@ -565,9 +569,9 @@ function BookAppointments() {
 														},
 													}));
 												}}
-												readOnly={eventType === 'leave'}
+												readOnly={eventType === 'leave'|| isPastDate}
 												onOpen={(e) => {
-													if (eventType === 'leave')
+													if (eventType === 'leave'|| isPastDate)
 														e.preventDefault();
 												}}
 												componentsProps={{
@@ -624,6 +628,7 @@ function BookAppointments() {
 													}));
 												}
 											}}
+											disabled={isPastDate} 
 										>
 											<option value="">
 												Select Patient
@@ -657,6 +662,7 @@ function BookAppointments() {
 														e.target.value.toUpperCase(),
 												}))
 											}
+											disabled={isPastDate} 
 										>
 											<option value="">
 												Select visit type
@@ -738,7 +744,7 @@ function BookAppointments() {
 								})()}
 							</form>
 						</div>
-						{eventType !== 'leave' && (
+						{eventType !== 'leave' && !isPastDate &&(
 							<div className="flex justify-end gap-3 pt-2">
 								<button
 									type="button"

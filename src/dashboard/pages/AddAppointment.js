@@ -36,6 +36,9 @@ function AddAppointment() {
     const [allBookings, setAllBookings] = useState([]);
     const [eventType, setEventType] = useState(null);
     const [formDisabled, setFormDisabled] = useState(false);
+    const isPastDate =
+        appointment?.date &&
+        dayjs(appointment.date).isBefore(dayjs().startOf('day'));
 
 
 
@@ -477,15 +480,15 @@ function AddAppointment() {
                                                         },
                                                     }));
                                                 }}
-                                                readOnly={eventType === "leave"|| formDisabled} 
+                                                readOnly={eventType === "leave"|| formDisabled ||isPastDate} 
                                                 onOpen={(e) => {
-                                                    if (eventType === "leave"|| formDisabled) e.preventDefault(); 
+                                                    if (eventType === "leave"|| formDisabled||isPastDate) e.preventDefault(); 
                                                 }}
                                                 componentsProps={{
                                                     textField: {
                                                         size: "small",
                                                         InputProps: {
-                                                        readOnly: eventType === "leave"|| formDisabled,
+                                                        readOnly: eventType === "leave"|| formDisabled||isPastDate,
                                                         },
                                                         sx: {
                                                         "& .MuiInputBase-input": {
@@ -514,15 +517,15 @@ function AddAppointment() {
                                                         },
                                                     }));
                                                 }}
-                                                 readOnly={eventType === "leave"|| formDisabled} 
+                                                 readOnly={eventType === "leave"|| formDisabled||isPastDate} 
                                                 onOpen={(e) => {
-                                                    if (eventType === "leave"|| formDisabled) e.preventDefault(); 
+                                                    if (eventType === "leave"|| formDisabled||isPastDate) e.preventDefault(); 
                                                 }}
                                                 componentsProps={{
                                                     textField: {
                                                         size: "small",
                                                         InputProps: {
-                                                        readOnly: eventType === "leave"|| formDisabled,
+                                                        readOnly: eventType === "leave"|| formDisabled||isPastDate,
                                                         },
                                                         sx: {
                                                         "& .MuiInputBase-input": {
@@ -558,6 +561,7 @@ function AddAppointment() {
                                                     }));
                                                 }
                                             }}
+                                            disabled={isPastDate} 
                                         >
                                             <option value="">Select Patient</option>
                                             {patients?.map((patient) => (
@@ -644,7 +648,7 @@ function AddAppointment() {
                                                     visit_type: e.target.value.toUpperCase(),
                                                 }))
                                             }
-                                            disabled={formDisabled}
+                                            disabled={formDisabled || isPastDate}
                                         >
                                             <option value="">Select visit type</option>
                                             <option value="HOME">Home Visit</option>
@@ -652,33 +656,7 @@ function AddAppointment() {
                                         </select>
                                     </div>
                                 )}
-                                {/* {(() => {
-                                    const dayBooking = allBookings.find(b => b.date === appointment?.date);
-                                    const leaveEvent = dayBooking?.events?.find(e => e.type === "leave");
-                                    console.log(dayBooking,"daybooking",leaveEvent,"leaveevnett")
-
-                                    if (leaveEvent) {
-                                        const startTime = appointment?.time_slot?.start || leaveEvent.start;
-                                        const endTime = appointment?.time_slot?.end || leaveEvent.end;
-                                        return (
-                                        <div className="mt-4 p-3 border border-red-300 bg-red-50 text-red-700 rounded text-sm">
-                                            {`The doctor will not be available on ${
-                                            appointment?.date
-                                                ? dayjs(appointment.date).format("D MMMM, YYYY")
-                                                : "this date"
-                                            }${
-                                            startTime && endTime
-                                                ? `, from ${dayjs(startTime, "HH:mm").format("h:mm A")} to ${dayjs(
-                                                    endTime,
-                                                    "HH:mm"
-                                                ).format("h:mm A")}`
-                                                : ""
-                                            }.`}
-                                        </div>
-                                        );
-                                    }
-                                    return null;
-                                })()} */}
+                               
                                 {(() => {
                                     const dayBooking = allBookings.find(b => b.date === appointment?.date);
                                     const leaveEvents = dayBooking?.events?.filter(e => e.type === "leave") || [];
@@ -726,7 +704,7 @@ function AddAppointment() {
                                 })()}
 
 
-                                {eventType !== "leave" &&(
+                                {eventType !== "leave" &&!isPastDate &&(
                                     <div className="flex justify-end gap-3 pt-2">
                                         <button
                                             type="button"
