@@ -215,13 +215,28 @@ function AddUser() {
                                     <option value="+91">🇮🇳 +91</option>
                                     <option value="+1">🇺🇸 +1</option>
                                 </select>
-                                <input
+                                {/* <input
                                     className={`${inputClass} flex-1`}
                                     type="tel"
                                     value={formData.phone}
                                     onChange={(e) => handleChange("phone", e.target.value)}
                                     placeholder="9876543210"
-                                />
+                                /> */}
+                                <input
+  className={`${inputClass} flex-1`}
+  type="tel"
+  value={formData.phone}
+  onChange={(e) => {
+    const value = e.target.value;
+    // Allow only digits (0–9)
+    if (/^\d*$/.test(value)) {
+      handleChange("phone", value);
+    }
+  }}
+  placeholder="9876543210"
+  maxLength={10} // optional
+/>
+
                             </div>
                             {formErrors.phone && <p className={errorClass}>{formErrors.phone}</p>}
                         </div>

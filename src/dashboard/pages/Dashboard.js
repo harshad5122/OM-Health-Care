@@ -12,6 +12,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
+import { showAlert } from '../../components/AlertComponent';
 
 function Dashboard({ isDrawerOpen }) {
 	const { getChart } = useDashboardApi();
@@ -549,7 +550,7 @@ function Dashboard({ isDrawerOpen }) {
 				>
 					My Dashboard
 				</span>
-				<div className="flex flex-wrap items-center gap-3 px-[20px] py-4 justify-end">
+				{/* <div className="flex flex-wrap items-center gap-3 px-[20px] py-4 justify-end">
 					<LocalizationProvider dateAdapter={AdapterDayjs}>
 						<div className="flex gap-2 items-center filter-daterange">
 							<DatePicker
@@ -680,7 +681,165 @@ function Dashboard({ isDrawerOpen }) {
 					>
 						Clear
 					</button>
+				</div> */}
+
+				<div className="flex flex-wrap items-center gap-3 px-[20px] py-4 justify-end">
+					<LocalizationProvider dateAdapter={AdapterDayjs}>
+						<div className="flex gap-2 items-center filter-daterange">
+						<DatePicker
+							value={fromDate}
+							onChange={(newValue) => {
+							setFromDate(newValue);
+							if (newValue || toDate) {
+								// If custom date picked, clear month selection
+								setSelectedMonth(null);
+							}
+							}}
+							format="DD/MM/YYYY"
+						/>
+						<span className="text-gray-600">-</span>
+						<DatePicker
+							value={toDate}
+							onChange={(newValue) => {
+							setToDate(newValue);
+							if (newValue || fromDate) {
+								// If custom date picked, clear month selection
+								setSelectedMonth(null);
+							}
+							}}
+							format="DD/MM/YYYY"
+						/>
+						</div>
+					</LocalizationProvider>
+					<FormControl size="small" sx={{ minWidth: 120 }}>
+						<Select
+						value={selectedMonth || ''}
+						displayEmpty
+						className="bg-white"
+						onChange={(e) => {
+							const month = e.target.value;
+							setSelectedMonth(month);
+
+							if (!month) return; // handle empty selection
+
+							let firstDay, lastDay;
+
+							if (month === 13) {
+							// 'All' selected (Full year)
+							firstDay = dayjs().year(selectedYear).startOf('year');
+							lastDay = dayjs().year(selectedYear).endOf('year');
+							} else {
+							// specific month selected
+							firstDay = dayjs()
+								.year(selectedYear)
+								.month(month - 1)
+								.startOf('month');
+							lastDay = dayjs()
+								.year(selectedYear)
+								.month(month - 1)
+								.endOf('month');
+							}
+
+							setFromDate(firstDay);
+							setToDate(lastDay);
+						}}
+						>
+						<MenuItem value="">Select Month</MenuItem>
+						{months.map((month, index) => (
+							<MenuItem key={index} value={index + 1}>
+							{month}
+							</MenuItem>
+						))}
+						</Select>
+					</FormControl>
+					<FormControl size="small" sx={{ minWidth: 120 }}>
+						<Select
+						value={selectedYear}
+						className="bg-white"
+						onChange={(e) => {
+							const year = e.target.value;
+							setSelectedYear(year);
+
+							if (selectedMonth) {
+							let firstDay, lastDay;
+
+							if (selectedMonth === 13) {
+								// 'All' selected
+								firstDay = dayjs().year(year).startOf('year');
+								lastDay = dayjs().year(year).endOf('year');
+							} else {
+								// specific month
+								firstDay = dayjs()
+								.year(year)
+								.month(selectedMonth - 1)
+								.startOf('month');
+								lastDay = dayjs()
+								.year(year)
+								.month(selectedMonth - 1)
+								.endOf('month');
+							}
+
+							setFromDate(firstDay);
+							setToDate(lastDay);
+							}
+						}}
+						>
+						{years.map((year) => (
+							<MenuItem key={year} value={year}>
+							{year}
+							</MenuItem>
+						))}
+						</Select>
+					</FormControl>
+					<button
+						className="bg-[#1a6f8b] text-white px-4 py-2 rounded"
+						onClick={() => {
+							// Validation: if one date is selected but not the other
+							if ((fromDate && !toDate) || (!fromDate && toDate)) {
+							showAlert("Please select both From and To dates before searching.");
+							return;
+							}
+
+							let finalFrom = fromDate;
+							let finalTo = toDate;
+
+							// If both empty but month/year selected → set based on month
+							if ((!fromDate || !toDate) && selectedMonth) {
+							if (selectedMonth === 13) {
+								finalFrom = dayjs().year(selectedYear).startOf("year");
+								finalTo = dayjs().year(selectedYear).endOf("year");
+							} else {
+								finalFrom = dayjs()
+								.year(selectedYear)
+								.month(selectedMonth - 1)
+								.startOf("month");
+								finalTo = dayjs()
+								.year(selectedYear)
+								.month(selectedMonth - 1)
+								.endOf("month");
+							}
+							setFromDate(finalFrom);
+							setToDate(finalTo);
+							}
+
+							const filter = {
+							from: finalFrom ? finalFrom.format("YYYY-MM-DD") : null,
+							to: finalTo ? finalTo.format("YYYY-MM-DD") : null,
+							};
+
+							fetchCharts(filter);
+						}}
+						>
+						Search
+					</button>
+					<button
+						className="bg-[#1a6f8b] text-white px-4 py-2 rounded"
+						onClick={resetFilters}
+					>
+						Clear
+					</button>
 				</div>
+
 			</div>
 
 			<div className="flex-1 overflow-y-auto px-[20px] pb-[20px]">
@@ -801,9 +960,19 @@ function Dashboard({ isDrawerOpen }) {
 												<td className="px-4 py-2 border-b">
 													{leave.staffName}
 												</td>
-												<td className="px-4 py-2 border-b">
+												{/* <td className="px-4 py-2 border-b">
 													{leave.leaveType}
+												</td> */}
+												<td className="px-4 py-2 border-b">
+													{leave.leaveType === "FIRST_HALF"
+														? "First Half"
+														: leave.leaveType === "SECOND_HALF"
+														? "Second Half"
+														: leave.leaveType === "FULL_DAY"
+														? "Full Day"
+														: leave.leaveType}
 												</td>
+
 											</tr>
 										))}
 									</tbody>

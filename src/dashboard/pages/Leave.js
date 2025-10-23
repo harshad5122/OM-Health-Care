@@ -481,9 +481,20 @@ function Leave(isDrawerOpen) {
                                             <td className="px-4 py-2 text-sm">
                                                 {formatDate(leave.end_date)}{" "}
                                             </td>
-                                            <td className="px-4 py-2 text-sm">
+                                            {/* <td className="px-4 py-2 text-sm">
+                                                {console.log(leave.leave_type,"leavee")}
                                                  {leave.leave_type}
-                                            </td>
+
+                                            </td> */}
+                                            <td className="px-4 py-2 text-sm">
+													{leave.leave_type === "FIRST_HALF"
+														? "First Half"
+														: leave.leave_type === "SECOND_HALF"
+														? "Second Half"
+														: leave.leave_type === "FULL_DAY"
+														? "Full Day"
+														: leave.leave_type}
+												</td>
                                             <td className="px-4 py-2 text-sm">{leave.admin_name || "-"}</td>
                                             <td className="px-4 py-2 text-sm max-w-[250px] truncate" title={leave.reason}>
                                                 {leave.reason}

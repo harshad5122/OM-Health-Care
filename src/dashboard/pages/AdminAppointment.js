@@ -366,6 +366,9 @@ function AdminAppointment({ isDrawerOpen }) {
                                             {col}
                                         </th>
                                     ))}
+                                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 text-left">
+                                        Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -381,11 +384,11 @@ function AdminAppointment({ isDrawerOpen }) {
                                         return (
                                             <tr
                                                 key={patient._id}
-                                                className="border border-gray-200 text-left cursor-pointer"
-                                                onClick={() => {
-                                                    setSelectedPatient(patient);
-                                                    setIsModalOpen(true);
-                                                }}
+                                                className="border border-gray-200 text-left"
+                                                // onClick={() => {
+                                                //     setSelectedPatient(patient);
+                                                //     setIsModalOpen(true);
+                                                // }}
                                             >
                                                 <td className="px-4 py-2 text-sm truncate max-w-[150px]"
                                                 title={`${patient?.firstname} ${patient?.lastname}`}
@@ -413,6 +416,17 @@ function AdminAppointment({ isDrawerOpen }) {
                                                 </td>
                                                 <td className="px-4 py-2 text-sm">
                                                     {patient.patient_status}
+                                                </td>
+                                                <td className="px-4 py-2 text-sm">
+                                                    <button
+                                                        className="bg-[#1a6f8b] text-white text-xs px-3 py-1 rounded-md hover:bg-[#155a70] transition cursor-pointer"
+                                                        onClick={() => {
+                                                        setSelectedPatient(patient);
+                                                        setIsModalOpen(true);
+                                                        }}
+                                                    >
+                                                        View
+                                                    </button>
                                                 </td>
 
                                             </tr>

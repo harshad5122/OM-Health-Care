@@ -450,7 +450,6 @@ function AddDoctor() {
                             <label className={labelClass}>Phone number (with country code)<span className="text-red-500">*</span></label>
                             {/* <input className={inputClass} type="tel"  placeholder="+91 9876543210" value={personalInfo.phone} onChange={(e) => handlePersonalChange("phone", e.target.value)} /> */}
                             <div className="flex gap-2">
-                                {/* Country code dropdown */}
                                 <select
                                     className={` rounded-md border border-gray-300 px-2 py-2 text-sm focus-primary w-20 cursor-pointer`}   // narrow width for country code
                                     value={personalInfo.countryCode}
@@ -461,17 +460,22 @@ function AddDoctor() {
                                     <option value="+44">🇬🇧 +44</option>
                                     <option value="+61">🇦🇺 +61</option>
                                     <option value="+81">🇯🇵 +81</option>
-                                    {/* Add more as needed */}
                                 </select>
 
-                                {/* Phone number input */}
                                 <input
                                     className={`${inputClass} flex-1`}
                                     type="tel"
 
                                     placeholder="9876543210"
                                     value={personalInfo.phone}
-                                    onChange={(e) => handlePersonalChange("phone", e.target.value)}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        // Allow only digits (0–9)
+                                        if (/^\d*$/.test(value)) {
+                                        handlePersonalChange("phone", value);
+                                        }
+                                    }}
+                                    maxLength={10}
                                 />
                             </div>
                             {formErrors.phone && <p className={errorClass}>{formErrors.phone}</p>}
@@ -782,10 +786,31 @@ function AddDoctor() {
                             </select>
                             {formErrors.emergencyRelation && <p className={errorClass}>{formErrors.emergencyRelation}</p>}
                         </div>
-                        <div>
+                        {/* <div>
                             <label className={labelClass}>Contact number<span className="text-red-500">*</span></label>
                             <input className={inputClass} type="tel" value={emergencyContact.contactNumber} onChange={(e) => handleEmergencyChange("contactNumber", e.target.value)} />
                             {formErrors.emergencyNumber && <p className={errorClass}>{formErrors.emergencyNumber}</p>}
+                        </div> */}
+                        <div>
+                            <label className={labelClass}>
+                                Contact number<span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                className={inputClass}
+                                type="tel"
+                                value={emergencyContact.contactNumber}
+                                onChange={(e) => {
+                                const value = e.target.value;
+                                // Allow only digits
+                                if (/^\d*$/.test(value)) {
+                                    handleEmergencyChange("contactNumber", value);
+                                }
+                                }}
+                                maxLength={10} 
+                            />
+                            {formErrors.emergencyNumber && (
+                                <p className={errorClass}>{formErrors.emergencyNumber}</p>
+                            )}
                         </div>
                     </div>
                 </section>

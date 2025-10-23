@@ -139,7 +139,23 @@ const Profile = () => {
               <div className="form-group">
                 <label>Phone Number</label>
                 {isEditing ? (
-                  <input type="tel" name="phone" value={tempData.phone || ""} onChange={handleChange} />
+                  // <input type="tel" name="phone" value={tempData.phone || ""} onChange={handleChange} />
+                   <input
+        type="tel"
+        name="phone"
+        value={tempData.phone || ""}
+        onChange={(e) => {
+          // Allow only digits (0–9)
+          const digitsOnly = e.target.value.replace(/\D/g, "");
+          handleChange({
+            target: { name: "phone", value: digitsOnly },
+          });
+        }}
+        placeholder="9876543210"
+        maxLength={10} // optional (limit to 10 digits)
+        inputMode="numeric" // show numeric keypad on mobile
+        pattern="[0-9]*"
+      />
                 ) : (
                   <p>{profileData.phone}</p>
                 )}
