@@ -452,7 +452,7 @@ function AddDoctor() {
                             <div className="flex gap-2">
                                 {/* Country code dropdown */}
                                 <select
-                                    className={` rounded-md border border-gray-300 px-2 py-2 text-sm focus-primary w-20`}   // narrow width for country code
+                                    className={` rounded-md border border-gray-300 px-2 py-2 text-sm focus-primary w-20 cursor-pointer`}   // narrow width for country code
                                     value={personalInfo.countryCode}
                                     onChange={(e) => handlePersonalChange("countryCode", e.target.value)}
                                 >
@@ -562,14 +562,14 @@ function AddDoctor() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full md:col-span-2">
                                 <div>
                                     <label className={labelClass}>Country<span className="text-red-500">*</span></label>
-                                    <select className={selectClass} value={workAddress.country} onChange={(e) => handleAddressChange("work", "country", e.target.value)}>
+                                    <select  className={`${selectClass} cursor-pointer`} value={workAddress.country} onChange={(e) => handleAddressChange("work", "country", e.target.value)}>
                                         <option value="India">India</option>
                                     </select>
                                     {formErrors.workCountry && <p className={errorClass}>{formErrors.workCountry}</p>}
                                 </div>
                                 <div>
                                     <label className={labelClass}>State<span className="text-red-500">*</span></label>
-                                    <select className={selectClass} value={workAddress.state} onChange={(e) => handleAddressChange("work", "state", e.target.value)}>
+                                    <select  className={`${selectClass} cursor-pointer`} value={workAddress.state} onChange={(e) => handleAddressChange("work", "state", e.target.value)}>
                                         <option value="">Select state</option>
                                         {stateOptions.map((s) => (
                                             <option key={s} value={s}>{s}</option>
@@ -602,14 +602,14 @@ function AddDoctor() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full md:col-span-2">
                             <div>
                                 <label className={labelClass}>Country<span className="text-red-500">*</span></label>
-                                <select className={selectClass} value={currentAddress.country} onChange={(e) => handleAddressChange("current", "country", e.target.value)}>
+                                <select  className={`${selectClass} cursor-pointer`} value={currentAddress.country} onChange={(e) => handleAddressChange("current", "country", e.target.value)}>
                                     <option value="India">India</option>
                                 </select>
                                 {formErrors.currentCountry && <p className={errorClass}>{formErrors.currentCountry}</p>}
                             </div>
                             <div>
                                 <label className={labelClass}>State<span className="text-red-500">*</span></label>
-                                <select className={selectClass} value={currentAddress.state} onChange={(e) => handleAddressChange("current", "state", e.target.value)}>
+                                <select  className={`${selectClass} cursor-pointer`} value={currentAddress.state} onChange={(e) => handleAddressChange("current", "state", e.target.value)}>
                                     <option value="">Select state</option>
                                     {stateOptions.map((s) => (
                                         <option key={s} value={s}>{s}</option>
@@ -734,7 +734,7 @@ function AddDoctor() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full md:col-span-2">
                             <div>
                                 <label className={labelClass}>Country<span className="text-red-500">*</span></label>
-                                <select className={`${selectClass} disabled:cursor-not-allowed`} value={permanentAddress.country} onChange={(e) => handleAddressChange("permanent", "country", e.target.value)} disabled={isPermanentSameAsCurrent}>
+                                <select className={`${selectClass} disabled:cursor-not-allowed cursor-pointer`} value={permanentAddress.country} onChange={(e) => handleAddressChange("permanent", "country", e.target.value)} disabled={isPermanentSameAsCurrent}>
                                     <option value="India">India</option>
                                 </select>
                                 {formErrors.permanentCountry && <p className={errorClass}>{formErrors.permanentCountry}</p>}
@@ -742,7 +742,7 @@ function AddDoctor() {
 
                             <div>
                                 <label className={labelClass}>State<span className="text-red-500">*</span></label>
-                                <select className={`${selectClass} disabled:cursor-not-allowed`} value={permanentAddress.state} onChange={(e) => handleAddressChange("permanent", "state", e.target.value)} disabled={isPermanentSameAsCurrent}>
+                                <select className={`${selectClass} disabled:cursor-not-allowed cursor-pointer`} value={permanentAddress.state} onChange={(e) => handleAddressChange("permanent", "state", e.target.value)} disabled={isPermanentSameAsCurrent}>
                                     <option value="">Select state<span className="text-red-500">*</span></option>
                                     {stateOptions.map((s) => (
                                         <option key={s} value={s}>{s}</option>
@@ -774,7 +774,7 @@ function AddDoctor() {
                         </div>
                         <div>
                             <label className={labelClass}>Relation<span className="text-red-500">*</span></label>
-                            <select className={selectClass} value={emergencyContact.relation} onChange={(e) => handleEmergencyChange("relation", e.target.value)}>
+                            <select  className={`${selectClass} cursor-pointer`} value={emergencyContact.relation} onChange={(e) => handleEmergencyChange("relation", e.target.value)}>
                                 <option value="">Select relation</option>
                                 {relationOptions.map((r) => (
                                     <option key={r.value} value={r.value}>{r.label}</option>

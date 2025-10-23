@@ -175,20 +175,35 @@ function BookAppointments() {
 					return false;
 				} else {
 					// partial leave → check overlap
+					// const leaveStart = toMinutes(leave.start);
+					// const leaveEnd = toMinutes(leave.end);
+
+					// if (!(apptEnd <= leaveStart || apptStart >= leaveEnd)) {
+					// 	showAlert(
+					// 		`Dr. ${user?.firstname || ''} is on leave from ${
+					// 			leave.start
+					// 		}–${leave.end} on ${dayjs(appointment.date).format(
+					// 			'D MMMM, YYYY',
+					// 		)}.`,
+					// 		'error',
+					// 	);
+					// 	return false;
+					// }
+
 					const leaveStart = toMinutes(leave.start);
 					const leaveEnd = toMinutes(leave.end);
 
 					if (!(apptEnd <= leaveStart || apptStart >= leaveEnd)) {
+						const formattedStart = dayjs(leave.start, "HH:mm").format("hh:mm A");
+						const formattedEnd = dayjs(leave.end, "HH:mm").format("hh:mm A");
+
 						showAlert(
-							`Dr. ${user?.firstname || ''} is on leave from ${
-								leave.start
-							}–${leave.end} on ${dayjs(appointment.date).format(
-								'D MMMM, YYYY',
-							)}.`,
-							'error',
+							`Dr. ${user?.firstname || ''} is on leave from ${formattedStart} – ${formattedEnd} on ${dayjs(appointment.date).format('D MMMM, YYYY')}.`,
+							'error'
 						);
 						return false;
 					}
+
 				}
 			}
 		}

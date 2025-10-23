@@ -4,6 +4,7 @@ import { Link  } from 'react-router-dom';
 import { useAuth } from "../../context/AuthContext";
 import { useUserApi } from '../../api/userApi';
 import {showAlert} from '../../components/AlertComponent';
+import CircularProgress from "@mui/material/CircularProgress";
 
 
 const Profile = () => {
@@ -68,7 +69,13 @@ const Profile = () => {
     setIsEditing(false);
   };
 
-  if (loading) return <p>Loading profile...</p>;
+  // if (loading) return <p>Loading profile...</p>;
+   if (loading)
+  return (
+    <div className="flex justify-center items-center h-[calc(100vh-60px)]">
+      <CircularProgress size={30} />
+    </div>
+  );
   if (!profileData) return <p>No profile data found.</p>;
 
   return (
@@ -165,7 +172,7 @@ const Profile = () => {
                 <label>Gender</label>
                 {isEditing ? (
                   <div className="select-wrapper">
-                    <select name="gender" value={tempData.gender || ""} onChange={handleChange}>
+                    <select name="gender" value={tempData.gender || ""} onChange={handleChange} className='cursor-pointer'>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
                       <option value="other">Other</option>
@@ -207,7 +214,7 @@ const Profile = () => {
               <div className="form-group">
                 <label>Country</label>
                 {isEditing ? (
-                  <input type="text" name="country" value={tempData.country || ""} onChange={handleChange} />
+                  <input type="text" name="country" value={tempData.country || ""} onChange={handleChange} className='cursor-pointer          '/>
                 ) : (
                   <p>{profileData.country}</p>
                 )}

@@ -101,7 +101,10 @@ const DrawerMenu = ({ isOpen, toggleDrawer, userRole }) => {
         className={`${isOpen ? "flex flex-col p-4 flex-grow" : "flex flex-col items-center flex-grow mt-5 p-2.5"}`}
       >
         {menuItems[userRole]?.map((item) => {
-          const isActive = location.pathname === `${basePaths[userRole]}/${item.path}`;
+          // const isActive = location.pathname === `${basePaths[userRole]}/${item.path}`;
+          const isActive =
+          location.pathname === `${basePaths[userRole]}/${item.path}` ||
+          (userRole === 2 && item.path === "home" && location.pathname === basePaths[2]);
 
           return (
             <Link

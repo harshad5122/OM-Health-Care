@@ -193,14 +193,10 @@ function AddUser() {
                             <input className={inputClass} type="email" value={formData.email} onChange={(e) => handleChange("email", e.target.value)} />
                             {formErrors.email && <p className={errorClass}>{formErrors.email}</p>}
                         </div>
-                        {/* <div>
-                            <label className={labelClass}>Password *</label>
-                            <input className={inputClass} type="password" value={formData.password} onChange={(e) => handleChange("password", e.target.value)} />
-                            {formErrors.password && <p className={errorClass}>{formErrors.password}</p>}
-                        </div> */}
+                       
                         <div>
                             <label className={labelClass}>Gender *</label>
-                            <select className={selectClass} value={formData.gender} onChange={(e) => handleChange("gender", e.target.value)}>
+                            <select  className={`${selectClass} cursor-pointer`} value={formData.gender} onChange={(e) => handleChange("gender", e.target.value)}>
                                 <option value="">Select gender</option>
                                 {genderOptions.map((g) => (
                                     <option key={g.value} value={g.value}>{g.label}</option>
@@ -230,13 +226,11 @@ function AddUser() {
                             {formErrors.phone && <p className={errorClass}>{formErrors.phone}</p>}
                         </div>
 
-                        {/* DOB */}
                         <div>
                             <label className={labelClass}>Date of Birth *</label>
                             <input
                                 className={inputClass}
                                 type="date"
-                                // value={formData.dob}
                                 value={formData.dob ? formData.dob.split("T")[0] : ""}
                                 onChange={(e) => handleChange("dob", e.target.value)}
                             />
@@ -253,26 +247,17 @@ function AddUser() {
                             <span>
                                 <label className={labelClass}>Country *</label>
                                 <select
-                                    className={selectClass}
+                                     className={`${selectClass} cursor-pointer`}
                                     value={formData.country}
                                     onChange={(e) => handleChange("country", e.target.value)}
                                 >
-                                    {/* <option value="">Select country</option> */}
                                     <option value="India">India</option>
-                                    {/* <option value="United States">United States</option>
-                                    <option value="Canada">Canada</option>
-                                    <option value="United Kingdom">United Kingdom</option>
-                                    <option value="Australia">Australia</option>
-                                    <option value="Germany">Germany</option>
-                                    <option value="France">France</option>
-                                    <option value="Singapore">Singapore</option> */}
-                                    {/* Add more countries as needed */}
                                 </select>
                                 {formErrors.country && <p className={errorClass}>{formErrors.country}</p>}
                             </span>
                             <span>
                                 <label className={labelClass}>State *</label>
-                                <select className={selectClass} value={formData.state} onChange={(e) => handleChange("state", e.target.value)}>
+                                <select  className={`${selectClass} cursor-pointer`} value={formData.state} onChange={(e) => handleChange("state", e.target.value)}>
                                     <option value="">Select state</option>
                                     {stateOptions.map((s) => (
                                         <option key={s} value={s}>{s}</option>
@@ -290,7 +275,7 @@ function AddUser() {
                             <label className={labelClass}>Assign Doctor *</label>
                                 <select
                                     // className={selectClass}
-                                    className={`${selectClass} flex`}
+                                    className={`${selectClass} flex cursor-pointer`}
                                     value={formData.assign_doctor}
                                     onChange={(e) => handleChange("assign_doctor", e.target.value)}
                                 >

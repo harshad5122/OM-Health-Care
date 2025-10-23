@@ -169,7 +169,7 @@ function PatientStatus() {
 					onClose={() => {
 						setIsEditModalOpen(false);
 					}}
-					title={'Update Patient status ?'}
+					title={'Update Patient Status ?'}
 				>
 					<div className="space-y-4 flex flex-col">
 						<span>
